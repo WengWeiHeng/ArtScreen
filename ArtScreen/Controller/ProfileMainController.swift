@@ -8,11 +8,11 @@
 
 import UIKit
 
-class ProfileController: UIViewController {
+class ProfileMainController: UIViewController {
     
     //MARK: - Properties
     let userCoverView = UserCoverView()
-    let profileFooter = ProfileFooter()
+    private let profileInputView = ProfileInputView()
     
     private let closeButton: UIButton = {
         let button = UIButton(type: .system)
@@ -31,6 +31,8 @@ class ProfileController: UIViewController {
         button.layer.borderWidth = 1.25
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.addTarget(self, action: #selector(handleEditAction), for: .touchUpInside)
+        button.setDimensions(width: 100, height: 36)
+        button.layer.cornerRadius = 36 / 2
         
         
         return button
@@ -46,6 +48,7 @@ class ProfileController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+        navigationController?.navigationBar.barStyle = .black
     }
     
     //MARK: - Selectors
@@ -64,16 +67,15 @@ class ProfileController: UIViewController {
         view.addSubview(userCoverView)
         userCoverView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: 750)
         
-        view.addSubview(profileFooter)
-        profileFooter.anchor(top: userCoverView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, height: 90)
+        view.addSubview(profileInputView)
+        profileInputView.anchor(top: userCoverView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor)
         
         view.addSubview(closeButton)
         closeButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 12, paddingRight: 12)
         
         view.addSubview(editButton)
         editButton.anchor(bottom: userCoverView.bottomAnchor, right: view.rightAnchor, paddingBottom: 16, paddingRight: 12)
-        editButton.setDimensions(width: 100, height: 36)
-        editButton.layer.cornerRadius = 36 / 2
+        
     
     }
 }

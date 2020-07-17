@@ -7,9 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B0A13D5824C0681D00633D30 /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5724C0681D00633D30 /* ProfileController.swift */; };
+		B0A13D5824C0681D00633D30 /* ProfileMainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5724C0681D00633D30 /* ProfileMainController.swift */; };
 		B0A13D5A24C0702000633D30 /* UserCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5924C0702000633D30 /* UserCoverView.swift */; };
-		B0A13D5D24C0748400633D30 /* ProfileFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5C24C0748400633D30 /* ProfileFooter.swift */; };
+		B0A13D5D24C0748400633D30 /* UserInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5C24C0748400633D30 /* UserInfoView.swift */; };
+		B0A6B14124C1A3B8003D44C3 /* ProfileInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A6B14024C1A3B8003D44C3 /* ProfileInputView.swift */; };
+		B0A6B14324C1A785003D44C3 /* ProfileInnerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A6B14224C1A785003D44C3 /* ProfileInnerController.swift */; };
+		B0A6B14524C1A8C4003D44C3 /* ProfileExhibitionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A6B14424C1A8C4003D44C3 /* ProfileExhibitionCell.swift */; };
+		B0A6B14724C1B358003D44C3 /* ProfileInnerHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A6B14624C1B358003D44C3 /* ProfileInnerHeader.swift */; };
 		B0EE674C24BF270A0069B27D /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE674B24BF270A0069B27D /* MenuController.swift */; };
 		B0EE674E24BF277A0069B27D /* ContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE674D24BF277A0069B27D /* ContainerController.swift */; };
 		B0EE675024BF29A20069B27D /* MenuHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE674F24BF29A20069B27D /* MenuHeader.swift */; };
@@ -30,9 +34,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B0A13D5724C0681D00633D30 /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
+		B0A13D5724C0681D00633D30 /* ProfileMainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileMainController.swift; sourceTree = "<group>"; };
 		B0A13D5924C0702000633D30 /* UserCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCoverView.swift; sourceTree = "<group>"; };
-		B0A13D5C24C0748400633D30 /* ProfileFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFooter.swift; sourceTree = "<group>"; };
+		B0A13D5C24C0748400633D30 /* UserInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoView.swift; sourceTree = "<group>"; };
+		B0A6B14024C1A3B8003D44C3 /* ProfileInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInputView.swift; sourceTree = "<group>"; };
+		B0A6B14224C1A785003D44C3 /* ProfileInnerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInnerController.swift; sourceTree = "<group>"; };
+		B0A6B14424C1A8C4003D44C3 /* ProfileExhibitionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileExhibitionCell.swift; sourceTree = "<group>"; };
+		B0A6B14624C1B358003D44C3 /* ProfileInnerHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInnerHeader.swift; sourceTree = "<group>"; };
 		B0EE674B24BF270A0069B27D /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		B0EE674D24BF277A0069B27D /* ContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerController.swift; sourceTree = "<group>"; };
 		B0EE674F24BF29A20069B27D /* MenuHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuHeader.swift; sourceTree = "<group>"; };
@@ -69,9 +77,22 @@
 			isa = PBXGroup;
 			children = (
 				B0A13D5924C0702000633D30 /* UserCoverView.swift */,
-				B0A13D5C24C0748400633D30 /* ProfileFooter.swift */,
+				B0A13D5C24C0748400633D30 /* UserInfoView.swift */,
+				B0A6B14024C1A3B8003D44C3 /* ProfileInputView.swift */,
+				B0A6B14624C1B358003D44C3 /* ProfileInnerHeader.swift */,
+				B0A6B14424C1A8C4003D44C3 /* ProfileExhibitionCell.swift */,
 			);
 			path = UserProfile;
+			sourceTree = "<group>";
+		};
+		B0A6B13F24C19EB9003D44C3 /* Main&Menu */ = {
+			isa = PBXGroup;
+			children = (
+				B0EE674D24BF277A0069B27D /* ContainerController.swift */,
+				B0EE84D424BC1B0A001709BA /* MainController.swift */,
+				B0EE674B24BF270A0069B27D /* MenuController.swift */,
+			);
+			path = "Main&Menu";
 			sourceTree = "<group>";
 		};
 		B0EE675324BF47290069B27D /* Menu */ = {
@@ -147,11 +168,10 @@
 		B0EE84D124BC1AE3001709BA /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				B0A6B13F24C19EB9003D44C3 /* Main&Menu */,
 				B0EE84DE24BC2FBB001709BA /* Auth */,
-				B0EE674D24BF277A0069B27D /* ContainerController.swift */,
-				B0EE84D424BC1B0A001709BA /* MainController.swift */,
-				B0EE674B24BF270A0069B27D /* MenuController.swift */,
-				B0A13D5724C0681D00633D30 /* ProfileController.swift */,
+				B0A13D5724C0681D00633D30 /* ProfileMainController.swift */,
+				B0A6B14224C1A785003D44C3 /* ProfileInnerController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -253,19 +273,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				B0EE675224BF3AB40069B27D /* MenuCell.swift in Sources */,
-				B0A13D5D24C0748400633D30 /* ProfileFooter.swift in Sources */,
+				B0A6B14124C1A3B8003D44C3 /* ProfileInputView.swift in Sources */,
+				B0A6B14524C1A8C4003D44C3 /* ProfileExhibitionCell.swift in Sources */,
+				B0A13D5D24C0748400633D30 /* UserInfoView.swift in Sources */,
 				B0EE84E224BC2FD8001709BA /* RegisterController.swift in Sources */,
 				B0EE84D724BC1B4D001709BA /* Extensions.swift in Sources */,
 				B0EE84D524BC1B0A001709BA /* MainController.swift in Sources */,
 				B0EE84D924BC2298001709BA /* ExhibitionCell.swift in Sources */,
-				B0A13D5824C0681D00633D30 /* ProfileController.swift in Sources */,
+				B0A13D5824C0681D00633D30 /* ProfileMainController.swift in Sources */,
 				B0EE84C224BC1A9D001709BA /* ArtScreen.xcdatamodeld in Sources */,
 				B0A13D5A24C0702000633D30 /* UserCoverView.swift in Sources */,
 				B0EE675024BF29A20069B27D /* MenuHeader.swift in Sources */,
 				B0EE674C24BF270A0069B27D /* MenuController.swift in Sources */,
 				B0EE84E024BC2FC7001709BA /* LoginController.swift in Sources */,
 				B0EE84B824BC1A9D001709BA /* AppDelegate.swift in Sources */,
+				B0A6B14324C1A785003D44C3 /* ProfileInnerController.swift in Sources */,
 				B0EE84DD24BC26FE001709BA /* Utilities.swift in Sources */,
+				B0A6B14724C1B358003D44C3 /* ProfileInnerHeader.swift in Sources */,
 				B0EE84BA24BC1A9D001709BA /* SceneDelegate.swift in Sources */,
 				B0EE84DB24BC2504001709BA /* MainCollectionHeader.swift in Sources */,
 				B0EE674E24BF277A0069B27D /* ContainerController.swift in Sources */,

@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: scene)
 //        window?.rootViewController = UINavigationController(rootViewController: ContainerController())
-        window?.rootViewController = ContainerController()
+        window?.rootViewController = ProfileInnerController()
         window?.makeKeyAndVisible()
     }
 
