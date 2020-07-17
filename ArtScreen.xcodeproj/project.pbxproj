@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9901929B24C1CA430032FAD9 /* TestBranchByTam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9901929A24C1CA430032FAD9 /* TestBranchByTam.swift */; };
 		B0A13D5824C0681D00633D30 /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5724C0681D00633D30 /* ProfileController.swift */; };
 		B0A13D5A24C0702000633D30 /* UserCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5924C0702000633D30 /* UserCoverView.swift */; };
 		B0A13D5D24C0748400633D30 /* ProfileFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5C24C0748400633D30 /* ProfileFooter.swift */; };
@@ -30,6 +31,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9901929A24C1CA430032FAD9 /* TestBranchByTam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestBranchByTam.swift; sourceTree = "<group>"; };
 		B0A13D5724C0681D00633D30 /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
 		B0A13D5924C0702000633D30 /* UserCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCoverView.swift; sourceTree = "<group>"; };
 		B0A13D5C24C0748400633D30 /* ProfileFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFooter.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 				B0EE84D424BC1B0A001709BA /* MainController.swift */,
 				B0EE674B24BF270A0069B27D /* MenuController.swift */,
 				B0A13D5724C0681D00633D30 /* ProfileController.swift */,
+				9901929A24C1CA430032FAD9 /* TestBranchByTam.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				B0EE84B824BC1A9D001709BA /* AppDelegate.swift in Sources */,
 				B0EE84DD24BC26FE001709BA /* Utilities.swift in Sources */,
 				B0EE84BA24BC1A9D001709BA /* SceneDelegate.swift in Sources */,
+				9901929B24C1CA430032FAD9 /* TestBranchByTam.swift in Sources */,
 				B0EE84DB24BC2504001709BA /* MainCollectionHeader.swift in Sources */,
 				B0EE674E24BF277A0069B27D /* ContainerController.swift in Sources */,
 			);
