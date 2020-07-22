@@ -56,6 +56,7 @@ enum MenuOptions: Int, CaseIterable, CustomStringConvertible{
 protocol MenuControllerDelegate: class {
     func handleMenuDismissal()
     func handleShowProfilePage()
+    func handleLogout()
 }
 
 class MenuController: UITableViewController {
@@ -108,7 +109,27 @@ extension MenuController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("DEBUG: Cell did selected..")
+        let option = MenuOptions(rawValue: indexPath.row)
+        
+        switch option {
+        case .notification:
+            print("DEBUG: Show notification page..")
+        case .placeMap:
+            print("DEBUG: Show place map page..")
+        case .arCamere:
+            print("DEBUG: Show AR Camera page..")
+        case .setting:
+            print("DEBUG: Show setting page..")
+        case .instructions:
+            print("DEBUG: Show Instructions page..")
+        case .logOut:
+            UIView.animate(withDuration: 0.8, animations: {
+                self.delegate?.handleMenuDismissal()
+                self.delegate?.handleLogout()
+            }, completion: nil)
+        default:
+            print("Error..")
+        }
     }
 }
 

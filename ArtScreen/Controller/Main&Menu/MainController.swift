@@ -8,7 +8,7 @@
 
 import UIKit
 
-private let reuseIdentifier = "ExhibitionCell"
+private let reuseIdentifier = "MainExhibitionCell"
 private let headerIdentifier = "MainCollectionHeader"
 
 protocol MainControllerDelegate: class {
@@ -86,7 +86,7 @@ class MainController: UICollectionViewController {
     
     func configureCollectionView() {
         collectionView.backgroundColor = .mainBackground
-        collectionView.register(ExhibitionCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.register(MainExhibitionCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.register(MainCollectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIdentifier)
     }
 }
@@ -98,7 +98,7 @@ extension MainController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ExhibitionCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MainExhibitionCell
                 
         return cell
     }

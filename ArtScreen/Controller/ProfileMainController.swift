@@ -8,11 +8,23 @@
 
 import UIKit
 
+private enum State {
+    case closed
+    case open
+}
+
 class ProfileMainController: UIViewController {
     
     //MARK: - Properties
     let userCoverView = UserCoverView()
-    private let profileInputView = ProfileInputView()
+    let userContentView = UserContentView()
+    
+    private let popupOffset: CGFloat = UIScreen.main.bounds.height
+    private var bottomConstraint = NSLayoutConstraint()
+    
+    private var currentState: State = .closed
+    private var runningAnimators = [UIViewPropertyAnimator]()
+    private var animationProgress = [CGFloat]()
     
     private let closeButton: UIButton = {
         let button = UIButton(type: .system)
@@ -33,9 +45,17 @@ class ProfileMainController: UIViewController {
         button.addTarget(self, action: #selector(handleEditAction), for: .touchUpInside)
         button.setDimensions(width: 100, height: 36)
         button.layer.cornerRadius = 36 / 2
-        
-        
+
         return button
+    }()
+    
+    private let userInfoView = UserInfoView()
+    
+    private lazy var panRecognizer: UIPanGestureRecognizer = {
+        let recognizer = UIPanGestureRecognizer()
+        recognizer.addTarget(self, action: #selector(contentViewPanned(recognizer:)))
+        
+        return recognizer
     }()
     
     //MARK: - Init
@@ -60,22 +80,130 @@ class ProfileMainController: UIViewController {
         print("DEBUG: Profile Cover is Editting..")
     }
     
+    @objc private func contentViewPanned(recognizer: UIPanGestureRecognizer) {
+        switch recognizer.state {
+        case .began:
+            animateTransitionIfNeeded(to: currentState.opposite, duration: 1)
+            runningAnimators.forEach { $0.pauseAnimation() }
+            animationProgress = runningAnimators.map { $0.fractionComplete }
+        case .changed:
+            let translation = recognizer.translation(in: userContentView)
+            var fraction = -translation.y / popupOffset
+            if currentState == .open { fraction *= -1 }
+            if runningAnimators[0].isReversed { fraction *= -1 }
+            
+            for (index, animator) in runningAnimators.enumerated() {
+                animator.fractionComplete = fraction + animationProgress[index]
+            }
+        case .ended:
+            let yVelocity = recognizer.velocity(in: userContentView).y
+            let shouldClose = yVelocity > 0
+            
+            if yVelocity == 0 {
+                runningAnimators.forEach { $0.continueAnimation(withTimingParameters: nil, durationFactor: 0) }
+                break
+            }
+            
+            switch currentState {
+            case .open:
+                if !shouldClose && !runningAnimators[0].isReversed { runningAnimators.forEach {
+                    $0.isReversed = !$0.isReversed
+                }}
+                
+                if shouldClose && runningAnimators[0].isReversed { runningAnimators.forEach {
+                    $0.isReversed = !$0.isReversed
+                }}
+            case .closed:
+                if shouldClose && !runningAnimators[0].isReversed { runningAnimators.forEach {
+                    $0.isReversed = !$0.isReversed
+                }}
+                
+                if !shouldClose && runningAnimators[0].isReversed { runningAnimators.forEach {
+                    $0.isReversed = !$0.isReversed
+                }}
+            }
+            runningAnimators.forEach{ $0.continueAnimation(withTimingParameters: nil, durationFactor: 0) }
+        default:
+            ()
+        }
+    }
+    
     //MARK: - Helpers
     func configureUI() {
         view.backgroundColor = .mainDarkGray
         
         view.addSubview(userCoverView)
-        userCoverView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: 750)
+        userCoverView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: view.frame.height - 150)
         
-        view.addSubview(profileInputView)
-        profileInputView.anchor(top: userCoverView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor)
-        
-        view.addSubview(closeButton)
-        closeButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 12, paddingRight: 12)
+        view.addSubview(userInfoView)
+        userInfoView.anchor(top: userCoverView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor)
         
         view.addSubview(editButton)
         editButton.anchor(bottom: userCoverView.bottomAnchor, right: view.rightAnchor, paddingBottom: 16, paddingRight: 12)
         
+        userContentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(userContentView)
+        userContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        userContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        bottomConstraint = userContentView .bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: popupOffset - 65)
+        bottomConstraint.isActive = true
+        userContentView.heightAnchor.constraint(equalToConstant: popupOffset).isActive = true
+        userContentView.addGestureRecognizer(panRecognizer)
+        
+        view.addSubview(closeButton)
+        closeButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 12, paddingRight: 12)
+    }
     
+    // popup animate
+    private func animateTransitionIfNeeded(to state: State, duration: TimeInterval) {
+        
+        guard runningAnimators.isEmpty else { return }
+        let state = currentState.opposite
+        
+        let transitionAnimator = UIViewPropertyAnimator(duration: 1, dampingRatio: 1) {
+            switch state {
+            case .open:
+                self.bottomConstraint.constant = 0
+                self.userContentView.profileInfoView.alpha = 1
+                self.userInfoView.alpha = 0
+            case .closed:
+                self.bottomConstraint.constant = self.popupOffset - 65
+                self.userContentView.profileInfoView.alpha = 0
+                self.userInfoView.alpha = 1
+            }
+            self.view.layoutIfNeeded()
+        }
+        
+        transitionAnimator.addCompletion { position in
+            switch position {
+            case .start:
+                self.currentState = state.opposite
+            case .end:
+                self.currentState = state
+            default:
+                ()
+            }
+            
+            switch self.currentState {
+            case .open:
+                self.bottomConstraint.constant = 0
+            case .closed:
+                self.bottomConstraint.constant = self.popupOffset - 65
+            }
+            
+            self.runningAnimators.removeAll()
+        }
+        
+        transitionAnimator.startAnimation()
+        runningAnimators.append(transitionAnimator)
+    }
+}
+
+extension State {
+    var opposite: State {
+        switch self {
+        case .open: return .closed
+        case .closed: return .open
+        }
     }
 }

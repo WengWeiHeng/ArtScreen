@@ -34,6 +34,7 @@ class MenuCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         backgroundColor = .mainPurple
+        selectionStyle = .none
         
         let stack = UIStackView(arrangedSubviews: [iconImageView, optionLabel])
         stack.spacing = 8

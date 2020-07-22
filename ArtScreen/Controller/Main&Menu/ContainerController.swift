@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class ContainerController: UIViewController {
     
@@ -23,6 +24,7 @@ class ContainerController: UIViewController {
         super.viewDidLoad()
         
         configureUI()
+        authenticateUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -44,7 +46,34 @@ class ContainerController: UIViewController {
         animateMenu(shouldExpand: isExpanded)
     }
     
+    //MARK: - API
+    func authenticateUser() {
+        if Auth.auth().currentUser?.uid == nil {
+            print("DEBUG: User is not logged in..")
+            presentLoginScreen()
+        }
+    }
+    
+    func logout() {
+        do {
+            try Auth.auth().signOut()
+            presentLoginScreen()
+        } catch {
+            print("DEBUG: Error signing out..")
+        }
+    }
+    
     //MARK: - Helpers
+    func presentLoginScreen() {
+        DispatchQueue.main.async {
+            let controller = LoginController()
+            controller.delegate = self
+            let nav = UINavigationController(rootViewController: controller)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true, completion: nil)
+        }
+    }
+    
     func configureUI() {
         view.backgroundColor = .mainPurple
         
@@ -121,5 +150,17 @@ extension ContainerController: MenuControllerDelegate {
         present(nav, animated: true) {
             self.dismissMenu()
         }
+    }
+    
+    func handleLogout() {
+        logout()
+    }
+}
+
+//MARK: - AuthenticationDelegate
+extension ContainerController: AuthenticationDelegate {
+    func authenticationComplete() {
+        dismiss(animated: true, completion: nil)
+        configureUI()
     }
 }

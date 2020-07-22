@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import JGProgressHUD
 
 extension UIView {
     func anchor(top: NSLayoutYAxisAnchor? = nil,
@@ -104,5 +105,36 @@ extension UIColor {
     static let mainDarkGray = UIColor.rgb(red: 46, green: 46, blue: 46)
     static let mainAlphaGray = UIColor.rgb(red: 69, green: 69, blue: 69)
 }
+
+
+extension UIViewController {
+    static let hud = JGProgressHUD(style: .dark)
+
+    func configureGradientLayer() {
+        let gradient = CAGradientLayer()
+        gradient.colors = [UIColor.systemPurple.cgColor, UIColor.systemPink.cgColor]
+        gradient.locations = [0, 1]
+        view.layer.addSublayer(gradient)
+        gradient.frame = view.frame
+    }
+    
+    func showLoader(_ show: Bool, withText text: String? = "Loading") {
+        view.endEditing(true)
+        UIViewController.hud.textLabel.text = text
+
+        if show {
+            UIViewController.hud.show(in: view)
+        } else {
+            UIViewController.hud.dismiss()
+        }
+    }
+    
+    func showError(_ errorMessage: String) {
+        let alert = UIAlertController(title: "Oops!", message: errorMessage, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+}
+
 
 
