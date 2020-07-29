@@ -11,6 +11,10 @@ import UIKit
 class UserCoverView: UIView {
     
     //MARK: - Properties
+    var user: User? {
+        didSet { configureUserData() }
+    }
+    
     private let coverImageView: UIImageView = {
         let iv = UIImageView()
         iv.clipsToBounds = true
@@ -83,5 +87,14 @@ class UserCoverView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    //MARK: - Helpers
+    func configureUserData() {
+        guard let user = user else { return }
+        let viewModel = ProfileViewModel(user: user)
+        profileImageView.sd_setImage(with: user.profileImageUrl)
+        fullnameLabel.text = viewModel.fullnameText
+        usernameLabel.text = viewModel.usernameText
     }
 }

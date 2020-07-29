@@ -60,7 +60,10 @@ class MainController: UICollectionViewController {
     }
     
     @objc func handleSearchAction() {
-        print("DEBUG: handle search action..")
+        let controller = SearchController()
+        let nav = UINavigationController(rootViewController: controller)
+        nav.isModalInPresentation = false
+        present(nav, animated: true, completion: nil)
     }
     
     @objc func handleUploadAction() {

@@ -16,8 +16,15 @@ private enum State {
 class ProfileMainController: UIViewController {
     
     //MARK: - Properties
+    var user: User? {
+        didSet {
+            userCoverView.user = user
+            userContentView.user = user
+        }
+    }
     let userCoverView = UserCoverView()
     let userContentView = UserContentView()
+    let editToolBarView = EditToolBarView()
     
     private let popupOffset: CGFloat = UIScreen.main.bounds.height
     private var bottomConstraint = NSLayoutConstraint()
@@ -25,6 +32,7 @@ class ProfileMainController: UIViewController {
     private var currentState: State = .closed
     private var runningAnimators = [UIViewPropertyAnimator]()
     private var animationProgress = [CGFloat]()
+    private var isEditting = false
     
     private let closeButton: UIButton = {
         let button = UIButton(type: .system)
@@ -35,7 +43,7 @@ class ProfileMainController: UIViewController {
         return button
     }()
     
-    private let editButton: UIButton = {
+    private let actionButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Edit", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -77,7 +85,37 @@ class ProfileMainController: UIViewController {
     }
     
     @objc func handleEditAction() {
-        print("DEBUG: Profile Cover is Editting..")
+        guard let user = user else { return }
+        let viewModel = ProfileViewModel(user: user)
+        actionButton.setTitle(viewModel.buttonTitle, for: .normal)
+        
+        if user.isCurrentUser {
+            isEditting.toggle()
+            if isEditting {
+                // edit action
+                actionButton.backgroundColor = .mainPurple
+                actionButton.setTitle("Save", for: .normal)
+                actionButton.layer.borderWidth = 0
+                
+                UIView.animate(withDuration: 0.3) {
+                    self.closeButton.alpha = 0
+                    self.editToolBarView.alpha = 1
+                }
+                
+            } else {
+                // save action
+                actionButton.backgroundColor = .none
+                actionButton.setTitle("Edit", for: .normal)
+                actionButton.layer.borderWidth = 1.25
+                
+                UIView.animate(withDuration: 0.3) {
+                    self.closeButton.alpha = 1
+                    self.editToolBarView.alpha = 0
+                }
+            }
+        } else {
+            print("DEBUG: Follow this user..")
+        }
     }
     
     @objc private func contentViewPanned(recognizer: UIPanGestureRecognizer) {
@@ -138,8 +176,8 @@ class ProfileMainController: UIViewController {
         view.addSubview(userInfoView)
         userInfoView.anchor(top: userCoverView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor)
         
-        view.addSubview(editButton)
-        editButton.anchor(bottom: userCoverView.bottomAnchor, right: view.rightAnchor, paddingBottom: 16, paddingRight: 12)
+        view.addSubview(actionButton)
+        actionButton.anchor(bottom: userCoverView.bottomAnchor, right: view.rightAnchor, paddingBottom: 16, paddingRight: 12)
         
         userContentView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(userContentView)
@@ -149,6 +187,10 @@ class ProfileMainController: UIViewController {
         bottomConstraint.isActive = true
         userContentView.heightAnchor.constraint(equalToConstant: popupOffset).isActive = true
         userContentView.addGestureRecognizer(panRecognizer)
+        
+        view.addSubview(editToolBarView)
+        editToolBarView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 150)
+        editToolBarView.alpha = 0
         
         view.addSubview(closeButton)
         closeButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 12, paddingRight: 12)

@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Firebase
+import SDWebImage
 
 private let reusesIdentifier = "MenuCell"
 
@@ -62,6 +64,10 @@ protocol MenuControllerDelegate: class {
 class MenuController: UITableViewController {
     
     //MARK: - Properties
+    var user: User? {
+        didSet { menuHeader.user = user}
+    }
+    
     weak var delegate: MenuControllerDelegate?
     
     private lazy var menuHeader: MenuHeader = {
@@ -73,6 +79,7 @@ class MenuController: UITableViewController {
     }()
     
     //MARK: - Init
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .mainPurple
@@ -89,6 +96,13 @@ class MenuController: UITableViewController {
         tableView.rowHeight = 50
         tableView.register(MenuCell.self, forCellReuseIdentifier: reusesIdentifier)
         tableView.tableHeaderView = menuHeader
+    }
+    
+    func configureUserInfo() {
+        guard let user = user else { return }
+        let viewModel = ProfileViewModel(user: user)
+        //menuHeader.profileImageView.sd_setImage(with: user.profileImageUrl)
+        menuHeader.fullnameLabel.text = viewModel.fullnameText
     }
 }
 

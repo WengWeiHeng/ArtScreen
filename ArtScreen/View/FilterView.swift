@@ -10,9 +10,16 @@ import UIKit
 
 private let reuseIdentifier = "FilterViewCell"
 
+protocol FilterViewDelegate: class {
+    func moveToArtwork()
+    func moveToExhibition()
+}
+
 class FilterView: UIView {
     
     //MARK: - Properties
+    weak var delegate: FilterViewDelegate?
+    
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -59,7 +66,18 @@ extension FilterView: UICollectionViewDataSource {
 //MARK: - CollectionView Delegate
 extension FilterView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("DEBUG: Did Selected Item at FilterView..")
+        let option = FilterOptions(rawValue: indexPath.row)
+        
+        switch option {
+        case .exhibitions:
+            delegate?.moveToExhibition()
+            
+        case .artworks:
+            delegate?.moveToArtwork()
+            
+        case .none:
+            print("DEBUG: Error..")
+        }
     }
 }
 

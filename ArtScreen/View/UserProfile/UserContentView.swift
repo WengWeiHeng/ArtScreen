@@ -11,42 +11,27 @@ import WaterfallLayout
 
 private let exhibitionIdentifier = "ExhibitionCell"
 private let artworkIdentifier = "ArtworkCell"
-//private let headerIdentifier = "ContentHeader"
+
+private enum ActionOption{
+    case addExhibition
+    case addArtwork
+}
 
 class UserContentView: UIView {
     
     //MARK: - Properties
-    private let userInfoView = UserInfoView()
-    private let contentHeader = ContentHeader()
-    private let filterBar = FilterView()
-    private var selectedFilterOptions: FilterOptions = .exhibitions
+    var user: User? {
+        didSet { configureUserData() }
+    }
+    private var screenOffset: CGFloat = UIScreen.main.bounds.width
+    private var leftConstraint = NSLayoutConstraint()
+    private var option: ActionOption = .addExhibition
     
-    lazy var collectionView: UICollectionView = {
-//        let layout = UICollectionViewFlowLayout()
-//        layout.scrollDirection = .horizontal
-//        layout.sectionInset = UIEdgeInsets(top: 0, left: 12, bottom: 100, right: 12)
-//
-//        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//        cv.backgroundColor = .mainDarkGray
-//        cv.delegate = self
-//        cv.dataSource = self
-//
-//        return cv
-        
-        let layout = WaterfallLayout()
-        layout.delegate = self
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 12, bottom: 12, right: 12)
-        layout.minimumLineSpacing = 8.0
-        layout.minimumInteritemSpacing = 8.0
-//        layout.headerHeight = 60.0
-        
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .mainDarkGray
-        cv.delegate = self
-        cv.dataSource = self
-        
-        return cv
-    }()
+    private let userInfoView = UserInfoView()
+    private let filterBar = FilterView()
+    
+    private let userExhibitionView = UserExhibitionView()
+    private let userArtworkView = UserArtworkView()
     
     private let editButton: UIButton = {
         let button = UIButton(type: .system)
@@ -128,12 +113,30 @@ class UserContentView: UIView {
         return label
     }()
     
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 26)
+        label.textColor = .white
+        label.text = "Exhibition"
+        
+        return label
+    }()
+    
+    private let addButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "add").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .white
+        button.setDimensions(width: 24, height: 24)
+        button.addTarget(self, action: #selector(handleAddAction), for: .touchUpInside)
+        
+        return button
+    }()
+    
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         configureUI()
-        configureCollectionView()
     }
     
     required init?(coder: NSCoder) {
@@ -150,7 +153,24 @@ class UserContentView: UIView {
         print("DEBUG: Profile Cover is Editting..")
     }
     
+    @objc func handleAddAction() {
+        switch option {
+        case .addExhibition:
+            print("DEBUG: Add exhibition")
+        case .addArtwork:
+            print("DEBUG: Add artwork..")
+        }
+    }
+    
     //MARK: - Helpers
+    func configureUserData() {
+        guard let user = user else { return }
+        let viewModel = ProfileViewModel(user: user)
+        profileImageView.sd_setImage(with: user.profileImageUrl)
+        fullnameLabel.text = viewModel.fullnameText
+        usernameLabel.text = viewModel.usernameText
+    }
+    
     func configureUI() {
         backgroundColor = .mainDarkGray
         
@@ -158,71 +178,43 @@ class UserContentView: UIView {
         profileInfoView.anchor(top: topAnchor, left: leftAnchor, right: rightAnchor, height: 280)
         profileInfoView.alpha = 0
         
-        addSubview(contentHeader)
-        contentHeader.anchor(top: profileInfoView.bottomAnchor, left: leftAnchor, right: rightAnchor, height: 70)
-    }
-    
-    func configureCollectionView() {
-        collectionView.register(ExhibitionCell.self, forCellWithReuseIdentifier: exhibitionIdentifier)
-        collectionView.register(ArtworkCell.self, forCellWithReuseIdentifier: artworkIdentifier)
+        let stack = UIStackView(arrangedSubviews: [titleLabel, addButton])
+        stack.axis = .horizontal
         
-        addSubview(collectionView)
-        collectionView.anchor(top: contentHeader.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor)
+        addSubview(stack)
+        stack.anchor(top: profileInfoView.bottomAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 20, paddingLeft: 12, paddingRight: 12)
         
         
+        addSubview(userExhibitionView)
+        userExhibitionView.anchor(top: stack.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, paddingTop: 20, width: screenOffset)
+
+        addSubview(userArtworkView)
+        userArtworkView.anchor(top: stack.bottomAnchor, left: userExhibitionView.rightAnchor, bottom: bottomAnchor,  paddingTop: 20, width: screenOffset)
+
         addSubview(filterBar)
         filterBar.centerX(inView: self)
         filterBar.anchor(bottom: safeAreaLayoutGuide.bottomAnchor, paddingBottom: 0, width: 230, height: 40)
+        filterBar.delegate = self
     }
 }
 
-//MARK: - CollectionView DataSource
-extension UserContentView: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 3
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        switch selectedFilterOptions {
-        case .exhibitions:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: exhibitionIdentifier, for: indexPath) as! ExhibitionCell
-
-            return cell
-        case .artworks:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: artworkIdentifier, for: indexPath) as! ArtworkCell
-            
-            return cell
+extension UserContentView: FilterViewDelegate {
+    func moveToArtwork() {
+        UIView.animate(withDuration: 0.5) {
+            self.userArtworkView.frame.origin.x -= self.screenOffset
+            self.titleLabel.text = "Artwork"
         }
-    }
-}
-
-//MARK: - CollectionView Delegate
-extension UserContentView: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("Cell did Selected..")
-    }
-}
-
-extension UserContentView: WaterfallLayoutDelegate {
-    func collectionViewLayout(for section: Int) -> WaterfallLayout.Layout {
-//        switch section {
-//        case 0: return .waterfall(column: 2, distributionMethod: .balanced)
-//        case 1: return .waterfall(column: 2, distributionMethod: .balanced)
-//        default: return .waterfall(column: 2, distributionMethod: .balanced)
-//        }
-        return .waterfall(column: 2, distributionMethod: .balanced)
+        
+        self.option = .addArtwork
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout: WaterfallLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func moveToExhibition() {
+        UIView.animate(withDuration: 0.5) {
+            self.userArtworkView.frame.origin.x += self.screenOffset
+            self.titleLabel.text = "Exhibition"
+        }
         
-        return WaterfallLayout.automaticSize
+        self.option = .addExhibition
     }
 }
 
-extension UserContentView: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-
-        return CGSize(width: frame.width / 2, height: collectionView.frame.height - 100)
-    }
-}

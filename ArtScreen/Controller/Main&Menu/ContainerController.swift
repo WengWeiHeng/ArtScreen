@@ -12,19 +12,22 @@ import Firebase
 class ContainerController: UIViewController {
     
     //MARK: - Properties
+    var user: User? {
+        didSet { menuController.user = user }
+    }
+    
     private var mainController = MainController(collectionViewLayout: UICollectionViewFlowLayout())
     private var menuController: MenuController!
     private var isExpanded = false
     private lazy var xOrigin = self.view.frame.width - 200
     private lazy var yOrigin = self.view.frame.height * 0.15
     
-    
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        configureUI()
         authenticateUser()
+        configureUI()
+        fetchUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -60,6 +63,14 @@ class ContainerController: UIViewController {
             presentLoginScreen()
         } catch {
             print("DEBUG: Error signing out..")
+        }
+    }
+    
+    func fetchUser() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        UserService.fetchUser(withUid: uid) { user in
+            self.user = user
+            print("DEBUG: user is \(user.fullname)")
         }
     }
     
@@ -144,7 +155,9 @@ extension ContainerController: MenuControllerDelegate {
     }
     
     func handleShowProfilePage() {
+        guard let user = user else { return }
         let controller = ProfileMainController()
+        controller.user = user
         let nav = UINavigationController(rootViewController: controller)
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true) {

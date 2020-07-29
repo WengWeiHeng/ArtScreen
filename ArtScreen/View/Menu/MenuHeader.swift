@@ -16,6 +16,10 @@ protocol MenuHeaderDelegate: class {
 class MenuHeader: UIView {
     
     //MARK: - Properties
+    var user: User? {
+        didSet { configureUserData() }
+    }
+    
     weak var delegate: MenuHeaderDelegate?
     
     private let closeButton: UIButton = {
@@ -27,14 +31,16 @@ class MenuHeader: UIView {
         return button
     }()
     
-    private let profileImageView: UIImageView = {
+    let profileImageView: UIImageView = {
         let iv = UIImageView()
-        iv.backgroundColor = .white
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        iv.layer.cornerRadius = 50 / 2
 
         return iv
     }()
     
-    private lazy var fullnameLabel: UILabel = {
+    lazy var fullnameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 20)
         label.textColor = .white
@@ -47,7 +53,7 @@ class MenuHeader: UIView {
         return label
     }()
     
-    private lazy var usernameLabel: UILabel = {
+    lazy var usernameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = .white
@@ -69,7 +75,6 @@ class MenuHeader: UIView {
         
         addSubview(profileImageView)
         profileImageView.anchor(left: leftAnchor, bottom: bottomAnchor, paddingLeft: 12, paddingBottom: 50, width: 50, height: 50)
-        profileImageView.layer.cornerRadius = 50 / 2
         
         let stack = UIStackView(arrangedSubviews: [fullnameLabel, usernameLabel])
         stack.distribution = .fillEqually
@@ -91,5 +96,15 @@ class MenuHeader: UIView {
     
     @objc func handleShowProfilePage() {
         delegate?.handleShowProfilePage()
+    }
+    
+    //MARK: - Helpers
+    func configureUserData() {
+        guard let user = user else { return }
+        let viewModel = ProfileViewModel(user: user)
+        fullnameLabel.text = viewModel.fullnameText
+        usernameLabel.text = viewModel.usernameText
+        profileImageView.sd_setImage(with: user.profileImageUrl)
+        
     }
 }
