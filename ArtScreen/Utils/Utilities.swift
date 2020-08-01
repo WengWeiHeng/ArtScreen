@@ -72,4 +72,30 @@ class Utilities {
         
         return button
     }
+    
+    func buttonContainerView(withImage image: UIImage, title: String) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .mainBackground
+        view.layer.cornerRadius = 15
+        
+        let imageView = UIImageView()
+        imageView.image = image
+        imageView.setDimensions(width: 74, height: 74)
+        
+        let label = UILabel()
+        label.text = title
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textColor = .mainPurple
+        
+        let stack = UIStackView(arrangedSubviews: [imageView, label])
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.alignment = .center
+        
+        view.addSubview(stack)
+        stack.centerY(inView: view)
+        stack.centerX(inView: view)
+        
+        return view
+    }
 }

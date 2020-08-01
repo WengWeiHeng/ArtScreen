@@ -8,6 +8,11 @@
 
 import UIKit
 
+enum FilterViewState {
+    case inUserView
+    case inSearchView
+}
+
 private let reuseIdentifier = "FilterViewCell"
 
 protocol FilterViewDelegate: class {
@@ -19,6 +24,8 @@ class FilterView: UIView {
     
     //MARK: - Properties
     weak var delegate: FilterViewDelegate?
+    
+    let state: FilterViewState = .inUserView
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -50,7 +57,13 @@ class FilterView: UIView {
 //MARK: - CollectionView DataSource
 extension FilterView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return FilterOptions.allCases.count
+        switch state {
+        case .inUserView:
+            return FilterOptions.allCases.count
+        case .inSearchView:
+            return SearchOptions.allCases.count
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -85,8 +98,16 @@ extension FilterView: UICollectionViewDelegate {
 extension FilterView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let count = CGFloat(FilterOptions.allCases.count)
-        return CGSize(width: (frame.width - 16) / count, height: frame.height)
+        switch state {
+        case .inUserView:
+            let count = CGFloat(FilterOptions.allCases.count)
+            return CGSize(width: (frame.width - 16) / count, height: frame.height)
+        case .inSearchView:
+            let count = CGFloat(SearchOptions.allCases.count)
+            return CGSize(width: (frame.width - 16) / count, height: frame.height)
+        }
+        
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {

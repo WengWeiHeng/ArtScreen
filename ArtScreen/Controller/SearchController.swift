@@ -14,6 +14,7 @@ class SearchController: UITableViewController{
     
     //MARK: - Properties
     private let searchController = UISearchController(searchResultsController: nil)
+    private let headerView = SearchHeader()
     private var inSearchMode: Bool {
         return searchController.isActive && !searchController.searchBar.text!.isEmpty
     }
@@ -23,6 +24,7 @@ class SearchController: UITableViewController{
         super.viewDidLoad()
         configureUI()
         configureSearchController()
+        navigationController?.navigationBar.isHidden = true
     }
     
     //MARK: - Selectors
@@ -35,9 +37,11 @@ class SearchController: UITableViewController{
         navigationController?.navigationBar.backgroundColor = .none
         tableView.backgroundColor = .mainBackground
         tableView.register(SearchCell.self, forCellReuseIdentifier: reuseIdentifier)
+        tableView.tableHeaderView = headerView
+        headerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
         tableView.rowHeight = 60
         tableView.separatorStyle = .none
-        tableView.isScrollEnabled = false
+        tableView.isScrollEnabled = true
     }
     
     func configureSearchController() {
