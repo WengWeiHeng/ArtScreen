@@ -97,6 +97,10 @@ class MainController: UICollectionViewController {
         configureUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        view.accessibilityIdentifier = "add"
+    }
+    
     //MARK: - Selectors
     @objc func handleMenuAction() {
         delegate?.handleMenuToggle()
@@ -128,12 +132,7 @@ class MainController: UICollectionViewController {
     }
     
     @objc func handleAddArtwork() {
-        UIView.animate(withDuration: 0.4) {
-            self.blackButton.alpha = 0
-            self.addArtworkView.alpha = 0
-            self.addExhibitionView.alpha = 0
-            self.closeButton.alpha = 0
-        }
+        extractedFunc(animateTime: 0.4)
         
         let controller = AddArtworkController()
         let nav = UINavigationController(rootViewController: controller)
@@ -142,7 +141,12 @@ class MainController: UICollectionViewController {
     }
     
     @objc func handleAddExhibition() {
-        print("DEBUG: Handle add exhibition..")
+        extractedFunc(animateTime: 0.4)
+        
+        let controller = AddExhibitionController()
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
     }
     
     //MARK: - Helpers
@@ -185,6 +189,15 @@ class MainController: UICollectionViewController {
         collectionView.backgroundColor = .mainBackground
         collectionView.register(MainExhibitionCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.register(MainCollectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIdentifier)
+    }
+    
+    fileprivate func extractedFunc(animateTime: TimeInterval) {
+        UIView.animate(withDuration: animateTime) {
+            self.blackButton.alpha = 0
+            self.addArtworkView.alpha = 0
+            self.addExhibitionView.alpha = 0
+            self.closeButton.alpha = 0
+        }
     }
 }
 
