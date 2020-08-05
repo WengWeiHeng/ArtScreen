@@ -22,6 +22,10 @@
 		B06AB44424D2D2A40001FD4F /* AnimateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AB44324D2D2A40001FD4F /* AnimateController.swift */; };
 		B06AB44624D2D2C10001FD4F /* DefaultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AB44524D2D2C10001FD4F /* DefaultController.swift */; };
 		B06AB44A24D2D56A0001FD4F /* ConfirmImageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AB44924D2D56A0001FD4F /* ConfirmImageController.swift */; };
+		B08E38A524DA7A8900CBAEFB /* FeatureToolBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08E38A424DA7A8900CBAEFB /* FeatureToolBarView.swift */; };
+		B08E38A724DA7AA700CBAEFB /* FeatureToolBarCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08E38A624DA7AA700CBAEFB /* FeatureToolBarCell.swift */; };
+		B08E38A924DA7AE400CBAEFB /* FeatureToolBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08E38A824DA7AE400CBAEFB /* FeatureToolBarViewModel.swift */; };
+		B08E38AB24DAA6F200CBAEFB /* LayerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08E38AA24DAA6F200CBAEFB /* LayerCell.swift */; };
 		B0A13D5824C0681D00633D30 /* ProfileMainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5724C0681D00633D30 /* ProfileMainController.swift */; };
 		B0A13D5A24C0702000633D30 /* UserCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5924C0702000633D30 /* UserCoverView.swift */; };
 		B0A13D5D24C0748400633D30 /* UserInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5C24C0748400633D30 /* UserInfoView.swift */; };
@@ -88,6 +92,10 @@
 		B06AB44324D2D2A40001FD4F /* AnimateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimateController.swift; sourceTree = "<group>"; };
 		B06AB44524D2D2C10001FD4F /* DefaultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultController.swift; sourceTree = "<group>"; };
 		B06AB44924D2D56A0001FD4F /* ConfirmImageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmImageController.swift; sourceTree = "<group>"; };
+		B08E38A424DA7A8900CBAEFB /* FeatureToolBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureToolBarView.swift; sourceTree = "<group>"; };
+		B08E38A624DA7AA700CBAEFB /* FeatureToolBarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureToolBarCell.swift; sourceTree = "<group>"; };
+		B08E38A824DA7AE400CBAEFB /* FeatureToolBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureToolBarViewModel.swift; sourceTree = "<group>"; };
+		B08E38AA24DAA6F200CBAEFB /* LayerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerCell.swift; sourceTree = "<group>"; };
 		B0A13D5724C0681D00633D30 /* ProfileMainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileMainController.swift; sourceTree = "<group>"; };
 		B0A13D5924C0702000633D30 /* UserCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCoverView.swift; sourceTree = "<group>"; };
 		B0A13D5C24C0748400633D30 /* UserInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoView.swift; sourceTree = "<group>"; };
@@ -174,6 +182,8 @@
 				B06AB44524D2D2C10001FD4F /* DefaultController.swift */,
 				B06AB44324D2D2A40001FD4F /* AnimateController.swift */,
 				B06AB44924D2D56A0001FD4F /* ConfirmImageController.swift */,
+				B08E38A424DA7A8900CBAEFB /* FeatureToolBarView.swift */,
+				B08E38A624DA7AA700CBAEFB /* FeatureToolBarCell.swift */,
 			);
 			path = AddArtwork;
 			sourceTree = "<group>";
@@ -184,6 +194,7 @@
 				B06AB43B24D2D0A10001FD4F /* AlbumView.swift */,
 				B06AB43F24D2D1AA0001FD4F /* MyHeaderFooterCollectionView.swift */,
 				B06AB43D24D2D0B10001FD4F /* CameraView.swift */,
+				B08E38AA24DAA6F200CBAEFB /* LayerCell.swift */,
 			);
 			path = AddArtwork;
 			sourceTree = "<group>";
@@ -220,6 +231,7 @@
 				B000D08E24CE959D00DE9D71 /* ProfileViewModel.swift */,
 				B0A8D0B524C55C8E00A4127F /* FilterViewModel.swift */,
 				B0C0754624CEE7CA007CD390 /* ToolBarViewModel.swift */,
+				B08E38A824DA7AE400CBAEFB /* FeatureToolBarViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -484,6 +496,7 @@
 				B0BF970F24D7A54B004FC55C /* ExhibitionSendCell.swift in Sources */,
 				B0A8D0BA24C55D8F00A4127F /* FilterViewCell.swift in Sources */,
 				B0F2BAB624D5632C00361B46 /* UploadVC_CustomView.swift in Sources */,
+				B08E38A524DA7A8900CBAEFB /* FeatureToolBarView.swift in Sources */,
 				B0A8D0B124C55B6E00A4127F /* FilterView.swift in Sources */,
 				B06AB44624D2D2C10001FD4F /* DefaultController.swift in Sources */,
 				B0EE675224BF3AB40069B27D /* MenuCell.swift in Sources */,
@@ -520,6 +533,7 @@
 				B0EE675024BF29A20069B27D /* MenuHeader.swift in Sources */,
 				B0DC78CF24C5CE2200636A15 /* UserService.swift in Sources */,
 				B0EE674C24BF270A0069B27D /* MenuController.swift in Sources */,
+				B08E38A724DA7AA700CBAEFB /* FeatureToolBarCell.swift in Sources */,
 				B000D09324CEC2AE00DE9D71 /* EditToolBarView.swift in Sources */,
 				B0F2BAB824D5634600361B46 /* User_CustomView.swift in Sources */,
 				B0EE84E024BC2FC7001709BA /* LoginController.swift in Sources */,
@@ -528,11 +542,13 @@
 				B0EE84B824BC1A9D001709BA /* AppDelegate.swift in Sources */,
 				B0F2BAA924D554F700361B46 /* AddExhibitionController.swift in Sources */,
 				B06AB44224D2D2580001FD4F /* AlertUtilities.swift in Sources */,
+				B08E38A924DA7AE400CBAEFB /* FeatureToolBarViewModel.swift in Sources */,
 				B0DC78C924C5C88100636A15 /* AuthService.swift in Sources */,
 				B0AE310124D11ACB00F33932 /* UserArtworkView.swift in Sources */,
 				B0EE84DD24BC26FE001709BA /* Utilities.swift in Sources */,
 				B0AC025724C98A0E00790868 /* RegistrationViewModel.swift in Sources */,
 				B0EE84BA24BC1A9D001709BA /* SceneDelegate.swift in Sources */,
+				B08E38AB24DAA6F200CBAEFB /* LayerCell.swift in Sources */,
 				B0EE84DB24BC2504001709BA /* MainCollectionHeader.swift in Sources */,
 				B0EE674E24BF277A0069B27D /* ContainerController.swift in Sources */,
 				B06AB43C24D2D0A10001FD4F /* AlbumView.swift in Sources */,

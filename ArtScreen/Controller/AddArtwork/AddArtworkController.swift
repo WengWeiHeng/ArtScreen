@@ -24,11 +24,13 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
     
     let buttonCamera : UIButton = {
         let button = UIButton()
-        button.backgroundColor = .purple
+        button.backgroundColor = .mainPurple
         button.setTitleColor(.white, for: .normal)
         button.setTitle("CAMERA", for: .normal)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 14)
         button.layer.masksToBounds = true
-        button.layer.cornerRadius = 10
+        button.setDimensions(width: 100, height: 40)
+        button.layer.cornerRadius = 40 / 2
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(handleTapButtonCamera), for: .touchUpInside)
 
@@ -40,9 +42,11 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
         button.backgroundColor = .white
         button.setTitleColor(.black, for: .normal)
         button.setTitle("ALBUM", for: .normal)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 14)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.masksToBounds = true
-        button.layer.cornerRadius = 10
+        button.setDimensions(width: 100, height: 40)
+        button.layer.cornerRadius = 40 / 2
         button.addTarget(self, action: #selector(handleTapButtonAlbum), for: .touchUpInside)
         
         return button
@@ -59,14 +63,6 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
 
     }()
     
-    let cameraView : UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        view.translatesAutoresizingMaskIntoConstraints = false
-        
-        return view
-    }()
-    
     let captureImageView : UIImageView = {
         let img = UIImageView()
         
@@ -77,7 +73,6 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        let width = self.view.frame.maxX, height = self.view.frame.maxY
         navigationController?.navigationBar.isHidden = true
         view.backgroundColor = .black
         configureScrollView()
@@ -93,7 +88,7 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
         print("Tap Button Album")
         if scrollView.contentOffset.x == 0 {
             scrollView.contentOffset.x +=  self.view.bounds.width
-            buttonAlbum.backgroundColor = .purple
+            buttonAlbum.backgroundColor = .mainPurple
             buttonAlbum.setTitleColor(.white, for: .normal)
             buttonCamera.backgroundColor = .white
             buttonCamera.setTitleColor(.black, for: .normal)
@@ -104,7 +99,7 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
         print("Tap Button Camera")
         if scrollView.contentOffset.x > 0 {
             scrollView.contentOffset.x -=  self.view.bounds.width
-            buttonCamera.backgroundColor = .purple
+            buttonCamera.backgroundColor = .mainPurple
             buttonCamera.setTitleColor(.white, for: .normal)
             buttonAlbum.backgroundColor = .white
             buttonAlbum.setTitleColor(.black, for: .normal)
@@ -121,9 +116,17 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
         view.addSubview(buttonAlbum)
         view.addSubview(buttonCancel)
         
-        buttonCamera.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, paddingLeft: 70, paddingBottom: 50, width: 100, height: 30)
-        buttonAlbum.anchor(left: buttonCamera.rightAnchor, bottom: view.bottomAnchor, paddingLeft: 15, paddingBottom: 50, width: 100, height: 30)
-        buttonCancel.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 24, paddingLeft: 15)
+        let stack = UIStackView(arrangedSubviews: [buttonCamera, buttonAlbum])
+        stack.axis = .horizontal
+        stack.spacing = 16
+        
+        view.addSubview(stack)
+        stack.centerX(inView: view)
+        stack.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, paddingBottom: 20)
+        
+//        buttonCamera.anchor(bottom: view.bottomAnchor, right: view.centerXAnchor, paddingBottom: 50, paddingRight: 20, width: 100, height: 40)
+//        buttonAlbum.anchor(left: view.centerXAnchor, bottom: view.bottomAnchor, paddingLeft: 20, paddingBottom: 50, width: 100, height: 40)
+        buttonCancel.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 10, paddingLeft: 15, width: 24, height: 24)
     }
     
     func configureScrollView() {
@@ -134,13 +137,12 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
         scrollView.isPagingEnabled = true
         scrollView.delegate = self
         scrollView.contentSize = CGSize(width: CGFloat(pageSize) * screenWidth, height: screenHeight)
-        self.view.addSubview(scrollView)
+        view.addSubview(scrollView)
 
-//        view.backgroundColor = .black
-//        configureViewCamera()
         scrollView.addSubview(view1)
-//        viewCamera.alpha = 0.0
         scrollView.addSubview(view2)
+        view1.delegate = self
+        view2.delegate = self
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -149,21 +151,62 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
             // ページの場所を切り替える.
             let page = Int(scrollView.contentOffset.x / scrollView.frame.maxX)
             if page == 0 {
-                buttonCamera.backgroundColor = .purple
+                buttonCamera.backgroundColor = .mainPurple
                 buttonCamera.setTitleColor(.white, for: .normal)
                 buttonAlbum.backgroundColor = .white
                 buttonAlbum.setTitleColor(.black, for: .normal)
             } else {
-                buttonAlbum.backgroundColor = .purple
+                buttonAlbum.backgroundColor = .mainPurple
                 buttonAlbum.setTitleColor(.white, for: .normal)
                 buttonCamera.backgroundColor = .white
                 buttonCamera.setTitleColor(.black, for: .normal)
             }
         }
     }
-    
-    func configureViewCamera() {
-        scrollView.addSubview(cameraView)
-        cameraView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 70, height: screenWidth)
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        scrollView.contentOffset.y = 0.0
+    }
+}
+
+//MARK: - CamereViewDelegate
+extension AddArtworkController: CameraViewDelegate {
+    func presentPhotoCheck(_ image: UIImage) {
+        let viewController = ConfirmImageController()
+        viewController.image.image = image
+//        present(viewController, animated: true, completion: nil)
+        self.navigationController?.pushViewController(viewController, animated: true)
+
+    }
+}
+
+//MARK: - AlbumViewDelegate
+extension AddArtworkController : AlbumViewDelegate {
+    func presentPhotoCheckFromAlbum(_ image: UIImage) {
+        let alert = UIAlertController(title: "Do you want add AR Animation on your ArtWork",message:"If you don't want to add it now, you can click Edit in your profile page",
+                                      preferredStyle: UIAlertController.Style.alert)
+        let notNowAction = UIAlertAction(title: "Not Now", style: UIAlertAction.Style.default) {
+            UIAlertAction in
+            NSLog("Not Now Pressed ...")
+            let viewController =  DefaultController()
+            viewController.imageView.image = image
+
+            self.navigationController?.pushViewController(viewController, animated: true)
+            
+        }
+        
+        let doItAction = UIAlertAction(title: "Do It", style: UIAlertAction.Style.cancel) {
+            UIAlertAction in
+            NSLog("Do It Pressed ...")
+            let viewController = AnimateController()
+            viewController.imageView.image = image
+
+            self.navigationController?.pushViewController(viewController, animated: true)
+
+        }
+        
+        // Add the actions
+        alert.addAction(notNowAction)
+        alert.addAction(doItAction)
+        self.present(alert, animated: true, completion: nil)
     }
 }

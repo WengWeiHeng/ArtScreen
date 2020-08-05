@@ -13,7 +13,7 @@ protocol CustomProtocol {
 }
 
 class ConfirmImageController: UIViewController, CustomProtocol {
-    
+    weak var delegate: AlbumViewDelegate?
     //MARK: - Properties
     let image : UIImageView = {
         let imageView = UIImageView()
@@ -50,7 +50,13 @@ class ConfirmImageController: UIViewController, CustomProtocol {
     
     // MARK: - Selectors
     @objc func HandleTappedReloadCameraButton() {
-        dismiss(animated: true, completion: nil)
+//        dismiss(animated: true, completion: nil)
+        for controller in self.navigationController!.viewControllers as Array {
+            if controller.isKind(of: AddArtworkController.self) {
+                self.navigationController!.popToViewController(controller, animated: true)
+                break
+            }
+        }
     }
     
     @objc func HandleTappedNextPageButton() {
@@ -62,35 +68,40 @@ class ConfirmImageController: UIViewController, CustomProtocol {
             let viewController =  DefaultController()
             viewController.imageView = self.image
             viewController.customProtocol = self
-            self.present(viewController, animated: true,completion: nil)
+//            self.present(viewController, animated: true,completion: nil)
             self.navigationController?.pushViewController(viewController, animated: true)
-            
+
         }
-        
+
         let doItAction = UIAlertAction(title: "Do It", style: UIAlertAction.Style.cancel) {
             UIAlertAction in
             NSLog("Do It Pressed ...")
             let viewController = AnimateController()
             viewController.imageView = self.image
-            self.present(viewController, animated: true,completion: nil)
+//            self.present(viewController, animated: true,completion: nil)
             self.navigationController?.pushViewController(viewController, animated: true)
 
         }
-        
+
         // Add the actions
         alert.addAction(notNowAction)
         alert.addAction(doItAction)
         self.present(alert, animated: true, completion: nil)
+//        delegate?.presentPhotoCheckFromAlbum(self.image.image!)
     }
     
     //MARK: - Helpers
     func configure() {
-        view.addSubview(image)
-        image.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 70, height: screenWidth)
+        
         view.addSubview(nextPageButton)
-        nextPageButton.anchor(top: view.topAnchor, right: view.rightAnchor, paddingTop: 24, paddingRight: 15, width: 12, height: 24)
+        nextPageButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 10, paddingRight: 15, width: 12, height: 24)
+        
         view.addSubview(reloadCamereButton)
-        reloadCamereButton.anchor(top: view.topAnchor, left: view.leftAnchor, paddingTop: 24, paddingLeft: 15, width: 24, height: 24)
+        reloadCamereButton.centerY(inView: nextPageButton)
+        reloadCamereButton.anchor(left: view.leftAnchor, paddingLeft: 15, width: 24, height: 24)
+        
+        view.addSubview(image)
+        image.anchor(top: nextPageButton.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20, height: screenWidth)
         
     }
     

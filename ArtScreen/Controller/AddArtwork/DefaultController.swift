@@ -12,16 +12,8 @@ class DefaultController: UIViewController {
     
     //MARK: - Properties
     var customProtocol: CustomProtocol?
-    
-    let stackView : UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.alignment = .center
-        stack.distribution = .fill
-        stack.spacing = 8
-        stack.backgroundColor = .white
-        return stack
-    }()
+    let defaultToolBarView = DefaultToolBarView()
+
     
     let settingView : UIView = {
         let view = UIView()
@@ -62,30 +54,21 @@ class DefaultController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        let buttonName = ["Paint","Font","Style","Color","Delete"]
-        for i in 0..<buttonName.count {
-            let button = UIButton()
-            button.setDimensions(width: 60, height: 60)
-            button.setTitle(buttonName[i], for: .normal)
-//                button.backgroundColor = .cyan
-            button.setImage(UIImage(named: buttonName[i]), for: .normal)
-            button.setTitleColor(.black, for: .normal)
-            stackView.addArrangedSubview(button)
-        }
-        view.addSubview(stackView)
-        stackView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, paddingLeft: 15, paddingBottom: 30, width: 60 * 5 + 8 * 4, height: 60)
-        view.addSubview(settingView)
-        settingView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, height: 40)
-        view.addSubview(imageView)
-        imageView.anchor(top: settingView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 15, height: screenWidth)
+        configure()
     }
     
     //MARK: - Selectors
     @objc func tapbuttonPhotoLibrary() {
         print("Tapped PhotoLibrary Button...")
 //        dismiss(animated: true, completion: nil)
-        self.dismiss(animated: true) {
-            self.customProtocol?.dismissed()
+//        self.dismiss(animated: true) {
+//            self.customProtocol?.dismissed()
+//        }
+        for controller in self.navigationController!.viewControllers as Array {
+            if controller.isKind(of: AddArtworkController.self) {
+                self.navigationController!.popToViewController(controller, animated: true)
+                break
+            }
         }
     }
     
@@ -94,5 +77,14 @@ class DefaultController: UIViewController {
     }
     
     //MARK: - Helpers
+    func configure() {
+        view.addSubview(defaultToolBarView)
+        defaultToolBarView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 100)
+        
+        view.addSubview(settingView)
+        settingView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, height: 40)
+        view.addSubview(imageView)
+        imageView.anchor(top: settingView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 15, height: screenWidth)
+    }
 }
 

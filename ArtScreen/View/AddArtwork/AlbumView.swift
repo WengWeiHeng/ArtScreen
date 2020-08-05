@@ -9,10 +9,13 @@
 import UIKit
 import Photos
 import AVFoundation
-
+protocol AlbumViewDelegate: class {
+    func presentPhotoCheckFromAlbum(_ image: UIImage)
+}
 class AlbumView: UIView {
     
     //MARK: - Properties
+    weak var delegate: AlbumViewDelegate?
     let collectionViewHeaderFooterReuseIdentifier = "MyHeaderFooterClass"
     var captureSession: AVCaptureSession!
     var stillImageOutput: AVCapturePhotoOutput!
@@ -35,7 +38,7 @@ class AlbumView: UIView {
         layout.minimumInteritemSpacing = 0
         layout.sectionHeadersPinToVisibleBounds = true
 
-        let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight/2),collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight / 2),collectionViewLayout: layout)
         collectionView.collectionViewLayout = layout
         collectionView.backgroundColor = .white
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: "CollectionViewCell")
@@ -51,12 +54,15 @@ class AlbumView: UIView {
         loadPhotos()
         print(photoAssets.count)
         backgroundColor = .black
+        
+        addSubview(buttonNext)
+        buttonNext.anchor(top: topAnchor, right: rightAnchor, paddingTop: 50, paddingRight: 15, width: 12, height: 24)
+        
         collectionView.dataSource = self
         collectionView.delegate = self
         addSubview(collectionView)
-        collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 70)
-        addSubview(buttonNext)
-        buttonNext.anchor(top: topAnchor, right: rightAnchor, paddingTop: 24, paddingRight: 15, width: 12, height: 24)
+        collectionView.anchor(top: buttonNext.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 20)
+        
     }
     
     required init?(coder: NSCoder) {
@@ -66,7 +72,8 @@ class AlbumView: UIView {
     //MARK: - Selectors
     @objc func handleTapNextButton() {
         print("Tap NextButton ...")
-        self.showNotification(imageView)
+//        self.showNotification(imageView)
+        delegate?.presentPhotoCheckFromAlbum(imageView.image!)
     }
     
     //MARK: - Helpers
@@ -102,7 +109,9 @@ extension AlbumView: UICollectionViewDataSource, MyHeaderFooterCollectionViewDel
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: collectionViewHeaderFooterReuseIdentifier, for: indexPath) as? MyHeaderFooterCollectionView
-            headerView!.backgroundColor = UIColor.white
+            headerView?.addSubview(imageView)
+            imageView.anchor(top: headerView?.topAnchor, left: headerView?.leftAnchor, bottom: headerView?.bottomAnchor, right: headerView?.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+            imageView.image = convertImageFromAsset(asset: photoAssets[0])
             return headerView!
         default:
             assert(false, "Unexpected element kind")

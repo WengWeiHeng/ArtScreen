@@ -99,6 +99,7 @@ class MainController: UICollectionViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         view.accessibilityIdentifier = "add"
+        
     }
     
     //MARK: - Selectors

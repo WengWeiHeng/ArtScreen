@@ -8,37 +8,51 @@
 
 import UIKit
 
-class AnimateController: UIViewController {
+private let reuseIdentifier = "LayerCell"
+
+class AnimateController: UIViewController,UIScrollViewDelegate {
     
     //MARK: - Properties
     var customProtocol: CustomProtocol?
-    var buttonsAnimate : [UIButton] = []
-    var buttonsFeature : [UIButton] = []
+    let featureToolBarView = FeatureToolBarView()
+    let animateToolBarView = AnimateToolBarView()
+
+    private var isSelected: Bool = false
     
-    let stackViewFeature : UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.alignment = .center
-        stack.distribution = .fill
-        stack.spacing = 8
-        stack.backgroundColor = .white
-        return stack
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.backgroundColor = .init(white: 1, alpha: 0.5)
+        cv.delegate = self
+        cv.dataSource = self
+        cv.showsHorizontalScrollIndicator = false
+        cv.layer.cornerRadius = 56 / 2
+        cv.register(LayerCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        
+        return cv
     }()
     
-    let stackViewAnimate : UIStackView = {
-        let stack = UIStackView()
+    private let deleteButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "delete").withRenderingMode(.alwaysOriginal), for: .normal)
+        button.setDimensions(width: 36, height: 36)
+        button.addTarget(self, action: #selector(handleDeleteLayerItem), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    private lazy var layerStackView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [collectionView, deleteButton])
         stack.axis = .horizontal
-        stack.alignment = .center
-        stack.distribution = .fill
-        stack.spacing = 8
-        stack.backgroundColor = .white
-        stack.isHidden = true
+        stack.spacing = 12
+        stack.alpha = 0
+        
         return stack
     }()
     
     let settingView : UIView = {
        let view = UIView()
-        
         let buttonPhotoLibrary : UIButton = {
             let button = UIButton()
 //            button.backgroundColor = .white
@@ -97,24 +111,38 @@ class AnimateController: UIViewController {
             return button
         }()
         
+        let layerButton: UIButton = {
+            let button = UIButton(type: .system)
+            button.setImage(#imageLiteral(resourceName: "layer").withRenderingMode(.alwaysOriginal), for: .normal)
+            button.setDimensions(width: 26, height: 26)
+            button.addTarget(self, action: #selector(handleShowLayer), for: .touchUpInside)
+            
+            return button
+        }()
+        
         let buttonPlay : UIButton = {
             let button = UIButton()
             button.setImage(#imageLiteral(resourceName: "Play"), for: .normal)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addTarget(self, action: #selector(tapbuttonPlay), for: .touchUpInside)
+            button.setDimensions(width: 30, height: 26)
             return button
         }()
         
         view.addSubview(buttonUndo)
         view.addSubview(buttonRedo)
         view.addSubview(buttonPlay)
+        view.addSubview(layerButton)
+        
         buttonUndo.anchor(top: view.topAnchor, left: view.leftAnchor, paddingLeft: 20, width: 30, height: 20)
         buttonRedo.anchor(top: view.topAnchor, left: buttonUndo.rightAnchor, paddingLeft: 14, width: 30, height: 20)
-        buttonPlay.anchor(top: view.topAnchor, right: view.rightAnchor, paddingRight: 12, width: 50, height: 38)
+        buttonPlay.anchor(top: view.topAnchor, right: view.rightAnchor, paddingRight: 14)
+        layerButton.anchor(top: view.topAnchor, right: buttonPlay.leftAnchor, paddingRight: 10)
         
         buttonUndo.centerY(inView: view)
         buttonRedo.centerY(inView: view)
         buttonPlay.centerY(inView: view)
+        layerButton.centerY(inView: view)
         
         view.translatesAutoresizingMaskIntoConstraints = false
         
@@ -124,6 +152,8 @@ class AnimateController: UIViewController {
     lazy var imageView : UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .white
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -132,8 +162,6 @@ class AnimateController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         // Do any additional setup after loading the view.
-//        scrollViewFeature.delegate = self
-//        view.backgroundColor = .black
         configureRegister()
     }
     
@@ -141,10 +169,16 @@ class AnimateController: UIViewController {
     @objc func tapbuttonPhotoLibrary() {
         print("Tapped PhotoLibrary Button...")
 //        dismiss(animated: true, completion: nil)
-        self.dismiss(animated: true) {
-            guard let proto = self.customProtocol else {return}
-            proto.dismissed()
+        for controller in self.navigationController!.viewControllers as Array {
+            if controller.isKind(of: AddArtworkController.self) {
+                self.navigationController!.popToViewController(controller, animated: true)
+                break
+            }
         }
+//        self.dismiss(animated: true) {
+//            guard let proto = self.customProtocol else {return}
+//            proto.dismissed()
+//        }
     }
     
     @objc func tapbuttonFeature() {
@@ -167,48 +201,26 @@ class AnimateController: UIViewController {
         print("Tapped Play   Button...")
     }
     
-    @objc func HandleTapFeature(_ sender : UIButton) {
-        print("Tapped Feature ...")
-        switch sender.tag {
-        case 0:
-            print("Tapped \(sender.tag)")
-            stackViewFeature.isHidden = true
-            stackViewAnimate.isHidden = false
-        case 1:
-            print("Tapped \(sender.tag)")
-        case 2:
-            print("Tapped \(sender.tag)")
-        case 3:
-            print("Tapped \(sender.tag)")
-        case 4:
-            print("Tapped \(sender.tag)")
-        case 5:
-            print("Tapped \(sender.tag)")
-        default:
-            print("Finish")
+    @objc func handleShowLayer() {
+        isSelected.toggle()
+        if isSelected {
+            UIView.animate(withDuration: 0.4) {
+                self.layerStackView.alpha = 1
+            }
+        } else {
+            UIView.animate(withDuration: 0.4) {
+                self.layerStackView.alpha = 0
+                self.animateToolBarView.alpha = 0
+                self.featureToolBarView.alpha = 1
+            }
         }
     }
     
-    @objc func HandleTapAnimate(_ sender : UIButton) {
-        print("Tapped AnimateFeature...")
-        switch sender.tag {
-        case 0:
-            print("Tapped \(sender.tag)")
-            stackViewFeature.isHidden = false
-            stackViewAnimate.isHidden = true
-        case 1:
-            print("Tapped \(sender.tag)")
-        case 2:
-            print("Tapped \(sender.tag)")
-        case 3:
-            print("Tapped \(sender.tag)")
-        case 4:
-            print("Tapped \(sender.tag)")
-        default:
-            print("Finish")
-        }
+    @objc func handleDeleteLayerItem() {
+        print("DEBUG: Delete layer item..")
     }
     
+ 
     //MARK: - Helpers
     func SolveWidthStackView(_ number : Int) -> CGFloat {
         let result = (screenWidth - CGFloat(12 * 2 + (number - 1) * 8))
@@ -216,44 +228,74 @@ class AnimateController: UIViewController {
     }
     
     func configureRegister() {
-        let buttonAnimateName = ["Cancel","Path","Anchor","Speed","Delete"]
-        let buttonFeatureName = ["Animate","BackDrop","Cover","Adjustment","3DObject","Effects"]
-        for i in 0..<buttonFeatureName.count {
-            let button = UIButton()
-            let sizeHeightWidth = SolveWidthStackView(buttonFeatureName.count)
-            button.setDimensions(width: sizeHeightWidth, height: sizeHeightWidth)
-            button.setImage(UIImage(named: buttonFeatureName[i]), for: .normal)
-            button.tag = i
-            button.addTarget(self, action: #selector(HandleTapFeature(_:)), for: .touchUpInside)
-            buttonsFeature.append(button)
-            stackViewFeature.addArrangedSubview(button)
-        }
-         
-        for i in 0..<buttonAnimateName.count {
-            let button = UIButton()
-            let sizeHeightWidth = SolveWidthStackView(buttonFeatureName.count)
-            button.setDimensions(width: sizeHeightWidth, height: sizeHeightWidth)
-            button.setImage(UIImage(named: buttonAnimateName[i]), for: .normal)
-            button.tag = i
-            button.addTarget(self, action: #selector(HandleTapAnimate(_:)), for: .touchUpInside)
-            buttonsAnimate.append(button)
-            stackViewAnimate.addArrangedSubview(button)
-        }
+        view.addSubview(featureToolBarView)
+        featureToolBarView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 100)
+        featureToolBarView.alpha = 1
         
-        view.addSubview(stackViewFeature)
-        stackViewFeature.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, paddingLeft: 12, paddingBottom: 30, paddingRight: 12, width: SolveWidthStackView(6) * 6 + 8 * 5, height: SolveWidthStackView(6))
+        view.addSubview(animateToolBarView)
+        animateToolBarView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 100)
+        featureToolBarView.delegate = self
+        animateToolBarView.delegate = self
+        animateToolBarView.alpha = 0
         
-        view.addSubview(stackViewAnimate)
-        stackViewAnimate.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, paddingLeft: 12, paddingBottom: 30, paddingRight: 12, width: SolveWidthStackView(6) * 5 + 8 * 4, height: SolveWidthStackView(6))
-        
+
         view.addSubview(settingView)
-        settingView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, height: 40)
-        
-        view.addSubview(undoRedoPlayView)
-        undoRedoPlayView.anchor(left: view.leftAnchor, bottom: stackViewAnimate.topAnchor, right: view.rightAnchor, paddingBottom: 24, height: 38)
+        settingView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, height: 40)
         
         view.addSubview(imageView)
-        imageView.anchor(top: settingView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 15, height: screenWidth)
+        imageView.centerY(inView: view)
+        imageView.anchor(left: view.leftAnchor, right: view.rightAnchor, height: screenWidth)
+        
+        view.addSubview(undoRedoPlayView)
+        undoRedoPlayView.anchor(top: imageView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20, height: 38)
+        
+        view.addSubview(layerStackView)
+        layerStackView.anchor(left: view.leftAnchor, bottom: imageView.bottomAnchor, right: view.rightAnchor, paddingLeft: 12, paddingBottom: 10, paddingRight: 12, height: 56)
+        
+    }
+}
+
+//MARK: - UICollectionViewDataSource
+extension AnimateController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 5
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! LayerCell
+        
+        return cell
+    }
+}
+
+//MARK: - UICollectionViewDelegate
+extension AnimateController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        UIView.animate(withDuration: 0.4) {
+            self.featureToolBarView.alpha = 0
+            self.animateToolBarView.alpha = 1
+        }
+    }
+}
+
+//MARK: - UICollectionViewDelegateFlowLayout
+extension AnimateController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 36, height: 36)
+    }
+}
+
+
+//MARK: - ToolBarViewDelegate
+extension AnimateController: ToolBarViewDelegate {
+    func changeToolBarView(_ animateIsHiden: Bool) {
+        if animateIsHiden {
+            animateToolBarView.isHidden = true
+            featureToolBarView.isHidden = false
+        } else {
+            animateToolBarView.isHidden = false
+            featureToolBarView.isHidden = true
+        }
     }
 }
 

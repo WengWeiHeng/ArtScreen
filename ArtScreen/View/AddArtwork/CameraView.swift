@@ -9,9 +9,15 @@
 import UIKit
 import AVFoundation
 
+protocol CameraViewDelegate: class {
+    func presentPhotoCheck(_ image: UIImage)
+}
+
 class CameraView: UIView, AVCapturePhotoCaptureDelegate {
     
     //MARK: - Properties
+    weak var delegate: CameraViewDelegate?
+    
     var captureSession = AVCaptureSession()
     var mainCamera: AVCaptureDevice?
     var innerCamera: AVCaptureDevice?
@@ -230,8 +236,21 @@ class CameraView: UIView, AVCapturePhotoCaptureDelegate {
         
         if let image = capturedImage {
             // Save our captured image to photos album
-            nextViewControllerWithNavigationController(image)
+            let y = (image.size.height - image.size.width) / 2
+            let origin = CGPoint(x: 0.0, y: y)
+            let size = CGSize(width: image.size.width, height: image.size.width)
+            let rect = CGRect(origin: origin, size: size)
+            let croppingRect = image.imageOrientation.isLandscape ? rect.switched : rect
+            delegate?.presentPhotoCheck(trimImage(image: image, area: croppingRect)!)
         }
+    }
+    
+    func trimImage(image: UIImage, area: CGRect) -> UIImage? {
+        guard let cgImage = image.cgImage else { return nil }
+        guard let imageCropping = cgImage.cropping(to: area) else { return nil }
+        let trimImage = UIImage(cgImage: imageCropping, scale: image.scale, orientation: image.imageOrientation)
+
+        return trimImage
     }
 
     func setupView() {
@@ -239,7 +258,7 @@ class CameraView: UIView, AVCapturePhotoCaptureDelegate {
         self.addSubview(previewLayer)
         self.addSubview(viewCameraFeature)
         self.backgroundColor = .black
-        viewCameraFeature.anchor(left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 164, paddingBottom: 120, height: 64)
+        viewCameraFeature.anchor(left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingBottom: 120, height: 64)
     }
 }
 
@@ -299,7 +318,7 @@ extension CameraView{
         // プレビューレイヤの表示の向きを設定
         self.cameraPreviewLayer?.connection?.videoOrientation = AVCaptureVideoOrientation.portrait
 
-        self.cameraPreviewLayer?.frame = CGRect(x: 0, y: 70, width: screenWidth, height: screenWidth)
+        self.cameraPreviewLayer?.frame = CGRect(x: 0, y: 94, width: screenWidth, height: screenWidth)
         self.layer.insertSublayer(self.cameraPreviewLayer!, at: 0)
     }
 

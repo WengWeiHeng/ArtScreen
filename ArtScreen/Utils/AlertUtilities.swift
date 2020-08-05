@@ -18,8 +18,6 @@ extension UIView {
             let viewController =  DefaultController()
             viewController.imageView = imageView
             self.window?.rootViewController?.present(viewController, animated: true,completion: nil)
-            
-
         }
         
         let doItAction = UIAlertAction(title: "Do It", style: UIAlertAction.Style.cancel) {
@@ -36,24 +34,6 @@ extension UIView {
         alert.addAction(doItAction)
         self.window?.rootViewController?.present(alert, animated: true, completion: nil)
     }
-    
-    func nextViewControllerWithNavigationController (_ image : UIImage) {
-
-        let origin = CGPoint(x: 0.0, y: 70.0)
-        let size = CGSize(width: image.size.width, height: image.size.width)
-        let rect = CGRect(origin: origin, size: size)
-        let viewController = ConfirmImageController()
-        viewController.image.image = trimImage(image: image, area: rect)
-        self.window?.rootViewController?.present(viewController, animated: true,completion: nil)
-    }
-    
-    func trimImage(image: UIImage, area: CGRect) -> UIImage? {
-        guard let cgImage = image.cgImage else { return nil }
-        guard let imageCropping = cgImage.cropping(to: area) else { return nil }
-        let trimImage = UIImage(cgImage: imageCropping, scale: image.scale, orientation: image.imageOrientation)
-
-        return trimImage
-    }
 }
 
 extension UIImage {
@@ -66,4 +46,25 @@ extension UIImage {
         return UIGraphicsGetImageFromCurrentImageContext()
     }
 }
+
+extension UIImage.Orientation {
+    var isLandscape: Bool {
+        switch self {
+        case .up, .down, .upMirrored, .downMirrored:
+            return false
+        case .left, .right, .leftMirrored, .rightMirrored:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+extension CGRect {
+    var switched: CGRect {
+        return CGRect(x: minY, y: minX, width: height, height: width)
+    }
+}
+
+
 
