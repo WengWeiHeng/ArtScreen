@@ -94,6 +94,7 @@ class AddArtworkInputView: UIView {
         
         addSubview(collectionView)
         collectionView.anchor(top: titleBarView.bottomAnchor, left: leftAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: rightAnchor, paddingLeft: 16)
+        collectionView.showsHorizontalScrollIndicator = false
     }
 }
 

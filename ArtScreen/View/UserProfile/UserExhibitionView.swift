@@ -29,7 +29,7 @@ class UserExhibitionView: UIView {
         
         collectionView.backgroundColor = .mainDarkGray
         collectionView.register(ExhibitionCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        
+        collectionView.showsHorizontalScrollIndicator = false
         addSubview(collectionView)
         collectionView.addConstraintsToFillView(self)
     }

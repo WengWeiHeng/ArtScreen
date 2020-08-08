@@ -16,7 +16,7 @@ class ContainerController: UIViewController {
         didSet { menuController.user = user }
     }
     
-    private var mainController = MainController(collectionViewLayout: UICollectionViewFlowLayout())
+    private var mainController = MainController()
     private var menuController: MenuController!
     private var isExpanded = false
     private lazy var xOrigin = self.view.frame.width - 200

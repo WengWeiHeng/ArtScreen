@@ -54,7 +54,8 @@ class ExhibitionEditView: UIView {
         self.addSubview(stackView)
         stackView.axis = .vertical
         stackView.alignment = .center
-        stackView.distribution = .equalCentering
+//        stackView.distribution = .equalCentering
+        stackView.distribution = .fill
         stackView.spacing = 5
         stackView.layoutMargins = UIEdgeInsets(top: 30, left: 10, bottom: 70, right: 10)
         stackView.isLayoutMarginsRelativeArrangement = true
@@ -76,8 +77,9 @@ class ExhibitionEditView: UIView {
         stackView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
         
         view_Basic.topAnchor.constraint(equalTo: view_Top.bottomAnchor, constant: 20).isActive = true
-        view_Privacy.topAnchor.constraint(equalTo: view_Basic.bottomAnchor, constant: 20).isActive = true
-        view_Advanced.topAnchor.constraint(equalTo: view_Privacy.bottomAnchor, constant: 20).isActive = true
+        view_Basic.heightAnchor.constraint(equalToConstant: 400).isActive = true
+        view_Privacy.topAnchor.constraint(equalTo: view_Basic.bottomAnchor, constant: 50).isActive = true
+        view_Advanced.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -80).isActive = true
                 
     }
     
@@ -122,7 +124,7 @@ class ExhibitionEditView: UIView {
     func addTitle() -> UILabel {
         let label = UILabel()
         label.text = "Edit"
-        label.font = UIFont.systemFont(ofSize: 18)
+        label.font = UIFont.boldSystemFont(ofSize: 20)
         label.textColor = .mainPurple
         label.textAlignment = .center
 //        label.backgroundColor = .brown
@@ -143,7 +145,7 @@ class ExhibitionEditView: UIView {
 //        view.backgroundColor = .orange
         view.translatesAutoresizingMaskIntoConstraints = false
         view.widthAnchor.constraint(equalToConstant: 340).isActive = true
-        view.heightAnchor.constraint(equalToConstant: 340).isActive = true
+        view.heightAnchor.constraint(equalToConstant: 400).isActive = true
         
         ///Add a stcView into the view_Basic
         let stcView_Basic = addStcViewOfBasic()
@@ -165,7 +167,8 @@ class ExhibitionEditView: UIView {
         let stcView = UIStackView(frame: .zero)
         stcView.axis = .vertical
         stcView.alignment = .fill
-        stcView.distribution = .equalSpacing
+//        stcView.distribution = .equalSpacing
+        stcView.distribution = .fill
         stcView.spacing = 5
         stcView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         stcView.isLayoutMarginsRelativeArrangement = true
@@ -175,16 +178,16 @@ class ExhibitionEditView: UIView {
     func addBasicLabel() -> UILabel{
         let label = UILabel()
         label.text = "Basic"
-        label.font = .systemFont(ofSize: 16)
+        label.font = .boldSystemFont(ofSize: 16)
         label.textColor = .mainPurple
         label.textAlignment = .left
-//        label.backgroundColor = .white
+//        label.backgroundColor = .red
+        label.setDimensions(width: 340, height: 40)
         return label
     }
     func addExhibitionView() -> UIView{
         let view = UIView()
 //        view.backgroundColor = .blue
-        //view.widthAnchor.constraint(equalToConstant: 340).isActive = true
         
         ///Add a stcView into the view
         let stcView_Exbi = addStackViewOfExhibition()
@@ -194,6 +197,9 @@ class ExhibitionEditView: UIView {
         stcView_Exbi.addArrangedSubview(addExhibitionContentView())
         
         setConstraintsToView(stackView: stcView_Exbi, toView: view)
+
+        view.setDimensions(width: 340, height: 400)
+//        view.heightAnchor.constraint(equalToConstant: 500).isActive = true
         
         return view
     }
@@ -216,9 +222,10 @@ class ExhibitionEditView: UIView {
         imgView.frame.size.width = 50
         imgView.frame.size.height = 50
         imgView.image = imgDefault
-//        imgView.backgroundColor = .green
+        imgView.backgroundColor = .mainPurple
         imgView.widthAnchor.constraint(equalToConstant: 150).isActive = true
         imgView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        imgView.translatesAutoresizingMaskIntoConstraints = false
         return imgView
     }
     /// Set a view to contain StackView
@@ -243,7 +250,7 @@ class ExhibitionEditView: UIView {
         stcView.axis = .vertical
         stcView.alignment = .fill
         stcView.distribution = .fill
-        stcView.spacing = 10
+        stcView.spacing = 5
         stcView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         stcView.isLayoutMarginsRelativeArrangement = true
         stcView.translatesAutoresizingMaskIntoConstraints = false
@@ -252,7 +259,7 @@ class ExhibitionEditView: UIView {
     func addExhibitionTitle() -> UILabel{
         let label = UILabel()
         label.text = "Exhibition Title"
-        label.font = .systemFont(ofSize: 12)
+        label.font = .boldSystemFont(ofSize: 12)
         label.textColor = .mainPurple
         label.textAlignment = .left
 //        label.backgroundColor = .red
@@ -280,10 +287,11 @@ class ExhibitionEditView: UIView {
     func addIntroductionLabel() -> UILabel{
         let label = UILabel()
         label.text = "Introduction"
-        label.font = .systemFont(ofSize: 12)
+        label.font = .boldSystemFont(ofSize: 12)
         label.textColor = .mainPurple
         label.textAlignment = .left
 //        label.backgroundColor = .white
+        label.setDimensions(width: 340, height: 30)
         return label
     }
     func addIntroductionContent() ->UITextView{
@@ -306,10 +314,11 @@ class ExhibitionEditView: UIView {
     func addTagLabel() -> UILabel{
         let label = UILabel()
         label.text = "#Tag"
-        label.font = .systemFont(ofSize: 12)
+        label.font = .boldSystemFont(ofSize: 12)
         label.textColor = .mainPurple
         label.textAlignment = .left
 //        label.backgroundColor = .white
+        label.setDimensions(width: 340, height: 30)
         return label
     }
     func addTagContent() -> UITextView{
@@ -374,7 +383,7 @@ class ExhibitionEditView: UIView {
     func addPrivacyLabel() -> UILabel{
         let label = UILabel()
         label.text = "Privacy"
-        label.font = .systemFont(ofSize: 16)
+        label.font = .boldSystemFont(ofSize: 16)
         label.textColor = .mainPurple
         label.textAlignment = .left
 //        label.backgroundColor = .white
@@ -483,7 +492,7 @@ class ExhibitionEditView: UIView {
     func addAdvancedLabel() -> UILabel{
         let label = UILabel()
         label.text = "Advanced"
-        label.font = .systemFont(ofSize: 16)
+        label.font = .boldSystemFont(ofSize: 16)
         label.textColor = .mainPurple
         label.textAlignment = .left
         return label

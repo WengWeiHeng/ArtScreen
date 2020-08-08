@@ -12,6 +12,8 @@
 		B000D09124CEBBD500DE9D71 /* SearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000D09024CEBBD500DE9D71 /* SearchController.swift */; };
 		B000D09324CEC2AE00DE9D71 /* EditToolBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000D09224CEC2AE00DE9D71 /* EditToolBarView.swift */; };
 		B002946D24D11761004C19BA /* UserExhibitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B002946C24D11761004C19BA /* UserExhibitionView.swift */; };
+		B010F30F24DEAAA1008BE22A /* ARCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B010F30E24DEAAA1008BE22A /* ARCameraController.swift */; };
+		B010F31124DEBBE0008BE22A /* SupporterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B010F31024DEBBE0008BE22A /* SupporterCell.swift */; };
 		B04D73CB24D599C500B3B990 /* AddArtworkInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04D73CA24D599C500B3B990 /* AddArtworkInputView.swift */; };
 		B04D73CD24D59F7B00B3B990 /* AddArtworkInputViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04D73CC24D59F7B00B3B990 /* AddArtworkInputViewCell.swift */; };
 		B06AB43924D2CFDF0001FD4F /* AddArtworkController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AB43824D2CFDF0001FD4F /* AddArtworkController.swift */; };
@@ -60,7 +62,6 @@
 		B0EE84D524BC1B0A001709BA /* MainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE84D424BC1B0A001709BA /* MainController.swift */; };
 		B0EE84D724BC1B4D001709BA /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE84D624BC1B4D001709BA /* Extensions.swift */; };
 		B0EE84D924BC2298001709BA /* MainExhibitionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE84D824BC2298001709BA /* MainExhibitionCell.swift */; };
-		B0EE84DB24BC2504001709BA /* MainCollectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE84DA24BC2504001709BA /* MainCollectionHeader.swift */; };
 		B0EE84DD24BC26FE001709BA /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE84DC24BC26FE001709BA /* Utilities.swift */; };
 		B0EE84E024BC2FC7001709BA /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE84DF24BC2FC7001709BA /* LoginController.swift */; };
 		B0EE84E224BC2FD8001709BA /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EE84E124BC2FD8001709BA /* RegistrationController.swift */; };
@@ -82,6 +83,8 @@
 		B000D09024CEBBD500DE9D71 /* SearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchController.swift; sourceTree = "<group>"; };
 		B000D09224CEC2AE00DE9D71 /* EditToolBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditToolBarView.swift; sourceTree = "<group>"; };
 		B002946C24D11761004C19BA /* UserExhibitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserExhibitionView.swift; sourceTree = "<group>"; };
+		B010F30E24DEAAA1008BE22A /* ARCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraController.swift; sourceTree = "<group>"; };
+		B010F31024DEBBE0008BE22A /* SupporterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupporterCell.swift; sourceTree = "<group>"; };
 		B04D73CA24D599C500B3B990 /* AddArtworkInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddArtworkInputView.swift; sourceTree = "<group>"; };
 		B04D73CC24D59F7B00B3B990 /* AddArtworkInputViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddArtworkInputViewCell.swift; sourceTree = "<group>"; };
 		B06AB43824D2CFDF0001FD4F /* AddArtworkController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddArtworkController.swift; sourceTree = "<group>"; };
@@ -132,7 +135,6 @@
 		B0EE84D424BC1B0A001709BA /* MainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainController.swift; sourceTree = "<group>"; };
 		B0EE84D624BC1B4D001709BA /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		B0EE84D824BC2298001709BA /* MainExhibitionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainExhibitionCell.swift; sourceTree = "<group>"; };
-		B0EE84DA24BC2504001709BA /* MainCollectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCollectionHeader.swift; sourceTree = "<group>"; };
 		B0EE84DC24BC26FE001709BA /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		B0EE84DF24BC2FC7001709BA /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		B0EE84E124BC2FD8001709BA /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
@@ -309,7 +311,7 @@
 				B06AB43A24D2D08E0001FD4F /* AddArtwork */,
 				B0F2BAAE24D55D5C00361B46 /* AddExhibition */,
 				B0EE84D824BC2298001709BA /* MainExhibitionCell.swift */,
-				B0EE84DA24BC2504001709BA /* MainCollectionHeader.swift */,
+				B010F31024DEBBE0008BE22A /* SupporterCell.swift */,
 				B0A8D0AA24C54EC700A4127F /* ArtworkCell.swift */,
 				B0A8D0AE24C55B1D00A4127F /* ExhibitionCell.swift */,
 				B0A8D0B024C55B6E00A4127F /* FilterView.swift */,
@@ -329,6 +331,7 @@
 				B0F2BAA724D554D500361B46 /* AddExhibition */,
 				B0A13D5724C0681D00633D30 /* ProfileMainController.swift */,
 				B000D09024CEBBD500DE9D71 /* SearchController.swift */,
+				B010F30E24DEAAA1008BE22A /* ARCameraController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -496,6 +499,7 @@
 				B0BF970F24D7A54B004FC55C /* ExhibitionSendCell.swift in Sources */,
 				B0A8D0BA24C55D8F00A4127F /* FilterViewCell.swift in Sources */,
 				B0F2BAB624D5632C00361B46 /* UploadVC_CustomView.swift in Sources */,
+				B010F30F24DEAAA1008BE22A /* ARCameraController.swift in Sources */,
 				B08E38A524DA7A8900CBAEFB /* FeatureToolBarView.swift in Sources */,
 				B0A8D0B124C55B6E00A4127F /* FilterView.swift in Sources */,
 				B06AB44624D2D2C10001FD4F /* DefaultController.swift in Sources */,
@@ -525,6 +529,7 @@
 				B0EE84D924BC2298001709BA /* MainExhibitionCell.swift in Sources */,
 				B000D08F24CE959D00DE9D71 /* ProfileViewModel.swift in Sources */,
 				B0A13D5824C0681D00633D30 /* ProfileMainController.swift in Sources */,
+				B010F31124DEBBE0008BE22A /* SupporterCell.swift in Sources */,
 				B0A8D0AF24C55B1E00A4127F /* ExhibitionCell.swift in Sources */,
 				B0EE84C224BC1A9D001709BA /* ArtScreen.xcdatamodeld in Sources */,
 				B04D73CB24D599C500B3B990 /* AddArtworkInputView.swift in Sources */,
@@ -549,7 +554,6 @@
 				B0AC025724C98A0E00790868 /* RegistrationViewModel.swift in Sources */,
 				B0EE84BA24BC1A9D001709BA /* SceneDelegate.swift in Sources */,
 				B08E38AB24DAA6F200CBAEFB /* LayerCell.swift in Sources */,
-				B0EE84DB24BC2504001709BA /* MainCollectionHeader.swift in Sources */,
 				B0EE674E24BF277A0069B27D /* ContainerController.swift in Sources */,
 				B06AB43C24D2D0A10001FD4F /* AlbumView.swift in Sources */,
 				B0A8D0AB24C54EC700A4127F /* ArtworkCell.swift in Sources */,

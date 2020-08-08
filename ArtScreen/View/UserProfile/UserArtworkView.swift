@@ -36,6 +36,7 @@ class UserArtworkView: UIView {
         
         collectionView.backgroundColor = .mainDarkGray
         collectionView.register(ArtworkCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.showsVerticalScrollIndicator = false
         
         addSubview(collectionView)
         collectionView.addConstraintsToFillView(self)

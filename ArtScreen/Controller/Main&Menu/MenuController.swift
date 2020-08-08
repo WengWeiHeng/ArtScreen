@@ -131,7 +131,9 @@ extension MenuController {
         case .placeMap:
             print("DEBUG: Show place map page..")
         case .arCamere:
-            print("DEBUG: Show AR Camera page..")
+            let controller = ARCameraController()
+            controller.modalPresentationStyle = .fullScreen
+            present(controller, animated: true, completion: nil)
         case .setting:
             print("DEBUG: Show setting page..")
         case .instructions:

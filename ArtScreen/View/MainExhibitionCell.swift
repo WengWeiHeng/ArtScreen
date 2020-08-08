@@ -12,21 +12,25 @@ class MainExhibitionCell: UICollectionViewCell {
     
     //MARK: - Properties
     
-    private let exhibitionImage: UIImageView = {
+    private var widthOffset: CGFloat = UIScreen.main.bounds.width / 2
+    private var paddingOffset: CGFloat = 12 * 2
+    
+    let exhibitionImage: UIImageView = {
         let iv = UIImageView()
-        iv.backgroundColor = .mainPurple
-        iv.layer.cornerRadius = 15
-        iv.setDimensions(width: 164, height: 270)
+        iv.backgroundColor = .mainDarkGray
         
         return iv
     }()
     
+    
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
-
+        
         addSubview(exhibitionImage)
-        exhibitionImage.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 12, paddingLeft: 12, paddingRight: 12)
+        exhibitionImage.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor)
+//        exhibitionImage.setDimensions(width: widthOffset - paddingOffset, height: 300)
+        exhibitionImage.layer.cornerRadius = 15
     }
     
     required init?(coder: NSCoder) {

@@ -8,17 +8,21 @@
 
 import UIKit
 
-private let reuseIdentifier = "MainExhibitionCell"
-private let headerIdentifier = "MainCollectionHeader"
+private let reuseIdentifier = "ExhibitionCell"
+private let supporterIdentifier = "SupporterCell"
 
 protocol MainControllerDelegate: class {
     func handleMenuToggle()
 }
 
-class MainController: UICollectionViewController {
+class MainController: UIViewController {
     
     //MARK: - Properties
     weak var delegate: MainControllerDelegate?
+    private var tableView = UITableView()
+    
+    private var widthOffset: CGFloat = UIScreen.main.bounds.width / 2
+    private var paddingOffset: CGFloat = 12 * 2
     
     private let menuButton: UIButton = {
          let button = UIButton(type: .system)
@@ -45,6 +49,50 @@ class MainController: UICollectionViewController {
         button.addTarget(self, action: #selector(handleUploadAction), for: .touchUpInside)
 
         return button
+    }()
+    
+    private let exhibitionTitleView: UIView = {
+        let view = Utilities().titleBarInputview(withTitle: "EXHIBITION", action: #selector(handleExhibitionMore))
+        
+        return view
+    }()
+    
+    private let supporterTitleView: UIView = {
+        let view = Utilities().titleBarInputview(withTitle: "SUPPORTER", action: #selector(handleSupporterMore))
+        
+        return view
+    }()
+    
+    private lazy var exhibitionExplain: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 15
+        let image = UIImageView()
+        view.addSubview(image)
+        image.setDimensions(width: 40, height: 40)
+        image.layer.cornerRadius = 40 / 2
+        image.anchor(top: view.topAnchor, left: view.leftAnchor)
+        image.backgroundColor = .mainPurple
+        
+        let name = UILabel()
+        view.addSubview(name)
+        name.font = .boldSystemFont(ofSize: 14)
+        name.backgroundColor = .mainBackground
+        name.textColor = .mainPurple
+        name.text = "Jack Mauris"
+        name.centerY(inView: image)
+        name.anchor(left: image.rightAnchor, paddingLeft: 5)
+        
+        return view
+    }()
+    
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.delegate = self
+        cv.dataSource = self
+        
+        return cv
     }()
     
     private lazy var addArtworkView: UIView = {
@@ -99,7 +147,6 @@ class MainController: UICollectionViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         view.accessibilityIdentifier = "add"
-        
     }
     
     //MARK: - Selectors
@@ -150,6 +197,14 @@ class MainController: UICollectionViewController {
         present(nav, animated: true, completion: nil)
     }
     
+    @objc func handleExhibitionMore() {
+        print("DEBUG: More Exhibition..")
+    }
+    
+    @objc func handleSupporterMore() {
+        print("DEBUG: More Supporter..")
+    }
+    
     //MARK: - Helpers
     func configureUI() {
         view.backgroundColor = .mainBackground
@@ -164,6 +219,41 @@ class MainController: UICollectionViewController {
         stack.centerY(inView: menuButton)
         stack.anchor(right: view.rightAnchor, paddingRight: 12)
         
+        view.addSubview(exhibitionTitleView)
+        exhibitionTitleView.anchor(top: menuButton.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20,  height: 50)
+        
+        view.addSubview(collectionView)
+        collectionView.anchor(top: exhibitionTitleView.bottomAnchor, right: view.rightAnchor, paddingTop: 20, paddingRight: 12)
+        collectionView.setDimensions(width: widthOffset - paddingOffset, height: 300)
+        collectionView.backgroundColor = .mainBackground
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.register(MainExhibitionCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        
+        view.addSubview(exhibitionExplain)
+        exhibitionExplain.anchor(top: collectionView.topAnchor, left: view.leftAnchor, paddingLeft: 12)
+        exhibitionExplain.setDimensions(width: widthOffset - paddingOffset, height: 300)
+        
+        view.addSubview(supporterTitleView)
+        supporterTitleView.anchor(top: exhibitionExplain.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20, height: 50)
+        
+        configureTableView()
+        configureAddView()
+    }
+    
+    func configureTableView() {
+        tableView.register(SupporterCell.self, forCellReuseIdentifier: supporterIdentifier)
+        tableView.separatorStyle = .none
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.isScrollEnabled = false
+        tableView.backgroundColor = .mainBackground
+        tableView.rowHeight = 90
+        
+        view.addSubview(tableView)
+        tableView.anchor(top: supporterTitleView.bottomAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, paddingTop: 20)
+    }
+    
+    func configureAddView() {
         view.addSubview(blackButton)
         blackButton.addConstraintsToFillView(view)
         
@@ -177,19 +267,9 @@ class MainController: UICollectionViewController {
         view.addSubview(addExhibitionView)
         addExhibitionView.anchor(bottom: addArtworkView.bottomAnchor, right: view.rightAnchor, paddingRight: 12)
         
-        
-        
         let size = (view.frame.width - 36) / 2
         addArtworkView.setDimensions(width: size, height: size)
         addExhibitionView.setDimensions(width: size, height: size)
-        
-        configureCollectionView()
-    }
-    
-    func configureCollectionView() {
-        collectionView.backgroundColor = .mainBackground
-        collectionView.register(MainExhibitionCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        collectionView.register(MainCollectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIdentifier)
     }
     
     fileprivate func extractedFunc(animateTime: TimeInterval) {
@@ -203,12 +283,12 @@ class MainController: UICollectionViewController {
 }
 
 //MARK: - UICollectionViewDataSource
-extension MainController {
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1
+extension MainController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 5
     }
     
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MainExhibitionCell
                 
         return cell
@@ -216,33 +296,37 @@ extension MainController {
 }
 
 //MARK: - UICollectionViewDelegate
-extension MainController {
-    
-    //MARK: - Header Delegate
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! MainCollectionHeader
-        
-        return header
-    }
-    
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+extension MainController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("DEBUG: Cell did selected..")
     }
 }
 
 //MARK: - UICollectionViewDelegateFlowLayout
 extension MainController: UICollectionViewDelegateFlowLayout{
-    
-    //Collection header size
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-
-        return CGSize(width: view.frame.width, height: 154)
-    }
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return CGSize(width: view.frame.width, height: 300)
+        return CGSize(width: widthOffset - paddingOffset, height: 300)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        
+        return 14
+    }
+}
+
+//MARK: - UITableViewDelegate & UITableViewDataSource
+extension MainController: UITableViewDelegate, UITableViewDataSource {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 3
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: supporterIdentifier, for: indexPath) as! SupporterCell
+        cell.accessoryType = .disclosureIndicator
+        
+        return cell
+    }
+    
 }

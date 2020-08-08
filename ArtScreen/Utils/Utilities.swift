@@ -98,4 +98,27 @@ class Utilities {
         
         return view
     }
+    
+    func titleBarInputview(withTitle title: String, action: Selector) -> UIView {
+        let view = UIView()
+        
+        let label = UILabel()
+        label.text = title
+        label.textColor = .mainPurple
+        label.font = .boldSystemFont(ofSize: 26)
+        
+        let moreView = Utilities().moreButtonView(withImage: #imageLiteral(resourceName: "moreRight"), text: "MORE")
+        moreView.setDimensions(width: 50, height: 10)
+        let tap = UITapGestureRecognizer(target: self, action: action)
+        moreView.addGestureRecognizer(tap)
+        
+        view.addSubview(label)
+        label.centerY(inView: view)
+        label.anchor(left: view.leftAnchor, paddingLeft: 12)
+        
+        view.addSubview(moreView)
+        moreView.anchor(bottom: label.bottomAnchor, right: view.rightAnchor, paddingRight: 12)
+        
+        return view
+    }
 }
