@@ -10,14 +10,18 @@ import UIKit
 
 private let reuseIdentifier = "LayerCell"
 
-class AnimateController: UIViewController,UIScrollViewDelegate {
+class AnimateController: UIViewController, UIScrollViewDelegate {
     
     //MARK: - Properties
+    var checkSelectImageIndex: Int = 0
+    var checkViewDrawLasso: Bool = false
     var customProtocol: CustomProtocol?
     let featureToolBarView = FeatureToolBarView()
+    let penToolBarView = PenToolBarView()
     let animateToolBarView = AnimateToolBarView()
+    let lassoToolBarView = LassoToolBarView()
 
-    private var isSelected: Bool = false
+    private var layers = [UIImage]()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -26,7 +30,7 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
         cv.backgroundColor = .init(white: 1, alpha: 0.5)
         cv.delegate = self
         cv.dataSource = self
-        cv.showsHorizontalScrollIndicator = false
+//        cv.showsHorizontalScrollIndicator = false
         cv.layer.cornerRadius = 56 / 2
         cv.register(LayerCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         
@@ -43,7 +47,12 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
     }()
     
     private lazy var layerStackView: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [collectionView, deleteButton])
+        let button = UIButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "close").withRenderingMode(.alwaysOriginal), for: .normal)
+        button.setDimensions(width: 36, height: 36)
+        button.addTarget(self, action: #selector(handleCloseLayerView), for: .touchUpInside)
+        
+        let stack = UIStackView(arrangedSubviews: [button, collectionView, deleteButton])
         stack.axis = .horizontal
         stack.spacing = 12
         stack.alpha = 0
@@ -55,8 +64,6 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
        let view = UIView()
         let buttonPhotoLibrary : UIButton = {
             let button = UIButton()
-//            button.backgroundColor = .white
-//            button.setTitleColor(.black, for: .normal)
             button.setImage(#imageLiteral(resourceName: "Library"), for: .normal)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addTarget(self, action: #selector(tapbuttonPhotoLibrary), for: .touchUpInside)
@@ -93,11 +100,21 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
         return view
     }()
     
-    let undoRedoPlayView : UIView = {
+    private let buttonPlay: UIButton = {
+        let button = UIButton()
+        button.setImage(#imageLiteral(resourceName: "Play"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(tapbuttonPlay), for: .touchUpInside)
+        button.setDimensions(width: 30, height: 26)
+        
+        return button
+    }()
+    
+    lazy var undoRedoPlayView : UIView = {
         let view = UIView()
         let buttonUndo : UIButton = {
            let button = UIButton()
-           button.setImage(#imageLiteral(resourceName: "Undo"), for: .normal)
+           button.setImage(#imageLiteral(resourceName: "undo"), for: .normal)
            button.translatesAutoresizingMaskIntoConstraints = false
            button.addTarget(self, action: #selector(tapbuttonUndo), for: .touchUpInside)
            return button
@@ -105,7 +122,7 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
         
        let buttonRedo : UIButton = {
             let button = UIButton()
-            button.setImage(#imageLiteral(resourceName: "Redo"), for: .normal)
+            button.setImage(#imageLiteral(resourceName: "redo"), for: .normal)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.addTarget(self, action: #selector(tapbuttonRedo), for: .touchUpInside)
             return button
@@ -117,15 +134,6 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
             button.setDimensions(width: 26, height: 26)
             button.addTarget(self, action: #selector(handleShowLayer), for: .touchUpInside)
             
-            return button
-        }()
-        
-        let buttonPlay : UIButton = {
-            let button = UIButton()
-            button.setImage(#imageLiteral(resourceName: "Play"), for: .normal)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.addTarget(self, action: #selector(tapbuttonPlay), for: .touchUpInside)
-            button.setDimensions(width: 30, height: 26)
             return button
         }()
         
@@ -149,12 +157,95 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
         return view
     }()
     
-    lazy var imageView : UIImageView = {
+    //MARK: - PenProperties
+    var canvas: Canvas = Canvas()
+    var penCroppedImage: UIImage?
+//    var imgWidth: CGFloat?
+//    var imgHeight: CGFloat?
+    
+    //MARK: - LassoProperties
+    var cutImagecount : Int = 0
+    var allPoints = [CGPoint]()
+    var indexLastPoint = [Int]()
+    var lines = [Line]()
+    private var minX : CGFloat = CGFloat(MAXFLOAT)
+    private var maxX : CGFloat = 0
+    private var minY : CGFloat = CGFloat(MAXFLOAT)
+    private var maxY : CGFloat = 0
+    var lineView: DrawView!
+
+    private var lassoLayerImage = UIImage()
+    
+    lazy var originalImageView : UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .white
         imageView.clipsToBounds = true
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
+        
         return imageView
+    }()
+
+    let sampleImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.clipsToBounds = true
+        iv.contentMode = .scaleAspectFill
+
+        return iv
+    }()
+    
+    let trimImageView = UIImageView()
+    var arrtrimImageView = [UIImageView]()
+    
+    //MARK: - Animate setting properties
+    private var isRunning: Bool = false
+    private var offsetX: CGFloat!
+    private var offsetY: CGFloat!
+    private var centerX: CGFloat = 0.5
+    private var centerY: CGFloat = 0.5
+    
+    private var movePath: UIBezierPath!
+    private var moveSpeed: CFTimeInterval!
+    
+    private var rotateFromValue: CGFloat!
+    private var rotateToValue: CGFloat!
+    private var rotateAnimateSpeed: CFTimeInterval!
+    
+    private var scaleFromValue: CGFloat!
+    private var scaleToValue: CGFloat!
+    private var scaleAnimateSpeed: CFTimeInterval!
+    private var isRepeat: Bool!
+    
+    private var opacityFromValue: CGFloat!
+    private var opacityToValue: CGFloat!
+    private var opacityAnimateSpeed: CFTimeInterval!
+    
+    private var moveBottom = NSLayoutConstraint()
+    private var rotateBottom = NSLayoutConstraint()
+    private var scaleBottom = NSLayoutConstraint()
+    private var opacityBottom = NSLayoutConstraint()
+    
+    private let moveSettingHeight: CGFloat = screenHeight * 0.2
+    private let rotateSettingHeight: CGFloat = screenHeight * 0.25
+    private let settingViewHeight: CGFloat = screenHeight * 0.32
+
+    private var moveDrawView: MoveDrawView!
+    private let moveSettingView = MoveSettingView()
+    private let rotateSettingView = RotateSettingView()
+    private let scaleSettingView = ScaleSettingView()
+    private let opacitySettingView = OpacitySettingView()
+    
+    lazy var centerPoint: UIView = {
+        let view = UIView()
+        view.setDimensions(width: 10, height: 10)
+        view.layer.cornerRadius = 10 / 2
+        view.layer.borderWidth = 1
+        view.layer.borderColor = UIColor.mainCenterPoint.cgColor
+        view.alpha = 0
+        
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(panGestureAction(sender:)))
+        view.addGestureRecognizer(pan)
+        
+        return view
     }()
     
     //MARK: - Init
@@ -163,22 +254,18 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
         self.view.backgroundColor = .black
         // Do any additional setup after loading the view.
         configureRegister()
+        configureToolBars()
+        configureAnimateSettingView()
     }
     
     //MARK: - Selecotrs
     @objc func tapbuttonPhotoLibrary() {
-        print("Tapped PhotoLibrary Button...")
-//        dismiss(animated: true, completion: nil)
         for controller in self.navigationController!.viewControllers as Array {
             if controller.isKind(of: AddArtworkController.self) {
                 self.navigationController!.popToViewController(controller, animated: true)
                 break
             }
         }
-//        self.dismiss(animated: true) {
-//            guard let proto = self.customProtocol else {return}
-//            proto.dismissed()
-//        }
     }
     
     @objc func tapbuttonFeature() {
@@ -186,7 +273,32 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
     }
     
     @objc func tapbuttonSendImage() {
-        print("Tapped Send Button...")
+        
+        guard let itemImage = trimImageView.image else { return }
+        let itemCredentials = ArtworkItemCredentials(artworkItemImage: itemImage, moveAnimateSpeed: moveSpeed, rotateFromValue: Float(rotateFromValue), rotateToValue: Float(rotateToValue), rotateAnimateSpeed: rotateAnimateSpeed, scaleFromValue: Float(scaleFromValue), scaleToValue: Float(scaleToValue), scaleAnimateSpeed: scaleAnimateSpeed, opacityFromValue: Float(opacityFromValue), opacityToValue: Float(opacityToValue), opacityAnimateSpeed: opacityAnimateSpeed)
+        
+        if trimImageView.image == nil {
+            showError("Please make your Animate item!")
+        } else {
+            let controller = ArtworkInfoSettingController()
+            controller.artworkImage = originalImageView.image
+            controller.itemImage = itemImage
+            controller.itemCredentials = itemCredentials
+            navigationController?.pushViewController(controller, animated: true)
+            
+//            print("DEBUG: upload artwork..")
+//            showLoader(true, withText: "Please wait to uploadding your artwork")
+//            ArtworkService.uploadAnimateItemData(credentials: itemCredentials) { error in
+//                if let error = error {
+//                    self.showLoader(false)
+//                    self.showError(error.localizedDescription)
+//                    return
+//                }
+//
+//                self.showLoader(false)
+//                self.dismiss(animated: true, completion: nil)
+//            }
+        }
     }
     
     @objc func tapbuttonUndo() {
@@ -198,21 +310,65 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
     }
     
     @objc func tapbuttonPlay() {
-        print("Tapped Play   Button...")
+        UIView.animate(withDuration: 0.3) {
+            self.centerPoint.alpha = 0
+        }
+        
+        AnimateUtilities().setAnchorPoint(anchorPoint: CGPoint(x: centerX, y: centerY), view: trimImageView)
+        
+        movePath = moveDrawView.originalImagePath
+        moveSpeed = CFTimeInterval(moveSettingView.speedSlider.value)
+        
+        rotateFromValue = CGFloat(rotateSettingView.fromeValue)
+        rotateToValue = CGFloat(rotateSettingView.toValue)
+        rotateAnimateSpeed = CFTimeInterval(rotateSettingView.speedSlider.value)
+        
+        scaleFromValue = CGFloat(scaleSettingView.maxSizeSlider.value)
+        scaleToValue = CGFloat(scaleSettingView.minSizeSlider.value)
+        scaleAnimateSpeed = CFTimeInterval(scaleSettingView.speedSlider.value)
+        
+        opacityFromValue = CGFloat(opacitySettingView.maxSizeSlider.value)
+        opacityToValue = CGFloat(opacitySettingView.minSizeSlider.value)
+        opacityAnimateSpeed = CFTimeInterval(opacitySettingView.speedSlider.value)
+        
+        isRunning.toggle()
+        if isRunning {
+            if layers.count == 0 {
+                isRunning = false
+                showError("Create your animation objects.")
+            } else {
+                buttonPlay.setImage(#imageLiteral(resourceName: "pause").withRenderingMode(.alwaysOriginal), for: .normal)
+                if (checkViewDrawLasso == true) {
+                    view.addSubview(trimImageView)
+                    trimImageView.image = arrtrimImageView[checkSelectImageIndex].image
+                    trimImageView.frame = arrtrimImageView[checkSelectImageIndex].frame
+                    arrtrimImageView[checkSelectImageIndex].removeFromSuperview()
+                }
+                AnimateUtilities().move(view: trimImageView, path: movePath, duration: moveSpeed)
+                
+                AnimateUtilities().allAction(view: trimImageView, rotateFrom: rotateFromValue, rotateTo: rotateToValue, rotateDuration: rotateAnimateSpeed, scaleFrom: scaleFromValue, scaleTo: scaleToValue, scaleDuration: scaleAnimateSpeed, autoreverses: true, opacityFrom: opacityFromValue, opacityto: opacityToValue, opacityDuration: opacityAnimateSpeed)
+            }
+        } else {
+            buttonPlay.setImage(#imageLiteral(resourceName: "Play"), for: .normal)
+            AnimateUtilities().removeAnimate(view: trimImageView)
+        }
     }
     
     @objc func handleShowLayer() {
-        isSelected.toggle()
-        if isSelected {
-            UIView.animate(withDuration: 0.4) {
-                self.layerStackView.alpha = 1
-            }
-        } else {
-            UIView.animate(withDuration: 0.4) {
-                self.layerStackView.alpha = 0
-                self.animateToolBarView.alpha = 0
-                self.featureToolBarView.alpha = 1
-            }
+        UIView.animate(withDuration: 0.4) {
+            self.undoRedoPlayView.alpha = 0
+            self.layerStackView.alpha = 1
+            
+//            self.animateToolBarView.alpha = 1
+        }
+    }
+    
+    @objc func handleCloseLayerView() {
+        UIView.animate(withDuration: 0.4) {
+            self.undoRedoPlayView.alpha = 1
+            self.layerStackView.alpha = 0
+            self.animateToolBarView.alpha = 0
+            self.featureToolBarView.alpha = 1
         }
     }
     
@@ -220,6 +376,29 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
         print("DEBUG: Delete layer item..")
     }
     
+    @objc func panGestureAction(sender: UIPanGestureRecognizer) {
+                
+        // move direction
+        let translation = sender.translation(in: centerPoint)
+        
+        switch sender.state {
+
+        case .changed:
+            offsetX = centerPoint.center.x + translation.x
+            offsetY = centerPoint.center.y + translation.y
+            
+            centerX = (offsetX - trimImageView.frame.minX) / trimImageView.frame.width
+            centerY = (offsetY - trimImageView.frame.minY) / trimImageView.frame.height
+            
+            centerPoint.center = CGPoint(x: offsetX, y: offsetY)
+            sender.setTranslation(.zero, in: centerPoint)
+        case .ended:
+            print("CX: \(centerX), CY: \(centerY)")
+//            print("centerPoint anchorPoint: \(centerPoint.center.self)")
+        default:
+            ()
+        }
+    }
  
     //MARK: - Helpers
     func SolveWidthStackView(_ number : Int) -> CGFloat {
@@ -228,44 +407,197 @@ class AnimateController: UIViewController,UIScrollViewDelegate {
     }
     
     func configureRegister() {
-        view.addSubview(featureToolBarView)
-        featureToolBarView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 100)
-        featureToolBarView.alpha = 1
-        
-        view.addSubview(animateToolBarView)
-        animateToolBarView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 100)
-        featureToolBarView.delegate = self
-        animateToolBarView.delegate = self
-        animateToolBarView.alpha = 0
-        
-
         view.addSubview(settingView)
         settingView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, height: 40)
         
-        view.addSubview(imageView)
-        imageView.centerY(inView: view)
-        imageView.anchor(left: view.leftAnchor, right: view.rightAnchor, height: screenWidth)
+        view.addSubview(originalImageView)
+        originalImageView.centerY(inView: view)
+        originalImageView.anchor(left: view.leftAnchor, right: view.rightAnchor, height: screenWidth)
         
         view.addSubview(undoRedoPlayView)
-        undoRedoPlayView.anchor(top: imageView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20, height: 38)
+        undoRedoPlayView.anchor(top: originalImageView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20, height: 38)
         
         view.addSubview(layerStackView)
-        layerStackView.anchor(left: view.leftAnchor, bottom: imageView.bottomAnchor, right: view.rightAnchor, paddingLeft: 12, paddingBottom: 10, paddingRight: 12, height: 56)
+        layerStackView.anchor(top: undoRedoPlayView.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingLeft: 12, paddingRight: 12, height: 56)
+    }
+    
+    func configureToolBars() {
+        view.addSubview(featureToolBarView)
+        featureToolBarView.anchor(left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, height: 100)
+        featureToolBarView.alpha = 1
+        featureToolBarView.delegate = self
         
+        view.addSubview(penToolBarView)
+        penToolBarView.anchor(left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, height: 100)
+        penToolBarView.alpha = 0
+        penToolBarView.delegate = self
+        
+        view.addSubview(animateToolBarView)
+        animateToolBarView.anchor(left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, height: 100)
+        animateToolBarView.alpha = 0
+        animateToolBarView.delegate = self
+        
+        view.addSubview(lassoToolBarView)
+        lassoToolBarView.anchor(left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor,  height: 100)
+        lassoToolBarView.alpha = 0
+        lassoToolBarView.delegate = self
+    }
+    
+    func configureAnimateSettingView() {
+        view.addSubview(moveSettingView)
+        moveSettingView.translatesAutoresizingMaskIntoConstraints = false
+        moveSettingView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        moveSettingView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        moveBottom = moveSettingView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: moveSettingHeight)
+        moveBottom.isActive = true
+        moveSettingView.heightAnchor.constraint(equalToConstant: moveSettingHeight).isActive = true
+        moveSettingView.layer.cornerRadius = 24
+        moveSettingView.delegate = self
+        
+        view.addSubview(rotateSettingView)
+        rotateSettingView.translatesAutoresizingMaskIntoConstraints = false
+        rotateSettingView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        rotateSettingView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        rotateBottom = rotateSettingView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: rotateSettingHeight)
+        rotateBottom.isActive = true
+        rotateSettingView.heightAnchor.constraint(equalToConstant: rotateSettingHeight).isActive = true
+        rotateSettingView.layer.cornerRadius = 24
+        rotateSettingView.delegate = self
+        
+        view.addSubview(scaleSettingView)
+        scaleSettingView.translatesAutoresizingMaskIntoConstraints = false
+        scaleSettingView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        scaleSettingView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        scaleBottom = scaleSettingView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: settingViewHeight)
+        scaleBottom.isActive = true
+        scaleSettingView.heightAnchor.constraint(equalToConstant: settingViewHeight).isActive = true
+        scaleSettingView.layer.cornerRadius = 24
+        scaleSettingView.delegate = self
+        
+        view.addSubview(opacitySettingView)
+        opacitySettingView.translatesAutoresizingMaskIntoConstraints = false
+        opacitySettingView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        opacitySettingView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        opacityBottom = opacitySettingView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: settingViewHeight)
+        opacityBottom.isActive = true
+        opacitySettingView.heightAnchor.constraint(equalToConstant: settingViewHeight).isActive = true
+        opacitySettingView.layer.cornerRadius = 24
+        opacitySettingView.delegate = self
+    }
+    
+    func handleDismissal() {
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+            self.moveBottom.constant = self.moveSettingHeight
+            self.scaleBottom.constant = self.settingViewHeight
+            self.opacityBottom.constant = self.settingViewHeight
+            self.rotateBottom.constant = self.rotateSettingHeight
+            self.view.layoutIfNeeded()
+        }
+        transitionAnimator.startAnimation()
+    }
+    
+    //MARK: - Pen function Helpers
+    func configureCanvasView(withDoing doing: Bool) {
+        view.addSubview(canvas)
+        canvas.layer.anchorPointZ = 0
+        canvas.frame = CGRect(x: 0, y: 0, width: originalImageView.frame.width, height: originalImageView.frame.height)
+        canvas.anchor(top: originalImageView.topAnchor, width: originalImageView.frame.width, height: originalImageView.frame.height)
+        
+        canvas.clipsToBounds = true
+        canvas.isMultipleTouchEnabled = false
+        
+        if doing {
+            canvas.alpha = 1
+        } else {
+            canvas.removeFromSuperview()
+        }
+    }
+    
+    func penCropImage() -> UIImage? {
+        let maskLayer = canvas.setMaskLayer()
+        sampleImageView.layer.mask = maskLayer
+        /// context start
+        UIGraphicsBeginImageContextWithOptions(sampleImageView.frame.size, false, 1)
+        if let currentContext = UIGraphicsGetCurrentContext() {
+            sampleImageView.layer.render(in: currentContext)
+        }
+        /// make new image from context
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        /// end context
+        UIGraphicsEndImageContext()
+
+        let croppedImg = newImage
+        return croppedImg
+    }
+    
+    //MARK: - Lasso function Helpers
+    func configureLassoCroppedImageView() {
+        view.addSubview(sampleImageView)
+        sampleImageView.anchor(top: originalImageView.topAnchor, left: originalImageView.leftAnchor, bottom: originalImageView.bottomAnchor, right: originalImageView.rightAnchor)
+    }
+    
+    func drawLineOnImage(_ size: CGSize,_ image: UIImage,_ points : [CGPoint]) -> UIImage {
+        UIGraphicsBeginImageContext(size)
+        image.draw(at: CGPoint.zero)
+        guard let context = UIGraphicsGetCurrentContext() else { return UIImage() }
+        context.setLineWidth(1.0)
+        context.setStrokeColor(UIColor.blue.cgColor)
+
+        for i in 0..<points.count-1 {
+            context.move(to: CGPoint(x: points[i].x - minX , y: points[i].y - minY))
+            context.addLine(to: CGPoint(x: points[i+1].x - minX , y: points[i+1].y - minY))
+        }
+        context.move(to: CGPoint(x: points[points.count-1].x - minX , y: points[points.count-1].y - minY ))
+        context.addLine(to: CGPoint(x: points[0].x - minX, y: points[0].y - minY))
+        context.strokePath()
+
+        guard let resultImage = UIGraphicsGetImageFromCurrentImageContext() else { return UIImage() }
+        UIGraphicsEndImageContext()
+        return resultImage
+    }
+    
+    func solve(_ currentPoint: CGPoint) {
+        if (currentPoint.x > maxX) {
+            maxX = currentPoint.x
+        }
+        if (currentPoint.x < minX) {
+            minX = currentPoint.x
+        }
+        if (currentPoint.y > maxY) {
+            maxY = currentPoint.y
+        }
+        if (currentPoint.y < minY) {
+            minY = currentPoint.y
+        }
+    }
+
+    func trimImage(image: UIImage, area: CGRect) -> UIImage? {
+        guard let cgImage = image.cgImage else { return nil }
+        guard let imageCropping = cgImage.cropping(to: area) else { return nil }
+        let trimImage = UIImage(cgImage: imageCropping, scale: image.scale, orientation: image.imageOrientation)
+        return trimImage
     }
 }
 
 //MARK: - UICollectionViewDataSource
 extension AnimateController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        print("layers.count = \(layers.count)")
+        return layers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! LayerCell
+        cell.layerImageView.image = layers[indexPath.row]
         
         return cell
     }
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        if (checkViewDrawLasso == true) {
+            checkSelectImageIndex = indexPath.row
+        }
+    }
+    
 }
 
 //MARK: - UICollectionViewDelegate
@@ -273,6 +605,8 @@ extension AnimateController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         UIView.animate(withDuration: 0.4) {
             self.featureToolBarView.alpha = 0
+            self.penToolBarView.alpha = 0
+            self.lassoToolBarView.alpha = 0
             self.animateToolBarView.alpha = 1
         }
     }
@@ -285,17 +619,209 @@ extension AnimateController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-
-//MARK: - ToolBarViewDelegate
-extension AnimateController: ToolBarViewDelegate {
-    func changeToolBarView(_ animateIsHiden: Bool) {
-        if animateIsHiden {
-            animateToolBarView.isHidden = true
-            featureToolBarView.isHidden = false
-        } else {
-            animateToolBarView.isHidden = false
-            featureToolBarView.isHidden = true
+//MARK: - FeatureToolBarViewDelegate
+extension AnimateController: FeatureToolBarViewDelegate {
+    func showPenToolBar() {
+        UIView.animate(withDuration: 0.4) {
+            self.featureToolBarView.alpha = 0
+            self.penToolBarView.alpha = 1
+            self.checkViewDrawLasso = false
         }
+        
+        configureLassoCroppedImageView()
+        self.configureCanvasView(withDoing: true)
+    }
+    func showLassoToolBarAndDraw() {
+        self.checkViewDrawLasso = true
+        UIView.animate(withDuration: 0.4) {
+            self.featureToolBarView.alpha = 0
+            self.lassoToolBarView.alpha = 1
+        }
+        configureLassoCroppedImageView()
+        lineView = DrawView(frame: originalImageView.frame)
+        view.addSubview(lineView)
     }
 }
 
+//MARK: - PenToolBarDelegate
+extension AnimateController: PenToolBarDelegate {
+    func penCloseAction() {
+        UIView.animate(withDuration: 0.4) {
+            self.penToolBarView.alpha = 0
+            self.featureToolBarView.alpha = 1
+        }
+        
+        configureCanvasView(withDoing: false)
+    }
+    
+    func penClearAction() {
+        canvas.clearCanvas()
+        print("DEBUG: clear in controller..")
+    }
+    
+    func penCropAction() {
+        let beCropped = penCropImage()
+        let finalPath = canvas.getPath()
+        penCroppedImage = UIImage(cgImage: (beCropped?.cgImage?.cropping(to: finalPath.bounds))!)
+//        sampleImageView.layer.mask = nil
+        sampleImageView.removeFromSuperview()
+        
+        view.addSubview(trimImageView)
+        trimImageView.image = penCroppedImage
+        trimImageView.frame = finalPath.bounds
+        trimImageView.frame.origin.x = finalPath.bounds.minX + originalImageView.frame.origin.x
+        trimImageView.frame.origin.y = finalPath.bounds.minY + originalImageView.frame.origin.y
+        
+        print("DEBUG: originalImageView.minX \(originalImageView.frame.origin.y)")
+        
+        originalImageView.alpha = 0.3
+        
+        layers.append(penCroppedImage!)
+        collectionView.reloadData()
+        configureCanvasView(withDoing: false)
+    }
+    
+    func penJointAction() {
+        print("DEBUG: end in controller..")
+        canvas.endDrawingStatus = true
+        canvas.endDrawing()
+    }
+}
+
+//MARK: - LassoToolBarDelegate
+extension AnimateController: LassoToolBarDelegate {
+    func backAction() {
+        UIView.animate(withDuration: 0.4) {
+            self.lassoToolBarView.alpha = 0
+            self.featureToolBarView.alpha = 1
+            self.originalImageView.alpha = 1
+        }
+    }
+    
+    func jointAction() {
+        lassoLayerImage = ZImageCropper.cropImage(ofImageView: sampleImageView, withinPoints: lineView.getPoints())!
+        let line: [Line] = lineView.getLines()
+        //cut ImageView with point
+        view.addSubview(trimImageView)
+        let points = lineView.getPoints()
+        for i in 0..<points.count {
+            solve(points[i])
+        }
+        let height: CGFloat = maxY - minY
+        let width: CGFloat = maxX - minX
+        let minXImageView = originalImageView.frame.minX
+        let minYImageView = originalImageView.frame.minY
+        trimImageView.frame = CGRect(x: minX + minXImageView , y: minY + minYImageView, width: width , height: height)
+        let uiImage: UIImage = lassoLayerImage
+        let origin = CGPoint(x: minX, y: minY)
+        let size = CGSize(width: width, height: height)
+        let rect = CGRect(origin: origin, size: size)
+        trimImageView.image = trimImage(image: uiImage, area: rect)
+        trimImageView.image = drawLineOnImage(trimImageView.frame.size, trimImageView.image!, line[line.count-1].points)
+        sampleImageView.removeFromSuperview()
+        
+        view.addSubview(centerPoint)
+        centerPoint.centerX(inView: trimImageView)
+        centerPoint.centerY(inView: trimImageView)
+        
+        lineView.removeFromSuperview()
+        layers.append(lassoLayerImage)
+        arrtrimImageView.append(UIImageView())
+        let lastIndex = arrtrimImageView.count-1
+        view.addSubview(arrtrimImageView[lastIndex])
+        arrtrimImageView[lastIndex].frame = trimImageView.frame
+        arrtrimImageView[lastIndex].image = trimImageView.image
+        arrtrimImageView[lastIndex].tag = lastIndex
+        trimImageView.removeFromSuperview()
+    }
+    
+    func undoAction() {
+        lines = lineView.getLines()
+        print(lines.count)
+        _ = lines.popLast()
+        lineView.removeFromSuperview()
+        lineView = DrawView(frame: originalImageView.frame)
+        view.addSubview(lineView)
+        lineView.setting(lines)
+        lineView.undo()
+    }
+    
+    func cutAction() {
+//        lineView.connect2Points()
+        lineView.removeFromSuperview()
+        originalImageView.alpha = 0.3
+        collectionView.reloadData()
+    }
+    
+    func cleanAction() {
+        lineView.removeFromSuperview()
+    }
+}
+
+//MARK: - AnimateToolBarViewDelegate
+extension AnimateController: AnimateToolBarViewDelegate {
+    func moveSetting() {
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+            self.moveBottom.constant = 0
+            self.view.layoutIfNeeded()
+        }
+        transitionAnimator.startAnimation()
+        
+        moveDrawView = MoveDrawView(frame: originalImageView.frame)
+        moveDrawView.delegate = self
+        view.addSubview(moveDrawView)
+    }
+    
+    func rotateSetting() {
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+            self.rotateBottom.constant = 0
+            self.view.layoutIfNeeded()
+        }
+        transitionAnimator.startAnimation()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.centerPoint.alpha = 1
+        }
+    }
+    
+    func scaleSetting() {
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+            self.scaleBottom.constant = 0
+            self.view.layoutIfNeeded()
+        }
+        transitionAnimator.startAnimation()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.centerPoint.alpha = 1
+        }
+    }
+    
+    func opacitySetting() {
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+            self.opacityBottom.constant = 0
+            self.view.layoutIfNeeded()
+        }
+        transitionAnimator.startAnimation()
+    }
+}
+
+//MARK: - SettingViewDelegate
+extension AnimateController: SettingViewDelegate {
+    func dismissSettingView() {
+        handleDismissal()
+        
+        moveDrawView.removeFromSuperview()
+    }
+}
+
+//MARK: - MoveDrawViewDelegate
+extension AnimateController: MoveDrawViewDelegate {
+    func drawMovePath(_ path: UIBezierPath) {
+        print("DEBUG : LastLinePath = \(path)")
+        let circleLayer = CAShapeLayer()
+        circleLayer.path = path.cgPath
+        circleLayer.strokeColor = UIColor.black.cgColor
+        circleLayer.fillColor = UIColor.clear.cgColor
+        view.layer.addSublayer(circleLayer)
+    }
+}

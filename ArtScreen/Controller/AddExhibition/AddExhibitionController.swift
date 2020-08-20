@@ -8,61 +8,71 @@
 
 import UIKit
 
-//MARK: - paddingLabel settings
-class PaddingLabel: UILabel {
-    var insets = UIEdgeInsets.zero
-    
-    func padding(_ top: CGFloat, _ left: CGFloat, _ bottom: CGFloat, _ right: CGFloat) {
-        self.frame = CGRect(x: 0, y: 0, width: self.frame.width + left + right, height: self.frame.height + top + bottom)
-        insets = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
-    }
-    
-    override func drawText(in rect: CGRect) {
-        super.drawText(in: rect.inset(by: insets))
-    }
-    
-    override var intrinsicContentSize: CGSize {
-        get {
-            var contentSize = super.intrinsicContentSize
-            contentSize.height += insets.top + insets.bottom
-            contentSize.width += insets.left + insets.right
-            return contentSize
-        }
-    }
-}
-
-class AddExhibitionController: UIViewController, UITextFieldDelegate {
+class AddExhibitionController: UIViewController {
     
     //MARK: - Properties
-    lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        return scrollView
+    var user: User?
+    private var isOnline: Bool = true
+    private let imagePicker = UIImagePickerController()
+    private var exhibitionImage: UIImage?
+    
+    private var customConstraintY: NSLayoutConstraint!
+    
+    private let coverImageButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "coverImage").withRenderingMode(.alwaysOriginal), for: .normal)
+        button.imageView?.clipsToBounds = true
+        button.imageView?.contentMode = .scaleAspectFill
+        button.setDimensions(width: screenWidth, height: screenWidth)
+        button.addTarget(self, action: #selector(selectExhibitionImage), for: .touchUpInside)
+        
+        return button
     }()
     
-    lazy var stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.distribution = UIStackView.Distribution.equalSpacing
-        stackView.spacing = 5
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        return stackView
+    private let titleLabel: UILabel = {
+        let label = AddExhibitionUtilities().customLabel(title: "Exhibition Title")
+        
+        return label
     }()
     
-    lazy var contentView: UIView = {
+    private let titleTextField: UITextField = {
+        let tf = AddExhibitionUtilities().customTextField(placeholder: "Title")
+        
+        return tf
+    }()
+    
+    private let introductionLabel: UILabel = {
+        let label = AddExhibitionUtilities().customLabel(title: "Introduction")
+        
+        return label
+    }()
+    
+    private let introductionTextField: UITextField = {
+        let tf = AddExhibitionUtilities().customTextField(placeholder: "Introduction")
+        
+        return tf
+    }()
+    
+    private let lineView: UIView = {
         let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.setHeight(height: 0.75)
+        
         return view
     }()
     
-    private let coverImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.contentMode = UIView.ContentMode.scaleAspectFill
-        iv.setDimensions(width: screenWidth, height: screenWidth)
-        iv.backgroundColor = .mainPurple
-        iv.image = #imageLiteral(resourceName: "coverImage")
+    private let onlineLabel: UILabel = {
+        let label = AddExhibitionUtilities().customLabel(title: "Open online")
         
-        return iv
+        return label
+    }()
+    
+    private let olSwitch: UISwitch = {
+        let olswitch = UISwitch()
+        olswitch.isOn = true
+        olswitch.addTarget(self, action: #selector(handleOnOff), for: .touchUpInside)
+        
+        return olswitch
     }()
     
     //MARK: - Init
@@ -76,14 +86,77 @@ class AddExhibitionController: UIViewController, UITextFieldDelegate {
         navigationController?.navigationBar.isHidden = false
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
+    
     //MARK: - Selectors
     @objc func handleDismissal() {
         dismiss(animated: true, completion: nil)
     }
     
+    @objc func handleOnOff() {
+        if olSwitch.isOn {
+            isOnline = true
+        } else {
+            isOnline = false
+        }
+    }
+    
+    @objc func selectExhibitionImage() {
+        print("DEBUG: select image..")
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
     @objc func handleSendAction() {
-        let controller = ExhibitionUploadController()
-        navigationController?.pushViewController(controller, animated: true)
+        if titleTextField.text == "" && introductionTextField.text == "" {
+            showError("Please write something")
+        } else {
+            uploadExhibition()
+        }
+    }
+    
+    @objc func keyboardWillShow() {
+        if view.frame.origin.y == 0 {
+            self.view.frame.origin.y -= 88
+        }
+        
+        coverImageButton.isEnabled = false
+    }
+    
+    @objc func keyboardWillHide() {
+        if view.frame.origin.y != 0 {
+            view.frame.origin.y = 0
+        }
+        
+        coverImageButton.isEnabled = true
+    }
+    
+    //MARK: - API
+    func uploadExhibition() {
+        guard let name = titleTextField.text else { return }
+        guard let introduction = introductionTextField.text else { return }
+        guard let exhibitionImage = exhibitionImage else {
+            showError("Please select a image")
+            return
+        }
+        
+        let credentials = ExhibitionCredentials(name: name, introduction: introduction, exhibitionImage: exhibitionImage, online: isOnline)
+        
+        showLoader(true, withText: "Uploadding Exhibition")
+        ExhibitionService.uploadExhibition(credentials: credentials) { error in
+            if let error = error {
+                self.showLoader(false)
+                self.showError(error.localizedDescription)
+                return
+            }
+            
+            self.showLoader(false)
+            let controller = ExhibitionUploadController()
+            controller.user = self.user
+            controller.exhibitionTitleText = name
+            self.navigationController?.pushViewController(controller, animated: true)
+        }
     }
     
     //MARK: - Helpers
@@ -91,7 +164,38 @@ class AddExhibitionController: UIViewController, UITextFieldDelegate {
         view.backgroundColor = .black
         view.accessibilityIdentifier = "add_exhibition"
         configureNavigationBar()
-        setupLayout()
+        configureImagePicker()
+        
+        view.addSubview(coverImageButton)
+        coverImageButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20)
+        
+        let titleStack = UIStackView(arrangedSubviews: [titleLabel, titleTextField])
+        titleStack.axis = .vertical
+        titleStack.spacing = 4
+        
+        view.addSubview(titleStack)
+        titleStack.anchor(top: coverImageButton.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20, paddingLeft: 16, paddingRight: 16)
+        
+        let introductionStack = UIStackView(arrangedSubviews: [introductionLabel, introductionTextField])
+        introductionStack.axis = .vertical
+        introductionStack.spacing = 4
+        
+        view.addSubview(introductionStack)
+        introductionStack.anchor(top: titleStack.bottomAnchor, left: titleStack.leftAnchor, right: titleStack.rightAnchor, paddingTop: 20)
+        
+        view.addSubview(lineView)
+        lineView.anchor(top: introductionStack.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20)
+        
+        view.addSubview(olSwitch)
+        olSwitch.anchor(top: lineView.bottomAnchor, right: titleStack.rightAnchor, paddingTop: 20)
+        
+        view.addSubview(onlineLabel)
+        onlineLabel.anchor(left: titleStack.leftAnchor)
+        onlineLabel.centerY(inView: olSwitch)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func configureNavigationBar() {
@@ -105,80 +209,25 @@ class AddExhibitionController: UIViewController, UITextFieldDelegate {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "Send").withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(handleSendAction))
     }
     
-    private func setupLayout() {
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        contentView.addSubview(stackView)
-        
-        scrollView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0)
-        
-        contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
-        contentView.anchor(top: scrollView.topAnchor, left: scrollView.leftAnchor, bottom: scrollView.bottomAnchor, right: scrollView.rightAnchor)
-
-        stackView.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 20, paddingRight: 12)
-        
-        stackView.addArrangedSubview(coverImageView)
-        stackView.addArrangedSubview(addTitleLabel(labelText: "Exhibition Title", paddingTop: 20, paddingLeft: 12))
-        stackView.addArrangedSubview(addTextField(placeholder: "Title"))
-        stackView.addArrangedSubview(addTitleLabel(labelText: "Introduction", paddingTop: 20, paddingLeft: 12))
-        stackView.addArrangedSubview(addTextField(placeholder: "Introduction"))
-        stackView.addArrangedSubview(addDivideLine())
-        stackView.addArrangedSubview(addOnlineLabelAndSwitch())
-    }
-    
-    //MARK: - Add Properties Helpers
-    func addTitleLabel(labelText: String, paddingTop: CGFloat = 0, paddingLeft: CGFloat = 0, paddingBottom: CGFloat = 0, paddingRight: CGFloat = 0) -> PaddingLabel{
-        let exhTitleLabel = PaddingLabel()
-        exhTitleLabel.padding(paddingTop, paddingLeft, paddingBottom, paddingRight)
-        exhTitleLabel.text = labelText
-        exhTitleLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        exhTitleLabel.textColor = .white
-
-        return exhTitleLabel
-    }
-    
-    func addTextField(placeholder: String) -> UITextField{
-        let exhField = UITextField()
-        exhField.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.width * 0.1)
-        exhField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        exhField.font = UIFont.systemFont(ofSize: 18)
-        exhField.clearButtonMode = .whileEditing
-        exhField.returnKeyType = .done
-        exhField.textColor = .white
-        exhField.tintColor = .mainPurple
-        
-        /// create a padding view for padding on left
-        exhField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: exhField.frame.height))
-        exhField.leftViewMode = .always
-        
-        //self.view.addSubview(exhField)
-        hideKeyboardWhenTappedAround()
-        exhField.delegate = self
-        return exhField
-    }
-    
-    func addDivideLine() -> UIView{
-        let view = UIView()
-        view.setDimensions(width: screenWidth, height: 0.75)
-        view.backgroundColor = .white
-        view.alpha = 0.87
-        
-        return view
-    }
-
-    func addOnlineLabelAndSwitch() -> UIStackView {
-        let stack = UIStackView(frame: .zero)
-        stack.translatesAutoresizingMaskIntoConstraints = false
-
-        let olSwitch = UISwitch()
-        olSwitch.isOn = true
-        
-        stack.addArrangedSubview(addTitleLabel(labelText: "Online Exhibition", paddingLeft: 12))
-        stack.addArrangedSubview(olSwitch)
-        
-        return stack
+    func configureImagePicker() {
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
     }
 }
+
+//MARK: - UIImagePickerControllerDelegate
+extension AddExhibitionController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let exhibitionImage = info[.editedImage] as? UIImage else { return }
+        self.exhibitionImage = exhibitionImage
+        
+        coverImageButton.setImage(exhibitionImage.withRenderingMode(.alwaysOriginal), for: .normal)
+        
+        dismiss(animated: true, completion: nil)
+    }
+}
+
+
 
 //MARK: - Close Keyboard
 extension AddExhibitionController {

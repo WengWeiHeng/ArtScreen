@@ -187,6 +187,7 @@ class ProfileMainController: UIViewController {
         bottomConstraint.isActive = true
         userContentView.heightAnchor.constraint(equalToConstant: popupOffset).isActive = true
         userContentView.addGestureRecognizer(panRecognizer)
+        userContentView.delegate = self
         
         view.addSubview(editToolBarView)
         editToolBarView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 150)
@@ -247,5 +248,20 @@ extension State {
         case .open: return .closed
         case .closed: return .open
         }
+    }
+}
+
+extension ProfileMainController: UserContentViewDelegate {
+    func moveToAddExhibition() {
+        let controller = AddExhibitionController()
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+    }
+    
+    func moveToAddArtwork() {
+        let controller = AddArtworkController()
+        controller.modalPresentationStyle = .fullScreen
+        present(controller, animated: true, completion: nil)
     }
 }

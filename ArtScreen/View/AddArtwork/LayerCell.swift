@@ -11,9 +11,8 @@ import UIKit
 class LayerCell: UICollectionViewCell {
     
     //MARK: - Properties
-    private let layerImageView: UIImageView = {
+    let layerImageView: UIImageView = {
         let iv = UIImageView()
-        iv.backgroundColor = .mainPurple
         iv.clipsToBounds = true
         iv.contentMode = .scaleAspectFill
         iv.setDimensions(width: 36, height: 36)

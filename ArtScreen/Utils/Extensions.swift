@@ -91,6 +91,16 @@ extension UIView {
         anchor(top: view.topAnchor, left: view.leftAnchor,
                bottom: view.bottomAnchor, right: view.rightAnchor)
     }
+    
+    func setHeight(height: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false
+        heightAnchor.constraint(equalToConstant: height).isActive = true 
+    }
+    
+    func setWidth(width: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false
+        widthAnchor.constraint(equalToConstant: width).isActive = true
+    }
 }
 
 // MARK: - UIColor
@@ -104,6 +114,7 @@ extension UIColor {
     static let mainBackground = UIColor.rgb(red: 241, green: 239, blue: 242)
     static let mainDarkGray = UIColor.rgb(red: 46, green: 46, blue: 46)
     static let mainAlphaGray = UIColor.rgb(red: 69, green: 69, blue: 69)
+    static let mainCenterPoint = UIColor.rgb(red: 0, green: 255, blue: 255)
 }
 
 

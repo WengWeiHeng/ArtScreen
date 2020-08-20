@@ -11,8 +11,16 @@ import UIKit
 class AddArtworkInputViewCell: UICollectionViewCell {
     
     //MARK: - Properties
-    private let artworkImageView: UIImageView = {
+    var artwork: Artwork? {
+        didSet {
+            configureData()
+        }
+    }
+    
+    private let imageView: UIImageView = {
         let iv = UIImageView()
+        iv.clipsToBounds = true
+        iv.contentMode = .scaleAspectFill
         iv.backgroundColor = .mainPurple
         iv.layer.cornerRadius = 15
         
@@ -23,11 +31,17 @@ class AddArtworkInputViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        addSubview(artworkImageView)
-        artworkImageView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor)
+        addSubview(imageView)
+        imageView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    //MARK: - Helper
+    func configureData() {
+        guard let artwork = artwork else { return }
+        imageView.sd_setImage(with: artwork.artworkImageUrl)
     }
 }

@@ -9,14 +9,18 @@
 import UIKit
 
 private let reuseIdentifier1 = "FeatureToorBarCell"
-private let reuseIdentifier2 = "AnimateToorBarCell"
 private let reuseIdentifier3 = "DefaultToorBarCell"
 
-protocol ToolBarViewDelegate : class {
-    func changeToolBarView(_ animateIsHiden : Bool)
+protocol FeatureToolBarViewDelegate: class {
+    func showPenToolBar()
+    func showLassoToolBarAndDraw()
 }
 
 class FeatureToolBarView : UIView {
+    
+    //MARK: - Properties
+    weak var delegate: FeatureToolBarViewDelegate?
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -28,7 +32,6 @@ class FeatureToolBarView : UIView {
         
         return cv
     }()
-    weak var delegate: ToolBarViewDelegate?
 
     //MARK: - Init
        override init(frame: CGRect) {
@@ -58,10 +61,10 @@ extension FeatureToolBarView : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let option = FeatureToolBarOption(rawValue: indexPath.row)
         switch option {
-        case .anchor:
-            print("DEBUG: Handle anchor..")
-        case .cut:
-            print("DEBUG: Handle cut..")
+        case .pen:
+            delegate?.showPenToolBar()
+        case .lasso:
+            delegate?.showLassoToolBarAndDraw()
         case .delete:
             print("DEBUG: Handle delete..")
         case .none:
@@ -89,100 +92,14 @@ extension FeatureToolBarView : UICollectionViewDataSource {
 extension FeatureToolBarView : UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
            
-           let count = CGFloat(FeatureToolBarOption.allCases.count)
-           return CGSize(width: (frame.width - 30) / count, height: frame.height)
-       }
-       
-       func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-           return 1
-       }
-}
-
-//MARK: - AnimateToolBarView
-class AnimateToolBarView : UIView {
-    private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .none
-        cv.delegate = self
-        cv.dataSource = self
-        cv.showsHorizontalScrollIndicator = false
-        
-        return cv
-    }()
-    weak var delegate: ToolBarViewDelegate?
-    //MARK: - Init
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        configureUI()
-    }
+//       let count = CGFloat(FeatureToolBarOption.allCases.count)
+        return CGSize(width: (frame.width - 18) / 6, height: frame.height)
+   }
    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-       
-    //MARK: - Selectors
-   
-    //MARK: - Helpers
-    func configureUI() {
-        backgroundColor = .black
-        collectionView.register(AnimateToolBarCell.self, forCellWithReuseIdentifier: reuseIdentifier2)
-        
-        let selectedIndexPath = IndexPath(row: 0, section: 0)
-        collectionView.selectItem(at: selectedIndexPath, animated: true, scrollPosition: .left)
-        
-        addSubview(collectionView)
-        collectionView.addConstraintsToFillView(self)
-    }
+   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+       return 18
+   }
 }
-
-extension AnimateToolBarView : UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let option = AnimateToolBarOption(rawValue: indexPath.row)
-        switch option {
-        case .path:
-            print("DEBUG: Handle Path..")
-        case .rotate:
-            print("DEBUG: Handle Rotate..")
-        case .flash:
-            print("DEBUG: Handle Flash..")
-        case .scale:
-            print("DEBUG: Handle scale..")
-        case .none:
-            print("DEBUG: Error..")
-        }
-    }
-    
-}
-
-extension AnimateToolBarView : UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return AnimateToolBarOption.allCases.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier2, for: indexPath) as! AnimateToolBarCell
-        
-        let option = AnimateToolBarOption(rawValue: indexPath.row)
-        cell.option = option
-        
-        return cell
-    }
-}
-
-extension AnimateToolBarView : UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-           
-           let count = CGFloat(AnimateToolBarOption.allCases.count)
-           return CGSize(width: (frame.width - 24) / count, height: frame.height)
-       }
-       
-       func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-           return 1
-       }
-}
-
 
 //MARK: - DefaultToolBarView
 class DefaultToolBarView : UIView {
@@ -221,6 +138,7 @@ class DefaultToolBarView : UIView {
         collectionView.addConstraintsToFillView(self)
     }
 }
+
 extension DefaultToolBarView : UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let option = DefaultToolBarOption(rawValue: indexPath.row)
@@ -241,6 +159,7 @@ extension DefaultToolBarView : UICollectionViewDelegate {
     }
     
 }
+
 extension DefaultToolBarView : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return DefaultToolBarOption.allCases.count
@@ -255,11 +174,12 @@ extension DefaultToolBarView : UICollectionViewDataSource {
         return cell
     }
 }
+
 extension DefaultToolBarView : UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
            
-           let count = CGFloat(DefaultToolBarOption.allCases.count)
-           return CGSize(width: (frame.width - 18) / count, height: frame.height)
+//           let count = CGFloat(DefaultToolBarOption.allCases.count)
+           return CGSize(width: (frame.width - 18) / 6, height: frame.height)
        }
        
        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {

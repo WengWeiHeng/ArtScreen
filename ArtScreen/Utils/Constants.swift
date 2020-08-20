@@ -9,3 +9,6 @@
 import Firebase
 
 let COLLECTION_USERS = Firestore.firestore().collection("users")
+let COLLECTION_ARTWORKS = Firestore.firestore().collection("artworks")
+//let COLLECTION_ARTWORK_ITEMS = Firestore.firestore().collection("artwork-items")
+let COLLECTION_EXHIBITIONS = Firestore.firestore().collection("exhibitions")

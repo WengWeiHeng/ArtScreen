@@ -10,7 +10,7 @@ import UIKit
 import Photos
 import AVFoundation
 protocol AlbumViewDelegate: class {
-    func presentPhotoCheckFromAlbum(_ image: UIImage)
+    func uploadArtwork(_ image: UIImage)
 }
 class AlbumView: UIView {
     
@@ -21,7 +21,14 @@ class AlbumView: UIView {
     var stillImageOutput: AVCapturePhotoOutput!
     var videoPreviewLayer: AVCaptureVideoPreviewLayer!
     var photoAssets: [PHAsset] = []
-    var imageView = UIImageView()
+    
+    var headerImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.clipsToBounds = true
+        iv.contentMode = .scaleAspectFill
+        
+        return iv
+    }()
     
     let buttonNext : UIButton = {
         let button = UIButton()
@@ -73,7 +80,10 @@ class AlbumView: UIView {
     @objc func handleTapNextButton() {
         print("Tap NextButton ...")
 //        self.showNotification(imageView)
-        delegate?.presentPhotoCheckFromAlbum(imageView.image!)
+        
+//        delegate?.presentPhotoCheckFromAlbum(headerImageView.image!)
+        guard let image = headerImageView.image else { return }
+        delegate?.uploadArtwork(image)
     }
     
     //MARK: - Helpers
@@ -102,16 +112,16 @@ extension AlbumView: UICollectionViewDataSource, MyHeaderFooterCollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-            return CGSize(width: collectionView.frame.width, height: screenWidth)
+        return CGSize(width: collectionView.frame.width, height: screenWidth)
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: collectionViewHeaderFooterReuseIdentifier, for: indexPath) as? MyHeaderFooterCollectionView
-            headerView?.addSubview(imageView)
-            imageView.anchor(top: headerView?.topAnchor, left: headerView?.leftAnchor, bottom: headerView?.bottomAnchor, right: headerView?.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
-            imageView.image = convertImageFromAsset(asset: photoAssets[0])
+            headerView?.addSubview(headerImageView)
+            headerImageView.anchor(top: headerView?.topAnchor, left: headerView?.leftAnchor, bottom: headerView?.bottomAnchor, right: headerView?.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+            headerImageView.image = convertImageFromAsset(asset: photoAssets[0])
             return headerView!
         default:
             assert(false, "Unexpected element kind")
@@ -140,9 +150,9 @@ extension AlbumView: UICollectionViewDataSource, MyHeaderFooterCollectionViewDel
         if let header = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: indexPath.section)) as? MyHeaderFooterCollectionView {
             // Do your stuff here
 
-            header.addSubview(imageView)
-            imageView.anchor(top: header.topAnchor, left: header.leftAnchor, bottom: header.bottomAnchor, right: header.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
-            imageView.image = convertImageFromAsset(asset: photoAssets[indexPath.row])
+            header.addSubview(headerImageView)
+            headerImageView.anchor(top: header.topAnchor, left: header.leftAnchor, bottom: header.bottomAnchor, right: header.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+            headerImageView.image = convertImageFromAsset(asset: photoAssets[indexPath.row])
         }
     }
     
@@ -160,7 +170,10 @@ extension AlbumView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayou
 class CollectionViewCell: UICollectionViewCell {
     private let imageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
         imageView.frame = CGRect(x: 0, y: 0, width: screenWidth / 4.0, height: screenWidth / 4.0)
+        
         return imageView
     }()
 

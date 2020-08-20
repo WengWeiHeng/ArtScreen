@@ -15,6 +15,7 @@ let screenHeight = screen.size.height
 class AddArtworkController: UIViewController, UIScrollViewDelegate {
     
     //MARK: - Properties
+    var user: User?
     private var scrollView : UIScrollView!
     var view1 = CameraView(frame: CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight))
     var view2 = AlbumView(frame: CGRect(x: screenWidth, y: 0, width: screenWidth, height: screenHeight))
@@ -123,9 +124,7 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
         view.addSubview(stack)
         stack.centerX(inView: view)
         stack.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, paddingBottom: 20)
-        
-//        buttonCamera.anchor(bottom: view.bottomAnchor, right: view.centerXAnchor, paddingBottom: 50, paddingRight: 20, width: 100, height: 40)
-//        buttonAlbum.anchor(left: view.centerXAnchor, bottom: view.bottomAnchor, paddingLeft: 20, paddingBottom: 50, width: 100, height: 40)
+
         buttonCancel.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 10, paddingLeft: 15, width: 24, height: 24)
     }
     
@@ -163,50 +162,59 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
             }
         }
     }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         scrollView.contentOffset.y = 0.0
+    }
+    
+    func configureAlert(_ image: UIImage) {
+        let alert = UIAlertController(title: "Do you want add AR Animation on your ArtWork",message:"If you don't want to add it now, you can click Edit in your profile page", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Not now", style: .default, handler: { _ in
+            let viewController =  ArtworkInfoSettingController()
+            viewController.imageView.image = image
+            self.navigationController?.pushViewController(viewController, animated: true)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Do it", style: .default, handler: { _ in
+            let controller = AnimateController()
+            controller.originalImageView.image = image
+            controller.sampleImageView.image = image
+            self.navigationController?.pushViewController(controller, animated: true)
+        }))
+
+        self.present(alert, animated: true, completion: nil)
     }
 }
 
 //MARK: - CamereViewDelegate
 extension AddArtworkController: CameraViewDelegate {
     func presentPhotoCheck(_ image: UIImage) {
-        let viewController = ConfirmImageController()
-        viewController.image.image = image
-//        present(viewController, animated: true, completion: nil)
-        self.navigationController?.pushViewController(viewController, animated: true)
+        let controller = ConfirmImageController()
+        controller.image.image = image
+        self.navigationController?.pushViewController(controller, animated: true)
 
     }
 }
 
 //MARK: - AlbumViewDelegate
-extension AddArtworkController : AlbumViewDelegate {
-    func presentPhotoCheckFromAlbum(_ image: UIImage) {
-        let alert = UIAlertController(title: "Do you want add AR Animation on your ArtWork",message:"If you don't want to add it now, you can click Edit in your profile page",
-                                      preferredStyle: UIAlertController.Style.alert)
-        let notNowAction = UIAlertAction(title: "Not Now", style: UIAlertAction.Style.default) {
-            UIAlertAction in
-            NSLog("Not Now Pressed ...")
-            let viewController =  DefaultController()
-            viewController.imageView.image = image
-
-            self.navigationController?.pushViewController(viewController, animated: true)
-            
-        }
-        
-        let doItAction = UIAlertAction(title: "Do It", style: UIAlertAction.Style.cancel) {
-            UIAlertAction in
-            NSLog("Do It Pressed ...")
-            let viewController = AnimateController()
-            viewController.imageView.image = image
-
-            self.navigationController?.pushViewController(viewController, animated: true)
-
-        }
-        
-        // Add the actions
-        alert.addAction(notNowAction)
-        alert.addAction(doItAction)
-        self.present(alert, animated: true, completion: nil)
+extension AddArtworkController: AlbumViewDelegate {
+    
+    func uploadArtwork(_ image: UIImage) {
+//        let credentials = ArtworkCredentials(name: "", introduction: "", artworkImage: image)
+//
+//        self.showLoader(true, withText: "Uploadding your artwork")
+//
+//        ArtworkService.uploadArtwork(credentials: credentials) { error in
+//            if let error = error {
+//                self.showLoader(false)
+//                self.showError(error.localizedDescription)
+//                return
+//            }
+//
+//            self.showLoader(false)
+//            self.configureAlert(image)
+//        }
+        self.configureAlert(image)
     }
 }

@@ -1,18 +1,27 @@
 //
-//  EditToorBar.swift
+//  PenToolBarView.swift
 //  ArtScreen
 //
-//  Created by Heng on 2020/7/27.
+//  Created by Heng on 2020/8/13.
 //  Copyright © 2020 Heng. All rights reserved.
 //
 
 import UIKit
 
-private let reuseIdentifier = "EditToorBarCell"
+protocol PenToolBarDelegate: class {
+    func penCloseAction()
+    func penClearAction()
+    func penCropAction()
+    func penJointAction()
+}
 
-class EditToolBarView: UIView {
+private let reuseIdentifier = "PenToolBarCell"
+
+class PenToolBarView: UIView {
     
     //MARK: - Properties
+    weak var delegate: PenToolBarDelegate?
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -20,6 +29,7 @@ class EditToolBarView: UIView {
         cv.backgroundColor = .none
         cv.delegate = self
         cv.dataSource = self
+        cv.showsHorizontalScrollIndicator = false
         
         return cv
     }()
@@ -27,6 +37,7 @@ class EditToolBarView: UIView {
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         configureUI()
     }
     
@@ -34,70 +45,57 @@ class EditToolBarView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //MARK: - Selectors
-    
     //MARK: - Helpers
     func configureUI() {
         backgroundColor = .black
-        collectionView.register(EditToolBarCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        
-        let selectedIndexPath = IndexPath(row: 0, section: 0)
-        collectionView.selectItem(at: selectedIndexPath, animated: true, scrollPosition: .left)
+        collectionView.register(PenToolBarCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         
         addSubview(collectionView)
         collectionView.addConstraintsToFillView(self)
-        collectionView.showsHorizontalScrollIndicator = false
     }
 }
 
-extension EditToolBarView: UICollectionViewDataSource {
+extension PenToolBarView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return ToolBarOption.allCases.count
+        return PenToolBarOption.allCases.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! EditToolBarCell
-        
-        let option = ToolBarOption(rawValue: indexPath.row)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PenToolBarCell
+        let option = PenToolBarOption(rawValue: indexPath.row)
         cell.option = option
         
         return cell
     }
 }
 
-extension EditToolBarView: UICollectionViewDelegate {
+extension PenToolBarView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let option = ToolBarOption(rawValue: indexPath.row)
-        
+        let option = PenToolBarOption(rawValue: indexPath.row)
         switch option {
-        case .paint:
-            print("DEBUG: paint action..")
-        case .font:
-            print("DEBUG: font action..")
-        case .typeface:
-            print("DEBUG: typeface action..")
-        case .color:
-            print("DEBUG: color action..")
-        case .photo:
-            print("DEBUG: photo action..")
-        case .template:
-            print("DEBUG: template action..")
-        case .delete:
-            print("DEBUG: delete action..")
+        case .close:
+            delegate?.penCloseAction()
+        case .crop:
+            delegate?.penCropAction()
+        case .joint:
+            delegate?.penJointAction()
+        case .clear:
+            delegate?.penClearAction()
         case .none:
-            print("Error..")
+            print("DEBUG: Error..")
         }
+
     }
 }
 
-extension EditToolBarView: UICollectionViewDelegateFlowLayout {
+extension PenToolBarView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        let count = CGFloat(ToolBarOption.allCases.count)
-        return CGSize(width: (frame.width - 18) / count, height: frame.height)
+            
+        return CGSize(width: (frame.width - 18) / 6, height: frame.height)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 18
     }
+
 }

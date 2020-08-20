@@ -10,23 +10,80 @@ import Foundation
 
 //MARK: - FeatureToolBarOption
 enum FeatureToolBarOption : Int,CaseIterable {
-    case anchor
-    case cut
+    case pen
+    case lasso
     case delete
 
     var description : String {
         switch self {
-        case .anchor: return "Anchor"
-        case .cut: return "Cut"
+        case .pen: return "Pen"
+        case .lasso: return "Lasso"
         case .delete: return "Delete"
         
         }
     }
     var iconName : String {
         switch self {
-        case .anchor: return "anchor"
-        case .cut: return "cut"
+        case .pen: return "pen"
+        case .lasso: return "lasso"
         case .delete: return "delete"
+        
+        }
+    }
+}
+
+//MARK: - PenToolBarOption
+enum PenToolBarOption: Int, CaseIterable {
+    case close
+    case joint
+    case crop
+    case clear
+    
+    var description: String {
+        switch self {
+        case .close: return "Close"
+        case .joint: return "Joint"
+        case .crop: return "Crop"
+        case .clear: return "Clear"
+        }
+    }
+    
+    var iconName : String {
+        switch self {
+        case .close: return "close"
+        case .joint: return "joint"
+        case .crop: return "crop"
+        case .clear: return "clear"
+        
+        }
+    }
+}
+
+//MARK: - LassoToolBaroption
+enum LassoToolBarOption: Int, CaseIterable {
+    case close
+    case undo
+    case joint
+    case crop
+    case clear
+    
+    var description: String {
+        switch self {
+        case .close: return "Close"
+        case .undo: return "Undo"
+        case .joint: return "Joint"
+        case .crop: return "Crop"
+        case .clear: return "Clear"
+        }
+    }
+    
+    var iconName : String {
+        switch self {
+        case .close: return "close"
+        case .undo: return "undo"
+        case .joint: return "joint"
+        case .crop: return "crop"        
+        case .clear: return "clear"
         
         }
     }
@@ -36,23 +93,23 @@ enum FeatureToolBarOption : Int,CaseIterable {
 enum AnimateToolBarOption : Int,CaseIterable {
     case path
     case rotate
-    case flash
     case scale
+    case opacity
     
     var description : String {
         switch self {
         case .path: return "Path"
         case .rotate: return "Rotate"
-        case .flash: return "Flash"
         case .scale: return "Scale"
+        case .opacity: return "Opacity"
         }
     }
     var iconName : String {
         switch self {
         case .path: return "path"
         case .rotate: return "rotate"
-        case .flash: return "flashing"
         case .scale: return "scale"
+        case .opacity: return "opacity"
         }
     }
 }

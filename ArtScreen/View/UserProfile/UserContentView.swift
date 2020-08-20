@@ -17,12 +17,24 @@ private enum ActionOption{
     case addArtwork
 }
 
+protocol UserContentViewDelegate: class {
+    func moveToAddExhibition()
+    func moveToAddArtwork()
+}
+
 class UserContentView: UIView {
     
     //MARK: - Properties
     var user: User? {
-        didSet { configureUserData() }
+        didSet {
+            configureUserData()
+            userExhibitionView.user = user
+            userArtworkView.user = user
+        }
     }
+    
+    weak var delegate: UserContentViewDelegate?
+    
     private var screenOffset: CGFloat = UIScreen.main.bounds.width
     private var leftConstraint = NSLayoutConstraint()
     private var option: ActionOption = .addExhibition
@@ -156,9 +168,9 @@ class UserContentView: UIView {
     @objc func handleAddAction() {
         switch option {
         case .addExhibition:
-            print("DEBUG: Add exhibition")
+            delegate?.moveToAddExhibition()
         case .addArtwork:
-            print("DEBUG: Add artwork..")
+            delegate?.moveToAddArtwork()
         }
     }
     

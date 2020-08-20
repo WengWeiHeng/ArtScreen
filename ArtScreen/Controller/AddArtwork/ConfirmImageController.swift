@@ -60,34 +60,22 @@ class ConfirmImageController: UIViewController, CustomProtocol {
     }
     
     @objc func HandleTappedNextPageButton() {
-        let alert = UIAlertController(title: "Do you want add AR Animation on your ArtWork",message:"If you don't want to add it now, you can click Edit in your profile page",
-                                      preferredStyle: UIAlertController.Style.alert)
-        let notNowAction = UIAlertAction(title: "Not Now", style: UIAlertAction.Style.default) {
-            UIAlertAction in
-            NSLog("Not Now Pressed ...")
-            let viewController =  DefaultController()
-            viewController.imageView = self.image
-            viewController.customProtocol = self
-//            self.present(viewController, animated: true,completion: nil)
+        let alert = UIAlertController(title: "Do you want add AR Animation on your ArtWork",message:"If you don't want to add it now, you can click Edit in your profile page", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Not now", style: .default, handler: { _ in
+            let viewController =  ArtworkInfoSettingController()
+            viewController.imageView.image = self.image.image
             self.navigationController?.pushViewController(viewController, animated: true)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Do it", style: .default, handler: { _ in
+            let controller = AnimateController()
+            controller.originalImageView.image = self.image.image
+            controller.sampleImageView.image = self.image.image
+            self.navigationController?.pushViewController(controller, animated: true)
+        }))
 
-        }
-
-        let doItAction = UIAlertAction(title: "Do It", style: UIAlertAction.Style.cancel) {
-            UIAlertAction in
-            NSLog("Do It Pressed ...")
-            let viewController = AnimateController()
-            viewController.imageView = self.image
-//            self.present(viewController, animated: true,completion: nil)
-            self.navigationController?.pushViewController(viewController, animated: true)
-
-        }
-
-        // Add the actions
-        alert.addAction(notNowAction)
-        alert.addAction(doItAction)
         self.present(alert, animated: true, completion: nil)
-//        delegate?.presentPhotoCheckFromAlbum(self.image.image!)
     }
     
     //MARK: - Helpers

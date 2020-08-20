@@ -13,7 +13,10 @@ class ContainerController: UIViewController {
     
     //MARK: - Properties
     var user: User? {
-        didSet { menuController.user = user }
+        didSet {
+            menuController.user = user
+            mainController.user = user
+        }
     }
     
     private var mainController = MainController()

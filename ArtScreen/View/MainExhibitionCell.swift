@@ -7,16 +7,21 @@
 //
 
 import UIKit
+//import GravitySliderFlowLayout
 
 class MainExhibitionCell: UICollectionViewCell {
     
     //MARK: - Properties
-    
-    private var widthOffset: CGFloat = UIScreen.main.bounds.width / 2
-    private var paddingOffset: CGFloat = 12 * 2
+    var exhibition: Exhibition? {
+        didSet {
+            configureData()
+        }
+    }
     
     let exhibitionImage: UIImageView = {
         let iv = UIImageView()
+        iv.clipsToBounds = true
+        iv.contentMode = .scaleAspectFill
         iv.backgroundColor = .mainDarkGray
         
         return iv
@@ -29,7 +34,6 @@ class MainExhibitionCell: UICollectionViewCell {
         
         addSubview(exhibitionImage)
         exhibitionImage.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor)
-//        exhibitionImage.setDimensions(width: widthOffset - paddingOffset, height: 300)
         exhibitionImage.layer.cornerRadius = 15
     }
     
@@ -38,4 +42,8 @@ class MainExhibitionCell: UICollectionViewCell {
     }
     
     //MARK: - Helpers
+    func configureData() {
+        guard let exhibition = exhibition else { return }
+        exhibitionImage.sd_setImage(with: exhibition.exhibitionImageUrl)
+    }
 }

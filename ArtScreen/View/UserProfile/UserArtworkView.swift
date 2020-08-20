@@ -14,13 +14,19 @@ private let reuseIdentifier = "ArtworkCell"
 class UserArtworkView: UIView {
     
     //MARK: - Properties
+    var user: User? {
+        didSet {
+            fetchArtworks()
+        }
+    }
+    private var artworks = [Artwork]()
+    
     private lazy var collectionView: UICollectionView = {
         let layout = WaterfallLayout()
         layout.delegate = self
         layout.sectionInset = UIEdgeInsets(top: 0, left: 12, bottom: 12, right: 12)
         layout.minimumLineSpacing = 8.0
         layout.minimumInteritemSpacing = 8.0
-//        layout.headerHeight = 60.0
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .mainDarkGray
@@ -30,13 +36,23 @@ class UserArtworkView: UIView {
         return cv
     }()
     
+    private let announceView: UIStackView = {
+        let stack = Utilities().noArtworkAnnounceView(announceText: "You don't have any Artwork", buttonSelector: #selector(handleAddArtwork))
+        
+        return stack
+    }()
+    
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        backgroundColor = .mainDarkGray
         collectionView.backgroundColor = .mainDarkGray
         collectionView.register(ArtworkCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.showsVerticalScrollIndicator = false
+        
+//        addSubview(announceView)
+//        announceView.anchor(top: topAnchor, paddingTop: 100)
+//        announceView.centerX(inView: self)
         
         addSubview(collectionView)
         collectionView.addConstraintsToFillView(self)
@@ -46,18 +62,30 @@ class UserArtworkView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //MARK: - Helpers
+    //MARK: - Selectors
+    @objc func handleAddArtwork() {
+        
+    }
+    
+    //MARK: - API
+    func fetchArtworks() {
+        guard let user = user else { return }
+        ArtworkService.fetchArtworks(forUser: user) { artworks in
+            self.artworks = artworks
+            self.collectionView.reloadData()
+        }
+    }
 }
 
 //MARK: - UICollectionViewDataSource
 extension UserArtworkView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return artworks.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ArtworkCell
-        
+        cell.artwork = artworks[indexPath.row]
         return cell
     }
 }
@@ -72,11 +100,6 @@ extension UserArtworkView: UICollectionViewDelegate {
 //MARK: - WaterfallLayoutDelegate
 extension UserArtworkView: WaterfallLayoutDelegate {
     func collectionViewLayout(for section: Int) -> WaterfallLayout.Layout {
-//        switch section {
-//        case 0: return .waterfall(column: 2, distributionMethod: .balanced)
-//        case 1: return .waterfall(column: 2, distributionMethod: .balanced)
-//        default: return .waterfall(column: 2, distributionMethod: .balanced)
-//        }
         return .waterfall(column: 2, distributionMethod: .balanced)
     }
     

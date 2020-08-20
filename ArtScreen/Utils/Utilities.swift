@@ -121,4 +121,65 @@ class Utilities {
         
         return view
     }
+    
+    func customSlider(withMaxValue maxValue: Float, minValue: Float, value: Float) -> UISlider {
+        let slider = UISlider()
+        slider.minimumTrackTintColor = .mainBackground
+        slider.maximumTrackTintColor = .mainAlphaGray
+        slider.thumbTintColor = .mainBackground
+        slider.maximumValue = maxValue
+        slider.minimumValue = minValue
+        slider.value = value
+        slider.isContinuous = false
+        slider.setDimensions(width: screenWidth - 120, height: 50)
+    
+        return slider
+    }
+    
+    func sliderTitleLabel(withText text: String) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = .white
+        
+        return label
+    }
+    
+    func noArtworkAnnounceView(announceText: String, buttonSelector: Selector) -> UIStackView {
+        let iv = UIImageView()
+        iv.clipsToBounds = true
+        iv.image = #imageLiteral(resourceName: "notice")
+        iv.setDimensions(width: 30, height: 30)
+        
+        let announceLabel = UILabel()
+        announceLabel.font = UIFont.systemFont(ofSize: 16)
+        announceLabel.textColor = .white
+        announceLabel.text = announceText
+        announceLabel.textAlignment = .center
+        announceLabel.numberOfLines = 0
+        
+        let button = UIButton(type: .system)
+        button.setTitle("ADD", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .mainPurple
+        button.setDimensions(width: 80, height: 40)
+        button.layer.cornerRadius = 40 / 2
+        button.addTarget(self, action: buttonSelector, for: .touchUpInside)
+        
+        let stack = UIStackView(arrangedSubviews: [iv, announceLabel, button])
+        stack.axis = .vertical
+        stack.spacing = 10
+        stack.alignment = .center
+        stack.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        
+//        let view = UIView()
+//        view.addSubview(stack)
+//        stack.centerX(inView: view)
+//        stack.centerY(inView: view)
+
+        return stack
+    }
+    
+    
 }
