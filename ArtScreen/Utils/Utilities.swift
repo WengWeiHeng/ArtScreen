@@ -181,5 +181,22 @@ class Utilities {
         return stack
     }
     
-    
+    func customCountStackView(typeText: String, countText: String) -> UIStackView {
+        let typeLabel = UILabel()
+        typeLabel.text = typeText
+        typeLabel.font = UIFont.systemFont(ofSize: 10)
+        typeLabel.textColor = .mainAlphaGray
+        
+        let countLabel = UILabel()
+        countLabel.text = countText
+        countLabel.font = UIFont.boldSystemFont(ofSize: 13)
+        countLabel.textColor = .mainDarkGray
+        
+        let stack = UIStackView(arrangedSubviews: [typeLabel, countLabel])
+        stack.axis = .horizontal
+        stack.spacing = 6
+        stack.alignment = .bottom
+        
+        return stack
+    }
 }

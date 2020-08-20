@@ -11,6 +11,9 @@ import UIKit
 private let reuseIdentifier = "ExhibitionCell"
 private let supporterIdentifier = "SupporterCell"
 
+let collectionViewCellHeightCoefficient: CGFloat = 1.1
+let collectionViewCellWidthCoefficient: CGFloat = 0.7
+
 protocol MainControllerDelegate: class {
     func handleMenuToggle()
 }
@@ -23,12 +26,9 @@ class MainController: UIViewController {
             fetchExhibitions()
         }
     }
+    
     var exhibitions = [Exhibition]()
-    
-    let collectionViewCellHeightCoefficient: CGFloat = 0.9
-    let collectionViewCellWidthCoefficient: CGFloat = 0.6
     weak var pageControl: UIPageControl!
-    
     weak var delegate: MainControllerDelegate?
 
     private let menuButton: UIButton = {
@@ -111,9 +111,10 @@ class MainController: UIViewController {
     }()
     
     private lazy var collectionView: UICollectionView = {
-        let layout = GravitySliderFlowLayout(with: CGSize(width:  screenWidth * collectionViewCellWidthCoefficient, height: screenWidth * collectionViewCellHeightCoefficient))
+        let layout = GravitySliderFlowLayout(with: CGSize(width: screenWidth * collectionViewCellWidthCoefficient, height: screenWidth * collectionViewCellHeightCoefficient))
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .mainBackground
+        cv.backgroundColor = .none
+        cv.decelerationRate = UIScrollView.DecelerationRate(rawValue: 0)
         cv.dataSource = self
         cv.delegate = self
         
@@ -125,18 +126,19 @@ class MainController: UIViewController {
         let iv = UIImageView()
         iv.clipsToBounds = true
         iv.contentMode = .scaleAspectFill
-        iv.setDimensions(width: 36, height: 36)
-        iv.layer.cornerRadius = 36 / 2
+        iv.setDimensions(width: 28, height: 28)
+        iv.layer.cornerRadius = 28 / 2
         iv.backgroundColor = .mainPurple
+        iv.image = #imageLiteral(resourceName: "coverImage")
         
         return iv
     }()
     
     private let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 16)
+        label.font = .boldSystemFont(ofSize: 14)
         label.textColor = .mainPurple
-        label.text = "username."
+        label.text = "Jack Mauris"
         
         return label
     }()
@@ -145,24 +147,22 @@ class MainController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Follow", for: .normal)
         button.setTitleColor(.mainPurple, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 13)
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.mainPurple.cgColor
-        button.setDimensions(width: 80, height: 36)
-        button.layer.cornerRadius = 36 / 2
+        button.setDimensions(width: 80, height: 28)
+        button.layer.cornerRadius = 28 / 2
         button.addTarget(self, action: #selector(handleFollow), for: .touchUpInside)
         
         return button
     }()
     
-    private let exhibitionIntroduction: UILabel = {
+    private let exhibitionTitleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
+        label.font = .boldSystemFont(ofSize: 22)
         label.textColor = .mainPurple
-        label.numberOfLines = 5
-        label.textAlignment = .center
-        label.text = "GravitySlider is a lightweight animation flowlayot for UICollectionView completely written in Swift 4, compatible with iOS 11 and xCode 9."
-        
+        label.text = "Mauris hendrerit quam orci, sit amet posuere ante vestibulum sodales."
+        label.numberOfLines = 3
         return label
     }()
     
@@ -262,6 +262,11 @@ class MainController: UIViewController {
     func configureUI() {
         view.backgroundColor = .mainBackground
         
+        view.addSubview(collectionView)
+        collectionView.addConstraintsToFillView(view)
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.register(MainExhibitionCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+
         view.addSubview(menuButton)
         menuButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 16, paddingLeft: 12)
         
@@ -272,38 +277,25 @@ class MainController: UIViewController {
         stack.centerY(inView: menuButton)
         stack.anchor(right: view.rightAnchor, paddingRight: 12)
         
-        view.addSubview(titleLabel)
-        titleLabel.anchor(top: stack.bottomAnchor, paddingTop: 20)
-        titleLabel.centerX(inView: view)
-        
-        view.addSubview(collectionView)
-        collectionView.anchor(top: titleLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20)
-        collectionView.setHeight(height: 450)
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(MainExhibitionCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        view.addSubview(exhibitionTitleLabel)
+        exhibitionTitleLabel.anchor(top: menuButton.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 26, paddingLeft: 12, paddingRight: 12)
         
         let userStack = UIStackView(arrangedSubviews: [userImageView, usernameLabel])
         userStack.axis = .horizontal
         userStack.alignment = .center
-        userStack.spacing = 4
+        userStack.spacing = 12
         
         let userBar = UIStackView(arrangedSubviews: [userStack, followButton])
         userBar.axis = .horizontal
         userBar.setWidth(width: screenWidth * collectionViewCellWidthCoefficient)
         
         view.addSubview(userBar)
-        userBar.centerX(inView: collectionView)
-        userBar.anchor(top: collectionView.bottomAnchor, paddingTop: 30)
-        
-        view.addSubview(exhibitionIntroduction)
-        exhibitionIntroduction.anchor(top: userStack.bottomAnchor, paddingTop: 12)
-        exhibitionIntroduction.centerX(inView: userBar)
-        exhibitionIntroduction.setWidth(width: view.frame.width / 1.5)
-        
-        view.addSubview(moreButton)
-        moreButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, paddingBottom: 20)
-        moreButton.centerX(inView: view)
+        userBar.anchor(top: exhibitionTitleLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 12, paddingLeft: 12, paddingRight: 12)
 
+        view.addSubview(moreButton)
+        moreButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, paddingBottom: 40)
+        moreButton.centerX(inView: view)
+        
         configureAddView()
     }
     
@@ -336,8 +328,8 @@ class MainController: UIViewController {
     }
     
     private func animateChangingTitle(for indexPath: IndexPath) {
-        UIView.transition(with: exhibitionIntroduction, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.exhibitionIntroduction.text = self.exhibitions[indexPath.row % self.exhibitions.count].introduction
+        UIView.transition(with: exhibitionTitleLabel, duration: 0.3, options: .transitionCrossDissolve, animations: {
+//            self.exhibitionIntroduction.text = self.exhibitions[indexPath.row % self.exhibitions.count].introduction
         }, completion: nil)
     }
 }
@@ -350,7 +342,8 @@ extension MainController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MainExhibitionCell
-        cell.exhibition = exhibitions[indexPath.row]
+        cell.configureData(with: exhibitions[indexPath.row], collectionView: collectionView, index: indexPath.row)
+        cell.delegate = self
         
         return cell
     }
@@ -359,7 +352,8 @@ extension MainController: UICollectionViewDataSource {
 //MARK: - UICollectionViewDelegate
 extension MainController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("DEBUG: Cell did selected..")
+        let selectedCell = collectionView.cellForItem(at: indexPath) as! MainExhibitionCell
+        selectedCell.toggle()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -383,6 +377,33 @@ extension MainController: UICollectionViewDelegate {
         if index < exhibitions.count {
             self.animateChangingTitle(for: IndexPath(index: index))
             
+        }
+    }
+}
+
+//MARK: - MainExhibitionCellDelegate
+extension MainController: MainExhibitionCellDelegate {
+    func itemDismissal(isDismissal: Bool) {
+        if isDismissal {
+            self.menuButton.alpha = 0
+            self.searchButton.alpha = 0
+            self.uploadButton.alpha = 0
+            self.titleLabel.alpha = 0
+            self.userImageView.alpha = 0
+            self.usernameLabel.alpha = 0
+            self.followButton.alpha = 0
+            self.exhibitionTitleLabel.alpha = 0
+            self.moreButton.alpha = 0
+        } else {
+            self.menuButton.alpha = 1
+            self.searchButton.alpha = 1
+            self.uploadButton.alpha = 1
+            self.titleLabel.alpha = 1
+            self.userImageView.alpha = 1
+            self.usernameLabel.alpha = 1
+            self.followButton.alpha = 1
+            self.exhibitionTitleLabel.alpha = 1
+            self.moreButton.alpha = 1
         }
     }
 }

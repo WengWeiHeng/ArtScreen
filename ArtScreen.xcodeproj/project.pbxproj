@@ -292,6 +292,16 @@
 			path = AddArtwork;
 			sourceTree = "<group>";
 		};
+		B0887CF524EECAE0001214ED /* MainView */ = {
+			isa = PBXGroup;
+			children = (
+				B0EE84D824BC2298001709BA /* MainExhibitionCell.swift */,
+				B0AE310224D1417200F33932 /* SearchCell.swift */,
+				B0D8B60424D2A34000287CB4 /* SearchHeader.swift */,
+			);
+			path = MainView;
+			sourceTree = "<group>";
+		};
 		B0A13D5B24C0708D00633D30 /* UserProfile */ = {
 			isa = PBXGroup;
 			children = (
@@ -404,18 +414,16 @@
 		B0EE84D024BC1AE1001709BA /* View */ = {
 			isa = PBXGroup;
 			children = (
+				B0887CF524EECAE0001214ED /* MainView */,
 				B0EE675324BF47290069B27D /* Menu */,
 				B0A13D5B24C0708D00633D30 /* UserProfile */,
 				B06AB43A24D2D08E0001FD4F /* AddArtwork */,
 				B0F2BAAE24D55D5C00361B46 /* AddExhibition */,
-				B0EE84D824BC2298001709BA /* MainExhibitionCell.swift */,
 				B010F31024DEBBE0008BE22A /* SupporterCell.swift */,
 				B0A8D0AA24C54EC700A4127F /* ArtworkCell.swift */,
 				B0A8D0AE24C55B1D00A4127F /* ExhibitionCell.swift */,
 				B0A8D0B024C55B6E00A4127F /* FilterView.swift */,
 				B0A8D0B924C55D8F00A4127F /* FilterViewCell.swift */,
-				B0AE310224D1417200F33932 /* SearchCell.swift */,
-				B0D8B60424D2A34000287CB4 /* SearchHeader.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";

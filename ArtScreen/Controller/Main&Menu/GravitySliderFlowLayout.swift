@@ -64,7 +64,7 @@ open class GravitySliderFlowLayout: UICollectionViewFlowLayout {
                 transform = CATransform3DTranslate(transform, relativeDistanceFromCenter - adjustment + centerProximityMagnitude * itemSize.width*0.6, 0.0, 0.0)
                 transform = CATransform3DScale(transform, scaleFactor, scaleFactor, 1.0)
                 
-                let distanceFromCenter = fabs(collectionView.center.x - cellX)
+                let distanceFromCenter = abs(collectionView.center.x - cellX)
                 attribute.alpha = sqrtDistributor(x: distanceFromCenter, threshold: period*0.5, xOrigin: period*0.6)
                 attribute.zIndex = Int(zIndexValue * 1000)
                 attribute.transform3D = transform
