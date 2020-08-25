@@ -1,6 +1,6 @@
 # ArtScreen
-### アートを冷たいアートギャラリーに置くだけでなく、アートを現実の生活に取り入れる。
-### Instead of staying in the INanimate museum of Arts, integrate Arts into our animate life.
+#### アートを冷たいアートギャラリーに置くだけでなく、アートを現実の生活に取り入れる。
+#### Instead of staying in the INanimate museum of Arts, integrate Arts into our animate life.
 作者：翁 偉恆    
 共同開発メンバー：ファム ヴ ハイ、劉 沛文  
 指導：益川 由紀子
