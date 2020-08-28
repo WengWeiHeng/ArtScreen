@@ -95,6 +95,7 @@ enum AnimateToolBarOption : Int,CaseIterable {
     case rotate
     case scale
     case opacity
+    case emitter
     
     var description : String {
         switch self {
@@ -102,6 +103,7 @@ enum AnimateToolBarOption : Int,CaseIterable {
         case .rotate: return "Rotate"
         case .scale: return "Scale"
         case .opacity: return "Opacity"
+        case .emitter: return "Emitter"
         }
     }
     var iconName : String {
@@ -110,6 +112,7 @@ enum AnimateToolBarOption : Int,CaseIterable {
         case .rotate: return "rotate"
         case .scale: return "scale"
         case .opacity: return "opacity"
+        case .emitter: return "emitter"
         }
     }
 }

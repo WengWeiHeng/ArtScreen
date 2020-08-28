@@ -10,6 +10,7 @@ import UIKit
 
 protocol SettingViewDelegate: class {
     func dismissSettingView()
+//    func dismissMoveSetting()
 }
 
 class RotateSettingView: UIView {

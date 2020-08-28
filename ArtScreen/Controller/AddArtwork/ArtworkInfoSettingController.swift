@@ -15,6 +15,10 @@ class ArtworkInfoSettingController: UIViewController {
     var itemCredentials: ArtworkItemCredentials?
     var artworkImage: UIImage?
     var itemImage: UIImage?
+    var heightoriginalImageView: CGFloat!
+    var widthoriginalImageView: CGFloat!
+    var artworkImageWidth: CGFloat!
+    var artworkImageHeight: CGFloat!
     
     let navigationBarView : UIView = {
         let view = UIView()
@@ -101,23 +105,22 @@ class ArtworkInfoSettingController: UIViewController {
         guard let introduction = introductionTextField.text else { return }
         guard let artworkImage = artworkImage else { return }
         guard let itemCredentials = itemCredentials else { return }
+        guard let artworkImageWidth = artworkImageWidth else { return }
+        guard let artworkImageHeight = artworkImageHeight else { return }
         
-        let artworkCredentials = ArtworkCredentials(name: name, introduction: introduction, artworkImage: artworkImage)
+        let artworkCredentials = ArtworkCredentials(name: name, introduction: introduction, artworkImage: artworkImage, width: Float(artworkImageWidth), height: Float(artworkImageHeight))
         
         self.showLoader(true, withText: "Uploadding your artwork")
-
-        ArtworkService.uploadArtwork(credentials: artworkCredentials) { error in
-            
-            
-            ArtworkService.uploadAnimateItemData(credentials: itemCredentials) { error in
-                if let error = error {
-                    self.showLoader(false)
-                    self.showError(error.localizedDescription)
-                    return
-                }
+        
+        ArtworkService.uploadAnimateArtwork(credentials: artworkCredentials, itemCredentials: itemCredentials) { (error, ref) in
+            if let error = error {
                 self.showLoader(false)
-                self.dismiss(animated: true, completion: nil)
+                self.showError(error.localizedDescription)
+                return
             }
+            
+            self.showLoader(false)
+            self.dismiss(animated: true, completion: nil)
         }
     }
     
@@ -138,14 +141,19 @@ class ArtworkInfoSettingController: UIViewController {
         view.addSubview(navigationBarView)
         navigationBarView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, height: 40)
         
+        let centerView = UIView()
+        view.addSubview(centerView)
+        centerView.anchor(top: navigationBarView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 15, height: screenWidth)
+        
         view.addSubview(imageView)
-        imageView.anchor(top: navigationBarView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 15, height: screenWidth)
+        imageView.anchor(top: centerView.topAnchor)
+        imageView.centerX(inView: centerView)
+        imageView.setDimensions(width: widthoriginalImageView, height: heightoriginalImageView)
         imageView.image = artworkImage
         
         let titleStack = UIStackView(arrangedSubviews: [titleLabel, titleTextField])
         titleStack.axis = .vertical
         titleStack.spacing = 4
-        
         view.addSubview(titleStack)
         titleStack.anchor(top: imageView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20, paddingLeft: 16, paddingRight: 16)
         

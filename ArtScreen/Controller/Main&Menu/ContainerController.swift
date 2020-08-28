@@ -47,7 +47,6 @@ class ContainerController: UIViewController {
 
     //MARK: - Selectors
     @objc func dismissMenu(){
-        print("DEBUG: dismiss menu ..")
         isExpanded = false
         animateMenu(shouldExpand: isExpanded)
     }
@@ -55,7 +54,6 @@ class ContainerController: UIViewController {
     //MARK: - API
     func authenticateUser() {
         if Auth.auth().currentUser?.uid == nil {
-            print("DEBUG: User is not logged in..")
             presentLoginScreen()
         }
     }
@@ -73,7 +71,6 @@ class ContainerController: UIViewController {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         UserService.fetchUser(withUid: uid) { user in
             self.user = user
-            print("DEBUG: user is \(user.fullname)")
         }
     }
     
@@ -119,11 +116,8 @@ class ContainerController: UIViewController {
                 self.mainController.view.frame.origin.y = self.yOrigin
                 self.mainController.view.frame.size.width = self.view.frame.size.width * 0.73
                 self.mainController.view.frame.size.height = self.view.frame.size.height * 0.73
-                
-                //self.blackView.alpha = 1
             }, completion: nil)
         } else {
-            //self.blackView.alpha = 0
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut, animations: {
                 self.mainController.view.frame.origin.x = 0
                 self.mainController.view.frame.origin.y = 0
@@ -145,7 +139,6 @@ class ContainerController: UIViewController {
 //MARK: - MainController delegate
 extension ContainerController: MainControllerDelegate {
     func handleMenuToggle() {
-        print("DEBUG: menu action in container controller..")
         isExpanded.toggle()
         animateMenu(shouldExpand: isExpanded)
     }

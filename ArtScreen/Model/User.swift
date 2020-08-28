@@ -18,7 +18,7 @@ struct User {
     
     var isCurrentUser: Bool { return Auth.auth().currentUser?.uid == uid }
     
-    init(dictionary: [String: Any]) {
+    init(uid: String, dictionary: [String: Any]) {
         self.uid = dictionary["uid"] as? String ?? ""
         self.username = dictionary["username"] as? String ?? ""
         self.fullname = dictionary["fullname"] as? String ?? ""

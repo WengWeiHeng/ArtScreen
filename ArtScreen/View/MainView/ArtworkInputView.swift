@@ -1,25 +1,38 @@
 //
-//  UserArtworkView.swift
+//  ArtworkInputview.swift
 //  ArtScreen
 //
-//  Created by Heng on 2020/7/29.
+//  Created by Heng on 2020/8/21.
 //  Copyright © 2020 Heng. All rights reserved.
 //
 
 import UIKit
 import WaterfallLayout
 
-private let reuseIdentifier = "ArtworkCell"
+private let reuseIdentifier = "ArtworkInputViewCell"
 
-class UserArtworkView: UIView {
+protocol ArtworkInputViewDelegate: class {
+    func showArtworkDetail(artwork: Artwork)
+}
+
+class ArtworkInputView: UIView {
     
     //MARK: - Properties
-    var user: User? {
+    weak var delegate: ArtworkInputViewDelegate?
+    var artworks = [Artwork]()
+    var exhibitionID: String? {
         didSet {
-            fetchArtworks()
+            fetchExhibitionArtwork()
         }
     }
-    private var artworks = [Artwork]()
+    
+    let exhibitionTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .boldSystemFont(ofSize: 22)
+        label.textColor = .mainBackground
+        
+        return label
+    }()
     
     private lazy var collectionView: UICollectionView = {
         let layout = WaterfallLayout()
@@ -36,41 +49,30 @@ class UserArtworkView: UIView {
         return cv
     }()
     
-    private let announceView: UIStackView = {
-        let stack = Utilities().noArtworkAnnounceView(announceText: "You don't have any Artwork", buttonSelector: #selector(handleAddArtwork))
-        
-        return stack
-    }()
-    
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         backgroundColor = .mainDarkGray
-        collectionView.backgroundColor = .mainDarkGray
-        collectionView.register(ArtworkCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        
+        addSubview(exhibitionTitleLabel)
+        exhibitionTitleLabel.anchor(top: safeAreaLayoutGuide.topAnchor, left: leftAnchor, paddingTop: 16, paddingLeft: 12)
+
+        collectionView.register(ArtworkInputViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.showsVerticalScrollIndicator = false
         
-//        addSubview(announceView)
-//        announceView.anchor(top: topAnchor, paddingTop: 100)
-//        announceView.centerX(inView: self)
-        
         addSubview(collectionView)
-        collectionView.addConstraintsToFillView(self)
+        collectionView.anchor(top: exhibitionTitleLabel.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 16)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //MARK: - Selectors
-    @objc func handleAddArtwork() {
-        
-    }
-    
     //MARK: - API
-    func fetchArtworks() {
-        guard let user = user else { return }
-        ArtworkService.fetchUserArtworks(forUser: user) { (artworks) in
+    func fetchExhibitionArtwork() {
+        guard let exhibitionID = exhibitionID else { return }
+        ExhibitionService.fetchExhibitionArtwork(withExhibitionID: exhibitionID) { (artworks) in
             self.artworks = artworks
             self.collectionView.reloadData()
         }
@@ -78,27 +80,27 @@ class UserArtworkView: UIView {
 }
 
 //MARK: - UICollectionViewDataSource
-extension UserArtworkView: UICollectionViewDataSource {
+extension ArtworkInputView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return artworks.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ArtworkCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ArtworkInputViewCell
         cell.artwork = artworks[indexPath.row]
         return cell
     }
 }
 
 //MARK: - UICollectionViewDelegate
-extension UserArtworkView: UICollectionViewDelegate {
+extension ArtworkInputView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("DEBUG: Exhibition cell did selected..")
+        delegate?.showArtworkDetail(artwork: artworks[indexPath.row])
     }
 }
 
 //MARK: - WaterfallLayoutDelegate
-extension UserArtworkView: WaterfallLayoutDelegate {
+extension ArtworkInputView: WaterfallLayoutDelegate {
     func collectionViewLayout(for section: Int) -> WaterfallLayout.Layout {
         return .waterfall(column: 2, distributionMethod: .balanced)
     }

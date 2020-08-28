@@ -122,9 +122,9 @@ class Utilities {
         return view
     }
     
-    func customSlider(withMaxValue maxValue: Float, minValue: Float, value: Float) -> UISlider {
+    func customSlider(withMaxValue maxValue: Float, minValue: Float, value: Float, barColor: UIColor = UIColor.mainBackground) -> UISlider {
         let slider = UISlider()
-        slider.minimumTrackTintColor = .mainBackground
+        slider.minimumTrackTintColor = barColor
         slider.maximumTrackTintColor = .mainAlphaGray
         slider.thumbTintColor = .mainBackground
         slider.maximumValue = maxValue
@@ -172,25 +172,20 @@ class Utilities {
         stack.spacing = 10
         stack.alignment = .center
         stack.widthAnchor.constraint(equalToConstant: 160).isActive = true
-        
-//        let view = UIView()
-//        view.addSubview(stack)
-//        stack.centerX(inView: view)
-//        stack.centerY(inView: view)
 
         return stack
     }
     
-    func customCountStackView(typeText: String, countText: String) -> UIStackView {
+    func customCountStackView(typeText: String, countText: String, textColor: UIColor) -> UIStackView {
         let typeLabel = UILabel()
         typeLabel.text = typeText
         typeLabel.font = UIFont.systemFont(ofSize: 10)
-        typeLabel.textColor = .mainAlphaGray
+        typeLabel.textColor = textColor
         
         let countLabel = UILabel()
         countLabel.text = countText
         countLabel.font = UIFont.boldSystemFont(ofSize: 13)
-        countLabel.textColor = .mainDarkGray
+        countLabel.textColor = textColor
         
         let stack = UIStackView(arrangedSubviews: [typeLabel, countLabel])
         stack.axis = .horizontal

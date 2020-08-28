@@ -172,14 +172,22 @@ class AddArtworkController: UIViewController, UIScrollViewDelegate {
         
         alert.addAction(UIAlertAction(title: "Not now", style: .default, handler: { _ in
             let viewController =  ArtworkInfoSettingController()
-            viewController.imageView.image = image
+            let resize:CGSize = CGSize.init(width: screenWidth, height:screenWidth)
+            let originalImage = image.resize(size: resize)
+            viewController.artworkImage = originalImage
+            viewController.heightoriginalImageView = originalImage!.size.height
+            viewController.widthoriginalImageView = originalImage!.size.width
             self.navigationController?.pushViewController(viewController, animated: true)
         }))
         
         alert.addAction(UIAlertAction(title: "Do it", style: .default, handler: { _ in
             let controller = AnimateController()
-            controller.originalImageView.image = image
-            controller.sampleImageView.image = image
+            let resize:CGSize = CGSize.init(width: screenWidth, height:screenHeight-240)
+            let originalImage = image.resize(size: resize)
+            controller.originalImageView.image = originalImage
+            controller.heightoriginalImageView = originalImage!.size.height
+            controller.widthoriginalImageView = originalImage!.size.width
+            controller.sampleImageView.image = originalImage
             self.navigationController?.pushViewController(controller, animated: true)
         }))
 

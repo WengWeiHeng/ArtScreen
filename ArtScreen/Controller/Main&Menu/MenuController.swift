@@ -65,7 +65,9 @@ class MenuController: UITableViewController {
     
     //MARK: - Properties
     var user: User? {
-        didSet { menuHeader.user = user}
+        didSet {
+            menuHeader.user = user
+        }
     }
     
     weak var delegate: MenuControllerDelegate?

@@ -11,17 +11,23 @@ import Firebase
 
 struct Artwork {
     var artworkImageUrl: URL?
+    let width: Float
+    let height: Float
     let name: String
     let introduction: String
     var timestamp: Date!
+    let artworkID: String
     
     var user: User
     
-    init(user: User, dictionary: [String: Any]) {
+    init(user: User, artworkID: String, dictionary: [String: Any]) {
         self.user = user
+        self.artworkID = artworkID
         
         self.name = dictionary["name"] as? String ?? ""
         self.introduction = dictionary["introduction"] as? String ?? ""
+        self.width = dictionary["width"] as? Float ?? 0
+        self.height = dictionary["height"] as? Float ?? 0
         
         if let artworkImageUrlString = dictionary["artworkImageUrl"] as? String {
             guard let url = URL(string: artworkImageUrlString) else { return }

@@ -64,13 +64,17 @@ class ConfirmImageController: UIViewController, CustomProtocol {
         
         alert.addAction(UIAlertAction(title: "Not now", style: .default, handler: { _ in
             let viewController =  ArtworkInfoSettingController()
-            viewController.imageView.image = self.image.image
+            viewController.artworkImage = self.image.image
+            viewController.heightoriginalImageView = screenWidth
+            viewController.widthoriginalImageView = screenWidth
             self.navigationController?.pushViewController(viewController, animated: true)
         }))
         
         alert.addAction(UIAlertAction(title: "Do it", style: .default, handler: { _ in
             let controller = AnimateController()
             controller.originalImageView.image = self.image.image
+            controller.heightoriginalImageView = screenWidth
+            controller.widthoriginalImageView = screenWidth
             controller.sampleImageView.image = self.image.image
             self.navigationController?.pushViewController(controller, animated: true)
         }))

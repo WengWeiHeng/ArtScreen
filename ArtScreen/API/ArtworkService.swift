@@ -13,25 +13,49 @@ struct ArtworkCredentials {
     let name: String
     let introduction: String
     let artworkImage: UIImage
-}
-
-struct ArtworkItemCredentials {
-    let artworkItemImage: UIImage
-//    let movePath: UIBezierPath
-    let moveAnimateSpeed: CFTimeInterval
-    let rotateFromValue: Float
-    let rotateToValue: Float
-    let rotateAnimateSpeed: CFTimeInterval
-    let scaleFromValue: Float
-    let scaleToValue: Float
-    let scaleAnimateSpeed: CFTimeInterval
-    let opacityFromValue: Float
-    let opacityToValue: Float
-    let opacityAnimateSpeed: CFTimeInterval
+    let width: Float
+    let height: Float
 }
 
 struct ArtworkService {
-    static func uploadArtwork(credentials: ArtworkCredentials, completion: ((Error?) -> Void)?) {
+    static func uploadAnimateArtwork(credentials: ArtworkCredentials, itemCredentials: ArtworkItemCredentials, completion: @escaping(DatabaseCompletion)) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let name = credentials.name
+        let introduction = credentials.introduction
+        let width = credentials.width
+        let height = credentials.height
+        
+        guard let imageData = credentials.artworkImage.jpegData(compressionQuality: 0.3) else { return }
+        let filename = NSUUID().uuidString
+        let storageRef = Storage.storage().reference().child("artwork_images")
+        let ref = storageRef.child(filename)
+        
+        ref.putData(imageData, metadata: nil) { (meta, error) in
+            ref.downloadURL { (url, error) in
+                guard let artworkImageUrl = url?.absoluteString else { return }
+
+                let data = ["uid": uid,
+                            "name": name,
+                            "introduction": introduction,
+                            "artworkImageUrl": artworkImageUrl,
+                            "width": width,
+                            "height": height,
+                            "timestamp": Int(NSDate().timeIntervalSince1970)] as [String: Any]
+                
+                REF_ARTWORKS.childByAutoId().updateChildValues(data) { (err, ref) in
+                    guard let artworkID = ref.key else { return }
+                    ArtworkItemService.uploadAnimateItemData(credentials: itemCredentials) { (err, ref) in
+                        guard let itemID = ref.key else { return }
+                        ArtworkItemService.fetchArtworkItem(withArtworkID: artworkID, itemID: itemID) { (err, ref) in
+                            REF_USER_ARTWORKS.child(uid).updateChildValues([artworkID: 1], withCompletionBlock: completion)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    static func uploadArtwork(credentials: ArtworkCredentials, completion: @escaping(DatabaseCompletion)) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let name = credentials.name
         let introduction = credentials.introduction
@@ -42,10 +66,6 @@ struct ArtworkService {
         let ref = storageRef.child(filename)
         
         ref.putData(imageData, metadata: nil) { (meta, error) in
-            if let error = error {
-                completion!(error)
-                return
-            }
             ref.downloadURL { (url, error) in
                 guard let artworkImageUrl = url?.absoluteString else { return }
 
@@ -55,67 +75,55 @@ struct ArtworkService {
                             "artworkImageUrl": artworkImageUrl,
                             "timestamp": Int(NSDate().timeIntervalSince1970)] as [String: Any]
                 
-                COLLECTION_ARTWORKS.document(uid).collection("user-artworks").addDocument(data: data, completion: completion)
+                REF_ARTWORKS.childByAutoId().updateChildValues(data) { (err, ref) in
+                    guard let artworkID = ref.key else { return }
+                    REF_USER_ARTWORKS.child(uid).updateChildValues([artworkID: 1], withCompletionBlock: completion)
+                }
             }
         }
     }
     
-    static func uploadAnimateItemData(credentials: ArtworkItemCredentials, completion: ((Error?) -> Void)?) {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-//        let artworkID = COLLECTION_ARTWORKS.document(uid).collection("user-artworks").document().documentID
-//        print("DEBUG: ArtworkID: \(artworkID)")
-//        let movePath = credentials.movePath
-        let moveAnimateSpeed = credentials.moveAnimateSpeed
-        let rotateFromValue = credentials.rotateFromValue
-        let rotateToValue = credentials.rotateToValue
-        let rotateAnimateSpeed = credentials.rotateAnimateSpeed
-        let scaleFromValue = credentials.scaleFromValue
-        let scaleToValue = credentials.scaleToValue
-        let scaleAnimateSpeed = credentials.scaleAnimateSpeed
-        let opacityFromValue = credentials.opacityFromValue
-        let opacityToValue = credentials.opacityToValue
-        let opacityAnimateSpeed = credentials.opacityAnimateSpeed
-        
-        guard let itemImageData = credentials.artworkItemImage.jpegData(compressionQuality: 0.3) else { return }
-        let itemFilename = NSUUID().uuidString
-        let itemStorageRef = Storage.storage().reference().child("artwork_images").child("artwork_item_images")
-        let itemRef = itemStorageRef.child(itemFilename)
-        
-        itemRef.putData(itemImageData, metadata: nil) { (meta, error) in
-            
-            itemRef.downloadURL { (url, error) in
-                guard let artworkItemImageUrl = url?.absoluteString else { return }
-                
-                
-                let data = ["artworkItemImage": artworkItemImageUrl,
-//                            "movePath": movePath,
-                            "moveAnimateSpeed": moveAnimateSpeed,
-                            "rotateFromValue": rotateFromValue,
-                            "rotateToValue": rotateToValue,
-                            "rotateAnimateSpeed": rotateAnimateSpeed,
-                            "scaleFromValue": scaleFromValue,
-                            "scaleToValue": scaleToValue,
-                            "scaleAnimateSpeed": scaleAnimateSpeed,
-                            "opacityFromValue": opacityFromValue,
-                            "opacityToValue": opacityToValue,
-                            "opacityAnimateSpeed": opacityAnimateSpeed] as [String: Any]
-                
-                COLLECTION_ARTWORKS.document(uid).collection("artwork-items").addDocument(data: data, completion: completion)
-            }
-        }
-    }
-    
-    static func fetchArtworks(forUser user: User, completion: @escaping([Artwork]) -> Void) {
+    static func fetchUserArtworks(forUser user: User, completion: @escaping([Artwork]) -> Void) {
         var artworks = [Artwork]()
-        let query = COLLECTION_ARTWORKS.document(user.uid).collection("user-artworks")
-        
-        query.addSnapshotListener { (snapshot, error) in
-            snapshot?.documentChanges.forEach({ change in
-                let dictionary = change.document.data()
-                let artwork = Artwork(user: user, dictionary: dictionary)
+        REF_USER_ARTWORKS.child(user.uid).observe(.childAdded) { (snapshot) in
+            let artworkID = snapshot.key
+            
+            self.fetchArtwork(withArtworkID: artworkID) { artwork in
                 artworks.append(artwork)
                 completion(artworks)
-            })
+            }
+        }
+    }
+    
+    static func fetchArtwork(withArtworkID artworkID: String, completion: @escaping(Artwork) -> Void) {
+        REF_ARTWORKS.child(artworkID).observeSingleEvent(of: .value) { (snapshot) in
+            guard let dictionary = snapshot.value as? [String: Any] else { return }
+            guard let uid = dictionary["uid"] as? String else { return }
+            
+            UserService.fetchUser(withUid: uid) { (user) in
+                let artwork = Artwork(user: user, artworkID: artworkID, dictionary: dictionary)
+                completion(artwork)
+            }
+        }
+    }
+    
+    static func addArtworkInExhibition(withExhibitionID exhibitionID: String, artwork: Artwork, completion: @escaping(DatabaseCompletion)) {
+
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        REF_EXHIBITIONS.child(exhibitionID).updateChildValues([artwork.artworkID: 1]) { (error, ref) in
+            REF_USER_EXHIBITIONS.child(uid).child(exhibitionID).updateChildValues([artwork.artworkID: 1], withCompletionBlock: completion)
+        }
+    }
+    
+    static func getArtworkImageUrl(completion: @escaping([Artwork]) -> Void) {
+        var artworks = [Artwork]()
+        
+        REF_ARTWORKS.observe(.childAdded) { (snapshot) in
+            let artworkID = snapshot.key
+            self.fetchArtwork(withArtworkID: artworkID) { (artwork) in
+                artworks.append(artwork)
+                completion(artworks)
+            }
         }
     }
 }

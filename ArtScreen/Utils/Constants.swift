@@ -8,7 +8,22 @@
 
 import Firebase
 
-let COLLECTION_USERS = Firestore.firestore().collection("users")
-let COLLECTION_ARTWORKS = Firestore.firestore().collection("artworks")
-//let COLLECTION_ARTWORK_ITEMS = Firestore.firestore().collection("artwork-items")
-let COLLECTION_EXHIBITIONS = Firestore.firestore().collection("exhibitions")
+let STROAGE_EXHIBITIONS_IMAGES = Storage.storage().reference().child("exhibition-images")
+let STORAGE_ARTWORK_IMAGES = Storage.storage().reference().child("artwork_images")
+
+let DB_REF = Database.database().reference()
+let REF_USERS = DB_REF.child("users")
+
+let REF_EXHIBITIONS = DB_REF.child("exhibitions")
+let REF_USER_EXHIBITIONS = DB_REF.child("user-exhibitions")
+
+let REF_ARTWORKS = DB_REF.child("artworks")
+let REF_USER_ARTWORKS = DB_REF.child("user-artworks")
+let REF_EXHIBITION_ARTWORKS = DB_REF.child("exhibition-artworks")
+
+let REF_ARTWORKITEMS = DB_REF.child("artworkItems")
+let REF_ARTWORK_ARTWORKITEMS = DB_REF.child("artwork-artworksItems")
+
+
+//let REF_ANIMATIONS = DB_REF.child("animations")
+//let REF_ARTWORK_ANIMATIONS = DB_REF.child("artwork-animations")

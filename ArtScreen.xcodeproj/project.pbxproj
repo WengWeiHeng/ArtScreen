@@ -17,6 +17,10 @@
 		B009854224E7BE100047AF54 /* DrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B009854124E7BE100047AF54 /* DrawView.swift */; };
 		B009854724E7D4BB0047AF54 /* Artwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = B009854624E7D4BB0047AF54 /* Artwork.swift */; };
 		B009854924E7D54E0047AF54 /* ArtworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B009854824E7D54E0047AF54 /* ArtworkService.swift */; };
+		B00D016024F37C2A00BFF08B /* iOSDevCenters+GIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D015F24F37C2A00BFF08B /* iOSDevCenters+GIF.swift */; };
+		B00D016224F3806100BFF08B /* ArtworkItemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D016124F3806100BFF08B /* ArtworkItemService.swift */; };
+		B00D016424F3D30F00BFF08B /* funny.gif in Resources */ = {isa = PBXBuildFile; fileRef = B00D016324F3D30E00BFF08B /* funny.gif */; };
+		B00D016624F3E2A800BFF08B /* ARResultTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D016524F3E2A800BFF08B /* ARResultTestController.swift */; };
 		B00D093924EA2D4C00AF56CC /* MoveDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D093824EA2D4C00AF56CC /* MoveDrawView.swift */; };
 		B00D093B24EA2FC000AF56CC /* MoveSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00D093A24EA2FC000AF56CC /* MoveSettingView.swift */; };
 		B010F30F24DEAAA1008BE22A /* ARCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B010F30E24DEAAA1008BE22A /* ARCameraController.swift */; };
@@ -41,12 +45,21 @@
 		B06AB44424D2D2A40001FD4F /* AnimateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AB44324D2D2A40001FD4F /* AnimateController.swift */; };
 		B06AB44624D2D2C10001FD4F /* ArtworkInfoSettingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AB44524D2D2C10001FD4F /* ArtworkInfoSettingController.swift */; };
 		B06AB44A24D2D56A0001FD4F /* ConfirmImageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AB44924D2D56A0001FD4F /* ConfirmImageController.swift */; };
+		B08B6B0C24F6354E00378465 /* EmitterSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08B6B0B24F6354E00378465 /* EmitterSettingView.swift */; };
 		B08E38A524DA7A8900CBAEFB /* FeatureToolBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08E38A424DA7A8900CBAEFB /* FeatureToolBarView.swift */; };
 		B08E38A724DA7AA700CBAEFB /* FeatureToolBarCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08E38A624DA7AA700CBAEFB /* FeatureToolBarCell.swift */; };
 		B08E38A924DA7AE400CBAEFB /* FeatureToolBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08E38A824DA7AE400CBAEFB /* FeatureToolBarViewModel.swift */; };
 		B08E38AB24DAA6F200CBAEFB /* LayerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08E38AA24DAA6F200CBAEFB /* LayerCell.swift */; };
 		B097E77224E9030800D880A4 /* OpacitySettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B097E77124E9030800D880A4 /* OpacitySettingView.swift */; };
 		B097E77424E95DF200D880A4 /* ArtworkItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B097E77324E95DF200D880A4 /* ArtworkItem.swift */; };
+		B09C00C224EF6A3D00748EDC /* ArtworkInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09C00C124EF6A3D00748EDC /* ArtworkInputView.swift */; };
+		B09C00C624EF7DD600748EDC /* ArtworkInputViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09C00C524EF7DD600748EDC /* ArtworkInputViewCell.swift */; };
+		B09C00C824EF80D500748EDC /* ArtworkDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09C00C724EF80D500748EDC /* ArtworkDetailController.swift */; };
+		B09C00CA24EF969400748EDC /* ArtworkDetailHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09C00C924EF969400748EDC /* ArtworkDetailHeaderView.swift */; };
+		B09C00CC24EF978900748EDC /* ArtworkDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09C00CB24EF978900748EDC /* ArtworkDetailCell.swift */; };
+		B09C00CE24EF9D1600748EDC /* ArtworkCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09C00CD24EF9D1600748EDC /* ArtworkCommentCell.swift */; };
+		B09C00D024EF9EDA00748EDC /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09C00CF24EF9EDA00748EDC /* CommentCell.swift */; };
+		B09C00D224EFA0AA00748EDC /* CustomInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09C00D124EFA0A900748EDC /* CustomInputAccessoryView.swift */; };
 		B0A13D5824C0681D00633D30 /* ProfileMainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5724C0681D00633D30 /* ProfileMainController.swift */; };
 		B0A13D5A24C0702000633D30 /* UserCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5924C0702000633D30 /* UserCoverView.swift */; };
 		B0A13D5D24C0748400633D30 /* UserInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A13D5C24C0748400633D30 /* UserInfoView.swift */; };
@@ -95,6 +108,7 @@
 		B0F2BAB624D5632C00361B46 /* UploadVC_CustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F2BAB524D5632C00361B46 /* UploadVC_CustomView.swift */; };
 		B0F2BAB824D5634600361B46 /* User_CustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F2BAB724D5634600361B46 /* User_CustomView.swift */; };
 		B0F2BABA24D5638700361B46 /* ExhibitionSendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F2BAB924D5638700361B46 /* ExhibitionSendView.swift */; };
+		B0F5160424F0D7D00011039A /* ExhibitionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F5160324F0D7D00011039A /* ExhibitionViewModel.swift */; };
 		B0F6310D24C405BC0096B04D /* UserContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F6310C24C405BC0096B04D /* UserContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -111,6 +125,10 @@
 		B009854124E7BE100047AF54 /* DrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawView.swift; sourceTree = "<group>"; };
 		B009854624E7D4BB0047AF54 /* Artwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artwork.swift; sourceTree = "<group>"; };
 		B009854824E7D54E0047AF54 /* ArtworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkService.swift; sourceTree = "<group>"; };
+		B00D015F24F37C2A00BFF08B /* iOSDevCenters+GIF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "iOSDevCenters+GIF.swift"; sourceTree = "<group>"; };
+		B00D016124F3806100BFF08B /* ArtworkItemService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkItemService.swift; sourceTree = "<group>"; };
+		B00D016324F3D30E00BFF08B /* funny.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = funny.gif; sourceTree = "<group>"; };
+		B00D016524F3E2A800BFF08B /* ARResultTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARResultTestController.swift; sourceTree = "<group>"; };
 		B00D093824EA2D4C00AF56CC /* MoveDrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDrawView.swift; sourceTree = "<group>"; };
 		B00D093A24EA2FC000AF56CC /* MoveSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveSettingView.swift; sourceTree = "<group>"; };
 		B010F30E24DEAAA1008BE22A /* ARCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraController.swift; sourceTree = "<group>"; };
@@ -135,12 +153,21 @@
 		B06AB44324D2D2A40001FD4F /* AnimateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimateController.swift; sourceTree = "<group>"; };
 		B06AB44524D2D2C10001FD4F /* ArtworkInfoSettingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkInfoSettingController.swift; sourceTree = "<group>"; };
 		B06AB44924D2D56A0001FD4F /* ConfirmImageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmImageController.swift; sourceTree = "<group>"; };
+		B08B6B0B24F6354E00378465 /* EmitterSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmitterSettingView.swift; sourceTree = "<group>"; };
 		B08E38A424DA7A8900CBAEFB /* FeatureToolBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureToolBarView.swift; sourceTree = "<group>"; };
 		B08E38A624DA7AA700CBAEFB /* FeatureToolBarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureToolBarCell.swift; sourceTree = "<group>"; };
 		B08E38A824DA7AE400CBAEFB /* FeatureToolBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureToolBarViewModel.swift; sourceTree = "<group>"; };
 		B08E38AA24DAA6F200CBAEFB /* LayerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerCell.swift; sourceTree = "<group>"; };
 		B097E77124E9030800D880A4 /* OpacitySettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpacitySettingView.swift; sourceTree = "<group>"; };
 		B097E77324E95DF200D880A4 /* ArtworkItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkItem.swift; sourceTree = "<group>"; };
+		B09C00C124EF6A3D00748EDC /* ArtworkInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkInputView.swift; sourceTree = "<group>"; };
+		B09C00C524EF7DD600748EDC /* ArtworkInputViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkInputViewCell.swift; sourceTree = "<group>"; };
+		B09C00C724EF80D500748EDC /* ArtworkDetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkDetailController.swift; sourceTree = "<group>"; };
+		B09C00C924EF969400748EDC /* ArtworkDetailHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkDetailHeaderView.swift; sourceTree = "<group>"; };
+		B09C00CB24EF978900748EDC /* ArtworkDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkDetailCell.swift; sourceTree = "<group>"; };
+		B09C00CD24EF9D1600748EDC /* ArtworkCommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkCommentCell.swift; sourceTree = "<group>"; };
+		B09C00CF24EF9EDA00748EDC /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
+		B09C00D124EFA0A900748EDC /* CustomInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomInputAccessoryView.swift; sourceTree = "<group>"; };
 		B0A13D5724C0681D00633D30 /* ProfileMainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileMainController.swift; sourceTree = "<group>"; };
 		B0A13D5924C0702000633D30 /* UserCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCoverView.swift; sourceTree = "<group>"; };
 		B0A13D5C24C0748400633D30 /* UserInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoView.swift; sourceTree = "<group>"; };
@@ -191,6 +218,7 @@
 		B0F2BAB524D5632C00361B46 /* UploadVC_CustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadVC_CustomView.swift; sourceTree = "<group>"; };
 		B0F2BAB724D5634600361B46 /* User_CustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User_CustomView.swift; sourceTree = "<group>"; };
 		B0F2BAB924D5638700361B46 /* ExhibitionSendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExhibitionSendView.swift; sourceTree = "<group>"; };
+		B0F5160324F0D7D00011039A /* ExhibitionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExhibitionViewModel.swift; sourceTree = "<group>"; };
 		B0F6310C24C405BC0096B04D /* UserContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -259,6 +287,7 @@
 				B097E77124E9030800D880A4 /* OpacitySettingView.swift */,
 				B00D093A24EA2FC000AF56CC /* MoveSettingView.swift */,
 				B00D093824EA2D4C00AF56CC /* MoveDrawView.swift */,
+				B08B6B0B24F6354E00378465 /* EmitterSettingView.swift */,
 			);
 			path = AnimateSetting;
 			sourceTree = "<group>";
@@ -296,6 +325,13 @@
 			isa = PBXGroup;
 			children = (
 				B0EE84D824BC2298001709BA /* MainExhibitionCell.swift */,
+				B09C00C124EF6A3D00748EDC /* ArtworkInputView.swift */,
+				B09C00C524EF7DD600748EDC /* ArtworkInputViewCell.swift */,
+				B09C00C924EF969400748EDC /* ArtworkDetailHeaderView.swift */,
+				B09C00CB24EF978900748EDC /* ArtworkDetailCell.swift */,
+				B09C00CD24EF9D1600748EDC /* ArtworkCommentCell.swift */,
+				B09C00CF24EF9EDA00748EDC /* CommentCell.swift */,
+				B09C00D124EFA0A900748EDC /* CustomInputAccessoryView.swift */,
 				B0AE310224D1417200F33932 /* SearchCell.swift */,
 				B0D8B60424D2A34000287CB4 /* SearchHeader.swift */,
 			);
@@ -323,6 +359,7 @@
 				B0EE84D424BC1B0A001709BA /* MainController.swift */,
 				B01D6AAA24EE3E49008821AB /* GravitySliderFlowLayout.swift */,
 				B0EE674B24BF270A0069B27D /* MenuController.swift */,
+				B09C00C724EF80D500748EDC /* ArtworkDetailController.swift */,
 			);
 			path = "Main&Menu";
 			sourceTree = "<group>";
@@ -336,6 +373,7 @@
 				B0A8D0B524C55C8E00A4127F /* FilterViewModel.swift */,
 				B0C0754624CEE7CA007CD390 /* ToolBarViewModel.swift */,
 				B08E38A824DA7AE400CBAEFB /* FeatureToolBarViewModel.swift */,
+				B0F5160324F0D7D00011039A /* ExhibitionViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -345,9 +383,9 @@
 			children = (
 				B009853A24E7B2DA0047AF54 /* LassoModel */,
 				B0DC78C524C5C73B00636A15 /* User.swift */,
+				B0D9184B24EB91E80085244F /* Exhibition.swift */,
 				B009854624E7D4BB0047AF54 /* Artwork.swift */,
 				B097E77324E95DF200D880A4 /* ArtworkItem.swift */,
-				B0D9184B24EB91E80085244F /* Exhibition.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -357,8 +395,9 @@
 			children = (
 				B0DC78C824C5C88100636A15 /* AuthService.swift */,
 				B0DC78CE24C5CE2200636A15 /* UserService.swift */,
-				B009854824E7D54E0047AF54 /* ArtworkService.swift */,
 				B0D9184D24EB91F90085244F /* ExhibitionService.swift */,
+				B009854824E7D54E0047AF54 /* ArtworkService.swift */,
+				B00D016124F3806100BFF08B /* ArtworkItemService.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -393,14 +432,15 @@
 		B0EE84B624BC1A9D001709BA /* ArtScreen */ = {
 			isa = PBXGroup;
 			children = (
-				B0DC78C724C5C87000636A15 /* API */,
 				B0DC78C424C5C72D00636A15 /* Model */,
+				B0DC78C724C5C87000636A15 /* API */,
 				B0EE84D324BC1AE7001709BA /* Utils */,
 				B0EE84D124BC1AE3001709BA /* Controller */,
 				B0EE84D024BC1AE1001709BA /* View */,
 				B0A8D0B424C55C8100A4127F /* ViewModel */,
 				B0EE84B724BC1A9D001709BA /* AppDelegate.swift */,
 				B0EE84B924BC1A9D001709BA /* SceneDelegate.swift */,
+				B00D016324F3D30E00BFF08B /* funny.gif */,
 				B0EE84BD24BC1A9D001709BA /* Main.storyboard */,
 				B0EE84C324BC1A9E001709BA /* Assets.xcassets */,
 				B0EE84C524BC1A9E001709BA /* LaunchScreen.storyboard */,
@@ -438,6 +478,7 @@
 				B0A13D5724C0681D00633D30 /* ProfileMainController.swift */,
 				B000D09024CEBBD500DE9D71 /* SearchController.swift */,
 				B010F30E24DEAAA1008BE22A /* ARCameraController.swift */,
+				B00D016524F3E2A800BFF08B /* ARResultTestController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -454,6 +495,7 @@
 				B0F170FF24E5168D0002FDA0 /* Canvas.swift */,
 				B01BEDD224E83300007C821C /* AnimateUtilities.swift */,
 				B0D9184924EB888D0085244F /* AddExhibitionUtilities.swift */,
+				B00D015F24F37C2A00BFF08B /* iOSDevCenters+GIF.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -551,6 +593,7 @@
 			files = (
 				B0EE84C724BC1A9E001709BA /* LaunchScreen.storyboard in Resources */,
 				B0A8D0DF24C5BA8400A4127F /* GoogleService-Info.plist in Resources */,
+				B00D016424F3D30F00BFF08B /* funny.gif in Resources */,
 				B0EE84C424BC1A9E001709BA /* Assets.xcassets in Resources */,
 				B0EE84BF24BC1A9D001709BA /* Main.storyboard in Resources */,
 			);
@@ -613,11 +656,15 @@
 				B0F2BAB624D5632C00361B46 /* UploadVC_CustomView.swift in Sources */,
 				B0F1710024E5168D0002FDA0 /* Canvas.swift in Sources */,
 				B010F30F24DEAAA1008BE22A /* ARCameraController.swift in Sources */,
+				B09C00C624EF7DD600748EDC /* ArtworkInputViewCell.swift in Sources */,
 				B08E38A524DA7A8900CBAEFB /* FeatureToolBarView.swift in Sources */,
 				B01BEDDA24E84D5A007C821C /* ScaleSettingView.swift in Sources */,
 				B0A8D0B124C55B6E00A4127F /* FilterView.swift in Sources */,
 				B06AB44624D2D2C10001FD4F /* ArtworkInfoSettingController.swift in Sources */,
+				B00D016624F3E2A800BFF08B /* ARResultTestController.swift in Sources */,
+				B09C00D024EF9EDA00748EDC /* CommentCell.swift in Sources */,
 				B0EE675224BF3AB40069B27D /* MenuCell.swift in Sources */,
+				B0F5160424F0D7D00011039A /* ExhibitionViewModel.swift in Sources */,
 				B097E77224E9030800D880A4 /* OpacitySettingView.swift in Sources */,
 				B0DC78C624C5C73B00636A15 /* User.swift in Sources */,
 				B0F6310D24C405BC0096B04D /* UserContentView.swift in Sources */,
@@ -625,6 +672,7 @@
 				B009853C24E7B2E50047AF54 /* Line.swift in Sources */,
 				B0F2BAB424D5616900361B46 /* ExhibitionEditView.swift in Sources */,
 				B0C0754724CEE7CA007CD390 /* ToolBarViewModel.swift in Sources */,
+				B09C00CC24EF978900748EDC /* ArtworkDetailCell.swift in Sources */,
 				B0A13D5D24C0748400633D30 /* UserInfoView.swift in Sources */,
 				B06AB43924D2CFDF0001FD4F /* AddArtworkController.swift in Sources */,
 				B06AB43E24D2D0B10001FD4F /* CameraView.swift in Sources */,
@@ -633,6 +681,7 @@
 				B0EE84D724BC1B4D001709BA /* Extensions.swift in Sources */,
 				B0F2BAAB24D55BA900361B46 /* ExhibitionUploadController.swift in Sources */,
 				B06AB44424D2D2A40001FD4F /* AnimateController.swift in Sources */,
+				B00D016224F3806100BFF08B /* ArtworkItemService.swift in Sources */,
 				B0C0754524CEE60E007CD390 /* EditToolBarCell.swift in Sources */,
 				B06AB44024D2D1AA0001FD4F /* MyHeaderFooterCollectionView.swift in Sources */,
 				B009854924E7D54E0047AF54 /* ArtworkService.swift in Sources */,
@@ -645,12 +694,14 @@
 				B0EE84D524BC1B0A001709BA /* MainController.swift in Sources */,
 				B097E77424E95DF200D880A4 /* ArtworkItem.swift in Sources */,
 				B000D09124CEBBD500DE9D71 /* SearchController.swift in Sources */,
+				B09C00C224EF6A3D00748EDC /* ArtworkInputView.swift in Sources */,
 				B0EE84D924BC2298001709BA /* MainExhibitionCell.swift in Sources */,
 				B009854224E7BE100047AF54 /* DrawView.swift in Sources */,
 				B000D08F24CE959D00DE9D71 /* ProfileViewModel.swift in Sources */,
 				B0A13D5824C0681D00633D30 /* ProfileMainController.swift in Sources */,
 				B0D9184E24EB91F90085244F /* ExhibitionService.swift in Sources */,
 				B010F31124DEBBE0008BE22A /* SupporterCell.swift in Sources */,
+				B00D016024F37C2A00BFF08B /* iOSDevCenters+GIF.swift in Sources */,
 				B0A8D0AF24C55B1E00A4127F /* ExhibitionCell.swift in Sources */,
 				B01BEDD824E84D17007C821C /* RotateSettingView.swift in Sources */,
 				B0EE84C224BC1A9D001709BA /* ArtScreen.xcdatamodeld in Sources */,
@@ -664,10 +715,12 @@
 				B000D09324CEC2AE00DE9D71 /* EditToolBarView.swift in Sources */,
 				B0F2BAB824D5634600361B46 /* User_CustomView.swift in Sources */,
 				B01BEDD324E83300007C821C /* AnimateUtilities.swift in Sources */,
+				B08B6B0C24F6354E00378465 /* EmitterSettingView.swift in Sources */,
 				B0EE84E024BC2FC7001709BA /* LoginController.swift in Sources */,
 				B0A8D0B624C55C8E00A4127F /* FilterViewModel.swift in Sources */,
 				B01BEDDE24E8510D007C821C /* AnimateToolBarCell.swift in Sources */,
 				B0F2BABA24D5638700361B46 /* ExhibitionSendView.swift in Sources */,
+				B09C00C824EF80D500748EDC /* ArtworkDetailController.swift in Sources */,
 				B01BEDDC24E850FD007C821C /* AnimateToolBarView.swift in Sources */,
 				B0EE84B824BC1A9D001709BA /* AppDelegate.swift in Sources */,
 				B034DCC524E4F31C0062C834 /* PenToolBarCell.swift in Sources */,
@@ -675,6 +728,7 @@
 				B0F2BAA924D554F700361B46 /* AddExhibitionController.swift in Sources */,
 				B06AB44224D2D2580001FD4F /* AlertUtilities.swift in Sources */,
 				B08E38A924DA7AE400CBAEFB /* FeatureToolBarViewModel.swift in Sources */,
+				B09C00CE24EF9D1600748EDC /* ArtworkCommentCell.swift in Sources */,
 				B0DC78C924C5C88100636A15 /* AuthService.swift in Sources */,
 				B0D9184C24EB91E80085244F /* Exhibition.swift in Sources */,
 				B009854024E7BDFD0047AF54 /* ZImageCropper.swift in Sources */,
@@ -682,7 +736,9 @@
 				B0EE84DD24BC26FE001709BA /* Utilities.swift in Sources */,
 				B0AC025724C98A0E00790868 /* RegistrationViewModel.swift in Sources */,
 				B00D093924EA2D4C00AF56CC /* MoveDrawView.swift in Sources */,
+				B09C00D224EFA0AA00748EDC /* CustomInputAccessoryView.swift in Sources */,
 				B0EE84BA24BC1A9D001709BA /* SceneDelegate.swift in Sources */,
+				B09C00CA24EF969400748EDC /* ArtworkDetailHeaderView.swift in Sources */,
 				B08E38AB24DAA6F200CBAEFB /* LayerCell.swift in Sources */,
 				B034DCC324E4F2350062C834 /* PenToolBarView.swift in Sources */,
 				B0EE674E24BF277A0069B27D /* ContainerController.swift in Sources */,

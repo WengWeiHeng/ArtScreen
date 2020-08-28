@@ -115,6 +115,9 @@ extension UIColor {
     static let mainDarkGray = UIColor.rgb(red: 46, green: 46, blue: 46)
     static let mainAlphaGray = UIColor.rgb(red: 69, green: 69, blue: 69)
     static let mainCenterPoint = UIColor.rgb(red: 0, green: 255, blue: 255)
+    static let mainRed = UIColor.rgb(red: 255, green: 0, blue: 0)
+    static let mainGreen = UIColor.rgb(red: 0, green: 255, blue: 0)
+    static let mainBlue = UIColor.rgb(red: 0, green: 0, blue: 255)
 }
 
 
@@ -147,5 +150,32 @@ extension UIViewController {
     }
 }
 
+extension UIImage {
+    func resize(size _size: CGSize) -> UIImage? {
+        let widthRatio = _size.width / size.width
+        let heightRatio = _size.height / size.height
+        let ratio = widthRatio < heightRatio ? widthRatio : heightRatio
+        
+        let resizedSize = CGSize(width: size.width * ratio, height: size.height * ratio)
+        UIGraphicsBeginImageContextWithOptions(resizedSize, false, 0.0) // 変更
+        draw(in: CGRect(origin: .zero, size: resizedSize))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return resizedImage
+    }
+}
 
+extension Array where Element: Hashable {
+    func removingDuplicates() -> [Element] {
+        var addedDict = [Element: Bool]()
 
+        return filter {
+            addedDict.updateValue(true, forKey: $0) == nil
+        }
+    }
+
+    mutating func removeDuplicates() {
+        self = self.removingDuplicates()
+    }
+}

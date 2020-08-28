@@ -8,23 +8,25 @@
 
 import Firebase
 
+typealias DatabaseCompletion = ((Error?, DatabaseReference) -> Void)
+
 struct UserService {
+    
     static func fetchUsers(completion: @escaping([User]) -> Void) {
-        COLLECTION_USERS.getDocuments { (snapshot, error) in
-            guard var users = snapshot?.documents.map({ User(dictionary: $0.data()) }) else { return }
-            
-            if let i = users.firstIndex(where: { $0.uid == Auth.auth().currentUser?.uid }) {
-                users.remove(at: i)
-            }
-            
+        var users = [User]()
+        REF_USERS.observe(.childAdded) { snapshot in
+            let uid = snapshot.key
+            guard let dictionary = snapshot.value as? [String: AnyObject] else { return }
+            let user = User(uid: uid, dictionary: dictionary)
+            users.append(user)
             completion(users)
         }
     }
     
     static func fetchUser(withUid uid: String, completion: @escaping(User) -> Void) {
-        COLLECTION_USERS.document(uid).getDocument { (snapshot, error) in
-            guard let dictionary = snapshot?.data() else { return }
-            let user = User(dictionary: dictionary)
+        REF_USERS.child(uid).observeSingleEvent(of: .value) { (snapshot) in
+            guard let dictionary = snapshot.value as? [String: AnyObject] else { return }
+            let user = User(uid: uid, dictionary: dictionary)
             completion(user)
         }
     }

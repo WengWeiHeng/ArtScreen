@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import WaterfallLayout
+
+private let reuseIdenfitier = "ArtworkInputViewCell"
 
 class ExhibitionUploadController: UIViewController {
     
@@ -16,6 +19,10 @@ class ExhibitionUploadController: UIViewController {
             addArtworkInputView.user = user
         }
     }
+    
+    var exhibitionID: String?
+    private var artworks = [Artwork]()
+    var artwork: Artwork?
     
     var exhibitionTitleText: String?
     
@@ -77,6 +84,22 @@ class ExhibitionUploadController: UIViewController {
         return stack
     }()
     
+    private lazy var collectionView: UICollectionView = {
+        let layout = WaterfallLayout()
+        layout.delegate = self
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 12, bottom: 12, right: 12)
+        layout.minimumLineSpacing = 8.0
+        layout.minimumInteritemSpacing = 8.0
+        
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.backgroundColor = .mainDarkGray
+        cv.register(ArtworkInputViewCell.self, forCellWithReuseIdentifier: reuseIdenfitier)
+        cv.delegate = self
+        cv.dataSource = self
+        
+        return cv
+    }()
+    
     private let blackViewButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .black
@@ -135,13 +158,16 @@ class ExhibitionUploadController: UIViewController {
     
     //MARK: - Helpers
     func configureUI() {
-        view.backgroundColor = .black
+        view.backgroundColor = .mainDarkGray
         view.addSubview(customNavigationBarView)
         customNavigationBarView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, height: 30)
 
         view.addSubview(exhibitionTitleLabel)
         exhibitionTitleLabel.anchor(top: customNavigationBarView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20, paddingLeft: 16, paddingRight: 16)
         exhibitionTitleLabel.text = exhibitionTitleText
+
+        view.addSubview(collectionView)
+        collectionView.anchor(top: exhibitionTitleLabel.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 20)
         
         view.addSubview(announceView)
         announceView.centerX(inView: view)
@@ -203,6 +229,32 @@ class ExhibitionUploadController: UIViewController {
     }
 }
 
+//MARK: - UICollectionViewDataSource
+extension ExhibitionUploadController: UICollectionViewDataSource, UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return artworks.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdenfitier, for: indexPath) as! ArtworkInputViewCell
+        cell.artwork = artworks[indexPath.row]
+        
+        return cell
+    }
+}
+
+//MARK: - WaterfallLayoutDelegate
+extension ExhibitionUploadController: WaterfallLayoutDelegate {
+    func collectionViewLayout(for section: Int) -> WaterfallLayout.Layout {
+        return .waterfall(column: 2, distributionMethod: .balanced)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout: WaterfallLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        return WaterfallLayout.automaticSize
+    }
+}
+
 //MARK: - AddArtworkInputViewDelegate
 extension ExhibitionUploadController: AddArtworkInputViewDelegate {
     func moveToAddArtworkController() {
@@ -211,6 +263,20 @@ extension ExhibitionUploadController: AddArtworkInputViewDelegate {
     
     func handleCloseInputView() {
         handleDismissal()
+    }
+    
+    func AddInArtwork(artwork: Artwork) {
+        print("DEBUG: Artwork is remove successfully and add in this exhibition..")
+        guard let exhibitionID = exhibitionID else { return }
+        UIView.animate(withDuration: 0.3) {
+            self.announceView.alpha = 0
+            self.view.layoutIfNeeded()
+        }
+        
+        ArtworkService.addArtworkInExhibition(withExhibitionID: exhibitionID, artwork: artwork) { (error, ref) in
+            self.artworks.append(artwork)
+            self.collectionView.reloadData()
+        }
     }
 }
 

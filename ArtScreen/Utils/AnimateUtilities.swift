@@ -77,16 +77,24 @@ class AnimateUtilities {
     }
     
     func allAction(view: UIView,
+                   path: UIBezierPath = UIBezierPath(),
+                   moveDuration: CFTimeInterval = 0,
                    rotateFrom: CGFloat = 0,
                    rotateTo: CGFloat = 0,
-                   rotateDuration: CFTimeInterval = 3,
-                   scaleFrom: CGFloat = 2,
+                   rotateDuration: CFTimeInterval = 0,
+                   scaleFrom: CGFloat = 0,
                    scaleTo: CGFloat = 0,
-                   scaleDuration: CFTimeInterval = 0.6,
-                   autoreverses: Bool = false,
-                   opacityFrom: CGFloat = 2,
+                   scaleDuration: CFTimeInterval = 0,
+                   autoreverses: Bool = true,
+                   opacityFrom: CGFloat = 0,
                    opacityto: CGFloat = 0,
-                   opacityDuration: CFTimeInterval = 0.6) {
+                   opacityDuration: CFTimeInterval = 0) {
+        
+        // move
+        let moveAnimation = CAKeyframeAnimation(keyPath: "position")
+        moveAnimation.duration = moveDuration
+        moveAnimation.repeatCount = MAXFLOAT
+        moveAnimation.path = path.cgPath
         
         // rotate
         let rotateAnimate = CABasicAnimation(keyPath: "transform.rotation")
@@ -121,15 +129,22 @@ class AnimateUtilities {
         
 //        if rotateFrom != 0 && rotateTo != 0 && rotateDuration != 0 {
 //            view.layer.add(rotateAnimate, forKey: nil)
-//        } else if scaleFrom != 0 && scaleFrom != 0 && scaleDuration != 0 {
-//            view.layer.add(scaleAnimate, forKey: nil)
-//        } else if opacityFrom != 0 && opacityto != 0 && opacityDuration != 0 {
-//            view.layer.add(scaleAnimate, forKey: nil)
 //        }
+        if path.isEmpty == false && moveDuration != 0 {
+            view.layer.add(moveAnimation, forKey: nil)
+        }
         
+        if scaleFrom != 0 && scaleTo != 0 && scaleDuration != 0 {
+            view.layer.add(scaleAnimate, forKey: nil)
+        }
+        
+        if opacityFrom != 0 && opacityto != 0 && opacityDuration != 0 {
+            view.layer.add(opacityAnimate, forKey: nil)
+        }
+//        
         view.layer.add(rotateAnimate, forKey: nil)
-        view.layer.add(scaleAnimate, forKey: nil)
-        view.layer.add(scaleAnimate, forKey: nil)
+//        view.layer.add(scaleAnimate, forKey: nil)
+//        view.layer.add(opacityAnimate, forKey: nil)
         
     }
     

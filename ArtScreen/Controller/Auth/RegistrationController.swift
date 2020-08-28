@@ -127,10 +127,10 @@ class RegistrationController: UIViewController {
         
         showLoader(true, withText: "Signing You Up")
         
-        AuthService.shared.createUser(credentials: credentials) { error in
-            if let error = error {
+        AuthService.shared.createUser(credentials: credentials) { (err, ref) in
+            if let err = err {
                 self.showLoader(false)
-                self.showError(error.localizedDescription)
+                self.showError(err.localizedDescription)
                 return
             }
             

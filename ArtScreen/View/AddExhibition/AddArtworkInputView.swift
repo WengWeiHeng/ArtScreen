@@ -11,6 +11,7 @@ import UIKit
 protocol AddArtworkInputViewDelegate: class {
     func handleCloseInputView()
     func moveToAddArtworkController()
+    func AddInArtwork(artwork: Artwork)
 }
 
 private let reuseIdentifier = "AddArtworkInputViewCell"
@@ -23,8 +24,10 @@ class AddArtworkInputView: UIView {
     var user: User? {
         didSet {
             fetchArtworks()
+            collectionView.reloadData()
         }
     }
+    
     private var artworks = [Artwork]()
     
     private let titleBarView: UIView = {
@@ -85,10 +88,11 @@ class AddArtworkInputView: UIView {
     //MARK: - API
     func fetchArtworks() {
         guard let user = user else { return }
-        ArtworkService.fetchArtworks(forUser: user) { artworks in
+        print("DEBUG: user: \(user.username)")
+        ArtworkService.fetchUserArtworks(forUser: user) { (artworks) in
             self.artworks = artworks
+            self.collectionView.reloadData()
         }
-        collectionView.reloadData()
     }
     
     //MARK: - Selectors
@@ -117,6 +121,7 @@ class AddArtworkInputView: UIView {
 //MARK: - UICollectionViewDataSource
 extension AddArtworkInputView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print("DEBUG: artworks.count: \(artworks.count)")
         return artworks.count
     }
     
@@ -131,7 +136,8 @@ extension AddArtworkInputView: UICollectionViewDataSource {
 //MARK: - UICollectionViewDelegate
 extension AddArtworkInputView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("DEBUG: CellItem is selected..")
+        let selected = artworks[indexPath.row]
+        delegate?.AddInArtwork(artwork: selected)
     }
 }
 

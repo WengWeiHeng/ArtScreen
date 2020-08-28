@@ -144,16 +144,16 @@ class AddExhibitionController: UIViewController {
         let credentials = ExhibitionCredentials(name: name, introduction: introduction, exhibitionImage: exhibitionImage, online: isOnline)
         
         showLoader(true, withText: "Uploadding Exhibition")
-        ExhibitionService.uploadExhibition(credentials: credentials) { error in
+        ExhibitionService.uploadExhibition(credentials: credentials) { (error, ref) in
             if let error = error {
                 self.showLoader(false)
                 self.showError(error.localizedDescription)
                 return
             }
-            
             self.showLoader(false)
             let controller = ExhibitionUploadController()
             controller.user = self.user
+            controller.exhibitionID = ref.key
             controller.exhibitionTitleText = name
             self.navigationController?.pushViewController(controller, animated: true)
         }

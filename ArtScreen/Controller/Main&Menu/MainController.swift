@@ -21,13 +21,9 @@ protocol MainControllerDelegate: class {
 class MainController: UIViewController {
     
     //MARK: - Properties
-    var user: User? {
-        didSet {
-            fetchExhibitions()
-        }
-    }
-    
+    var user: User?
     var exhibitions = [Exhibition]()
+    
     weak var pageControl: UIPageControl!
     weak var delegate: MainControllerDelegate?
 
@@ -129,7 +125,6 @@ class MainController: UIViewController {
         iv.setDimensions(width: 28, height: 28)
         iv.layer.cornerRadius = 28 / 2
         iv.backgroundColor = .mainPurple
-        iv.image = #imageLiteral(resourceName: "coverImage")
         
         return iv
     }()
@@ -138,7 +133,6 @@ class MainController: UIViewController {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 14)
         label.textColor = .mainPurple
-        label.text = "Jack Mauris"
         
         return label
     }()
@@ -161,8 +155,8 @@ class MainController: UIViewController {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 22)
         label.textColor = .mainPurple
-        label.text = "Mauris hendrerit quam orci, sit amet posuere ante vestibulum sodales."
         label.numberOfLines = 3
+        
         return label
     }()
     
@@ -183,6 +177,7 @@ class MainController: UIViewController {
         super.viewDidLoad()
         
         configureUI()
+        fetchExhibitions()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -191,12 +186,9 @@ class MainController: UIViewController {
     
     //MARK: - API
     func fetchExhibitions() {
-        guard let user = user else { return }
-        ExhibitionService.fetchExhibitions(forUser: user) { exhibitions in
+        ExhibitionService.fetchExhibitions { (exhibitions) in
             self.exhibitions = exhibitions
             self.collectionView.reloadData()
-            
-            print("DEBUG: User: \(user.fullname) in ExhibitionView")
         }
     }
     
@@ -329,7 +321,23 @@ class MainController: UIViewController {
     
     private func animateChangingTitle(for indexPath: IndexPath) {
         UIView.transition(with: exhibitionTitleLabel, duration: 0.3, options: .transitionCrossDissolve, animations: {
-//            self.exhibitionIntroduction.text = self.exhibitions[indexPath.row % self.exhibitions.count].introduction
+            self.exhibitionTitleLabel.text = self.exhibitions[indexPath.row % self.exhibitions.count].name
+        }, completion: nil)
+        
+        UIView.transition(with: usernameLabel, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            let uid = self.exhibitions[indexPath.row % self.exhibitions.count].uid
+            
+            UserService.fetchUser(withUid: uid) { user in
+                self.usernameLabel.text = user.fullname
+            }
+        }, completion: nil)
+        
+        UIView.transition(with: userImageView, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            let uid = self.exhibitions[indexPath.row % self.exhibitions.count].uid
+            
+            UserService.fetchUser(withUid: uid) { user in
+                self.userImageView.sd_setImage(with: user.profileImageUrl)
+            }
         }, completion: nil)
     }
 }
@@ -358,25 +366,9 @@ extension MainController: UICollectionViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let locationFirst = CGPoint(x: collectionView.center.x + scrollView.contentOffset.x, y: collectionView.center.y + scrollView.contentOffset.y)
-//        let locationSecond = CGPoint(x: collectionView.center.x + scrollView.contentOffset.x + 20, y: collectionView.center.y + scrollView.contentOffset.y)
-//        let locationThird = CGPoint(x: collectionView.center.x + scrollView.contentOffset.x - 20, y: collectionView.center.y + scrollView.contentOffset.y)
         
-//        if let indexPathFirst = collectionView.indexPathForItem(at: locationFirst),
-//            let indexPathSecond = collectionView.indexPathForItem(at: locationSecond),
-//            let indexPathThird = collectionView.indexPathForItem(at: locationThird),
-//            indexPathFirst.row == indexPathSecond.row &&
-//            indexPathSecond.row == indexPathThird.row &&
-//            indexPathFirst.row != pageControl.currentPage {
-//
-//            pageControl.currentPage = indexPathFirst.row % exhibitions.count
-//            self.animateChangingTitle(for: indexPathFirst)
-//            print(indexPathFirst.row)
-//        }
-        guard let indexPathFirst = collectionView.indexPathForItem(at: locationFirst) else { return }
-        let index = indexPathFirst.row % exhibitions.count
-        if index < exhibitions.count {
-            self.animateChangingTitle(for: IndexPath(index: index))
-            
+        if let indexPathFirst = collectionView.indexPathForItem(at: locationFirst), indexPathFirst.row == indexPathFirst.row {
+            self.animateChangingTitle(for: indexPathFirst)   
         }
     }
 }
@@ -405,5 +397,13 @@ extension MainController: MainExhibitionCellDelegate {
             self.exhibitionTitleLabel.alpha = 1
             self.moreButton.alpha = 1
         }
+    }
+    
+    func handleShowDetail(artwork: Artwork) {        
+        print("DEBUG: show Detail in main controller")
+        let controller = ArtworkDetailController()
+//        controller.modalPresentationStyle = .fullScreen
+        controller.artwork = artwork
+        present(controller, animated: true, completion: nil)
     }
 }

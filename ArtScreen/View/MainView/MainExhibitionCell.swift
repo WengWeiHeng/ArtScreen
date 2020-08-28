@@ -8,7 +8,7 @@
 
 import UIKit
 
-private enum CellState {
+enum CellState {
     case expanded
     case collapsed
     
@@ -22,11 +22,16 @@ private enum CellState {
 
 protocol MainExhibitionCellDelegate: class {
     func itemDismissal(isDismissal: Bool)
+    func handleShowDetail(artwork: Artwork)
 }
 
 class MainExhibitionCell: UICollectionViewCell {
     
     //MARK: - Properties
+    private var artworkInputView = ArtworkInputView()
+    private var rightConstraint = NSLayoutConstraint()
+    private let artworkInputViewWidth: CGFloat = screenWidth
+    
     private var initialFrame: CGRect?
     private var state: CellState = .collapsed
     static let cellSize = screenHeight * collectionViewCellHeightCoefficient
@@ -53,11 +58,12 @@ class MainExhibitionCell: UICollectionViewCell {
     
     //MARK: - Exhibition Info Properties
     
-    private let closeButton: UIButton = {
+    private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(#imageLiteral(resourceName: "close").withRenderingMode(.alwaysOriginal), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "close").withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .white
         button.setDimensions(width: 28, height: 28)
-        button.addTarget(self, action: #selector(handleDismissal), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleDismissal(_:)), for: .touchUpInside)
         button.alpha = 0
         
         return button
@@ -95,17 +101,17 @@ class MainExhibitionCell: UICollectionViewCell {
     }()
     
     private lazy var followerStack: UIStackView = {
-        let stack = Utilities().customCountStackView(typeText: "Followers", countText: "6,962")
+        let stack = Utilities().customCountStackView(typeText: "Followers", countText: "6,962", textColor: .mainDarkGray)
         return stack
     }()
     
     private lazy var likesStack: UIStackView = {
-        let stack = Utilities().customCountStackView(typeText: "Likes", countText: "25,104")
+        let stack = Utilities().customCountStackView(typeText: "Likes", countText: "25,104", textColor: .mainDarkGray)
         return stack
     }()
     
     private lazy var visitedStack: UIStackView = {
-        let stack = Utilities().customCountStackView(typeText: "Visited", countText: "304,501")
+        let stack = Utilities().customCountStackView(typeText: "Visited", countText: "304,501", textColor: .mainDarkGray)
         return stack
     }()
 
@@ -164,7 +170,32 @@ class MainExhibitionCell: UICollectionViewCell {
         return label
     }()
     
+    private lazy var introductionButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Introduction", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.backgroundColor = .mainPurple
+        button.setDimensions(width: 100, height: 40)
+        button.layer.cornerRadius = 40 / 2
+        button.addTarget(self, action: #selector(infoButtonAction(_:)), for: .touchUpInside)
+        
+        return button
+    }()
     
+    private lazy var artworkButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Artwork", for: .normal)
+        button.setTitleColor(.mainDarkGray, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.backgroundColor = .white
+        button.setDimensions(width: 100, height: 40)
+        button.layer.cornerRadius = 40 / 2
+        button.addTarget(self, action: #selector(artworkButtonAction(_:)), for: .touchUpInside)
+        
+        return button
+    }()
+
     // StackView
     private lazy var actionButtonStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [shareButton, likeButton])
@@ -203,6 +234,16 @@ class MainExhibitionCell: UICollectionViewCell {
         return stack
     }()
     
+    private lazy var filterButtonStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [introductionButton, artworkButton])
+        stack.axis = .horizontal
+        stack.spacing = 16
+        stack.alpha = 0
+        
+        return stack
+    }()
+    
+    
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -230,9 +271,23 @@ class MainExhibitionCell: UICollectionViewCell {
         
         addSubview(exhibitionStack)
         exhibitionStack.anchor(top: userStack.bottomAnchor, left: userStack.leftAnchor, right: followButton.rightAnchor, paddingTop: 16)
+
+        addSubview(artworkInputView)
+        artworkInputView.translatesAutoresizingMaskIntoConstraints = false
+        artworkInputView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        artworkInputView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        rightConstraint = artworkInputView.rightAnchor.constraint(equalTo: rightAnchor, constant: artworkInputViewWidth)
+        rightConstraint.isActive = true
+        artworkInputView.widthAnchor.constraint(equalToConstant: artworkInputViewWidth).isActive = true
+        artworkInputView.alpha = 0
+        artworkInputView.delegate = self
         
         addSubview(closeButton)
         closeButton.anchor(top: safeAreaLayoutGuide.topAnchor, right: rightAnchor, paddingTop: 16, paddingRight: 16)
+        
+        addSubview(filterButtonStack)
+        filterButtonStack.anchor(bottom: safeAreaLayoutGuide.bottomAnchor)
+        filterButtonStack.centerX(inView: self)
         
         addGestureRecognizer(panRecognizer)
     }
@@ -283,15 +338,49 @@ class MainExhibitionCell: UICollectionViewCell {
         }
     }
     
-    @objc func handleDismissal() {
+    @objc func handleDismissal(_ sender: Any) {
         toggle()
+    }
+    
+    @objc func infoButtonAction(_ sender: Any) {
+        
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+            self.rightConstraint.constant = self.artworkInputViewWidth
+            self.introductionButton.backgroundColor = .mainPurple
+            self.introductionButton.setTitleColor(.white, for: .normal)
+            self.artworkButton.backgroundColor = .white
+            self.artworkButton.setTitleColor(.mainDarkGray, for: .normal)
+            
+            self.layoutIfNeeded()
+        }
+        transitionAnimator.startAnimation()
+    }
+    
+    @objc func artworkButtonAction(_ sender: Any) {
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+            self.rightConstraint.constant = 0
+            self.artworkButton.backgroundColor = .mainPurple
+            self.artworkButton.setTitleColor(.white, for: .normal)
+            self.introductionButton.backgroundColor = .white
+            self.introductionButton.setTitleColor(.mainDarkGray, for: .normal)
+            
+            self.layoutIfNeeded()
+        }
+        transitionAnimator.startAnimation()
     }
     
     //MARK: - Helpers
     func configureData(with exhibition: Exhibition, collectionView: UICollectionView, index: Int) {
+        
         exhibitionImage.sd_setImage(with: exhibition.exhibitionImageUrl)
         exhibitionTitleLabel.text = exhibition.name
         exhibitionIntroduction.text = exhibition.introduction
+        
+        let viewModel = ExhibitionViewModel(exhibition: exhibition)
+        userImageView.sd_setImage(with: viewModel.profileImageUrl)
+        usernameLabel.text = viewModel.usernameText
+        artworkInputView.exhibitionTitleLabel.text = exhibition.name
+        artworkInputView.exhibitionID = exhibition.exhibitionID
         
         self.collectionView = collectionView
         self.index = index
@@ -320,8 +409,8 @@ class MainExhibitionCell: UICollectionViewCell {
             self.userStack.alpha = 0
             self.followButton.alpha = 0
             self.exhibitionStack.alpha = 0
-            
-            
+            self.filterButtonStack.alpha = 0
+            self.artworkInputView.alpha = 0
             
             self.frame = self.initialFrame!
             
@@ -364,6 +453,8 @@ class MainExhibitionCell: UICollectionViewCell {
             self.userStack.alpha = 1
             self.followButton.alpha = 1
             self.exhibitionStack.alpha = 1
+            self.filterButtonStack.alpha = 1
+            self.artworkInputView.alpha = 1
             
             self.frame = CGRect(x: collectionView.contentOffset.x, y: 0, width: collectionView.frame.width, height: collectionView.frame.height)
             
@@ -395,5 +486,12 @@ class MainExhibitionCell: UICollectionViewCell {
 extension MainExhibitionCell: UIGestureRecognizerDelegate {
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return abs((panRecognizer.velocity(in: panRecognizer.view)).y) > abs((panRecognizer.velocity(in: panRecognizer.view)).x)
+    }
+}
+
+//MARK: - ArtworkInputViewdelegate
+extension MainExhibitionCell: ArtworkInputViewDelegate {
+    func showArtworkDetail(artwork: Artwork) {
+        delegate?.handleShowDetail(artwork: artwork)
     }
 }

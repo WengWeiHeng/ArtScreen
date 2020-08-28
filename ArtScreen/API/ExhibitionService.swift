@@ -17,7 +17,7 @@ struct ExhibitionCredentials {
 }
 
 struct ExhibitionService {
-    static func uploadExhibition(credentials: ExhibitionCredentials, completion: ((Error?) -> Void)?) {
+    static func uploadExhibition(credentials: ExhibitionCredentials, completion: @escaping(DatabaseCompletion)) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
         let name = credentials.name
@@ -30,10 +30,6 @@ struct ExhibitionService {
         let ref = storageRef.child(filename)
         
         ref.putData(imageData, metadata: nil) { (meta, error) in
-            if let error = error {
-                completion!(error)
-                return
-            }
             ref.downloadURL { (url, error) in
                 guard let exhibitionImageUrl = url?.absoluteString else { return }
 
@@ -44,36 +40,67 @@ struct ExhibitionService {
                             "online": online,
                             "timestamp": Int(NSDate().timeIntervalSince1970)] as [String: Any]
                 
-//                COLLECTION_EXHIBITIONS.addDocument(data: data, completion: completion)
-                COLLECTION_EXHIBITIONS.document(uid).collection("user-exhibitions").addDocument(data: data, completion: completion)
+                REF_EXHIBITIONS.childByAutoId().updateChildValues(data) { (err, ref) in
+                    guard let exhibitionID = ref.key else { return }
+                    REF_USER_EXHIBITIONS.child(uid).child(exhibitionID).updateChildValues([exhibitionID: 1], withCompletionBlock: completion)
+                }
+
             }
         }
     }
     
-    static func fetchExhibitions(forUser user: User, completion: @escaping([Exhibition]) -> Void) {
+    static func fetchExhibitions(completion: @escaping([Exhibition]) -> Void) {
         var exhibitions = [Exhibition]()
-        let query = COLLECTION_EXHIBITIONS.document(user.uid).collection("user-exhibitions")
+//        guard let currentUid = Auth.auth().currentUser?.uid else { return }
         
-        query.addSnapshotListener { (snapshot, error) in
-            snapshot?.documentChanges.forEach({ change in
-                let dictionary = change.document.data()
-                let exhibition = Exhibition(user: user, dictionary: dictionary)
+        REF_EXHIBITIONS.observe(.childAdded) { snapshot in
+            let exhibitionID = snapshot.key
+            self.fetchExhibition(withExhibitionID: exhibitionID) { exhibition in
                 exhibitions.append(exhibition)
                 completion(exhibitions)
-            })
+            }
         }
     }
-//    
-//    static func fetchExhibition(withExhibitionID exhibitionID: String, completion: @escaping(Exhibition) -> Void) {
-//        COLLECTION_EXHIBITIONS.document(exhibitionID).getDocument { (snapshot, error) in
-//            guard let dictionary = snapshot?.data() else { return }
-//            guard let uid = dictionary["uid"] as? String else { return }
-//            
-//            UserService.fetchUser(withUid: uid) { user in
-//                let exhibition = Exhibition(user: user, exhibitionID: exhibitionID, dictionary: dictionary)
-//                completion(exhibition)
-//            }
-//        }
-//    }
+    
+    static func fetchUserExhibitions(forUser user: User, completion: @escaping([Exhibition]) -> Void) {
+        var exhibitions = [Exhibition]()
+        REF_USER_EXHIBITIONS.child(user.uid).observe(.childAdded) { (snapshot) in
+            let exhibitionID = snapshot.key
+            
+            self.fetchExhibition(withExhibitionID: exhibitionID) { exhibition in
+                exhibitions.append(exhibition)
+                completion(exhibitions)
+            }
+        }
+    }
+    
+    static func fetchExhibition(withExhibitionID exhibitionID: String, completion: @escaping(Exhibition) -> Void) {
+        REF_EXHIBITIONS.child(exhibitionID).observeSingleEvent(of: .value) { (snapshot) in
+            guard let dictionary = snapshot.value as? [String: Any] else { return }
+            guard let uid = dictionary["uid"] as? String else { return }
+
+            UserService.fetchUser(withUid: uid) { (user) in
+                let exhibition = Exhibition(user: user, exhibitionID: exhibitionID, dictionary: dictionary)
+                completion(exhibition)
+            }
+        }
+    }
+    
+    static func fetchExhibitionArtwork(withExhibitionID exhibitionID: String, completion: @escaping([Artwork]) -> Void) {
+        var artworks = [Artwork]()
+//        guard let currentUid = Auth.auth().currentUser?.uid else { return }
+
+        self.fetchExhibition(withExhibitionID: exhibitionID) { exhibition in
+            REF_EXHIBITIONS.child(exhibition.exhibitionID).observe(.childAdded) { (snapshot) in
+                print("DEBUG: snapshot: \(snapshot.key)")
+                let artworkID = snapshot.key                
+                ArtworkService.fetchArtwork(withArtworkID: artworkID) { (artwork) in
+                    artworks.append(artwork)
+                    completion(artworks)
+                }
+            }
+        }
+    }
 }
+
 

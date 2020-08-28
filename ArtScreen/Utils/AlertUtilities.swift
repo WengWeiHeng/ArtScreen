@@ -8,38 +8,6 @@
 
 import UIKit
 
-//extension UIView {
-//    
-//    
-//    func showNotification(_ imageView : UIImageView) {
-//        
-//        let alert = UIAlertController(title: "Do you want add AR Animation on your ArtWork",message:"If you don't want to add it now, you can click Edit in your profile page",
-//                                      preferredStyle: UIAlertController.Style.alert)
-//        let notNowAction = UIAlertAction(title: "Not Now", style: UIAlertAction.Style.default) {
-//            UIAlertAction in
-//            NSLog("Not Now Pressed ...")
-//            let viewController =  DefaultController()
-//            viewController.imageView = imageView
-//            self.window?.rootViewController?.present(viewController, animated: true,completion: nil)
-//        }
-//        
-//        let doItAction = UIAlertAction(title: "Do It", style: UIAlertAction.Style.cancel) {
-//            UIAlertAction in
-//            NSLog("Do It Pressed ...")
-//            
-//            let viewController = AnimateController()
-//            viewController.imageView = imageView
-//            self.window?.rootViewController?.present(viewController, animated: true,completion: nil)
-//            
-//        }
-//
-//        // Add the actions
-//        alert.addAction(notNowAction)
-//        alert.addAction(doItAction)
-//        self.window?.rootViewController?.present(alert, animated: true, completion: nil)
-//    }
-//}
-
 extension UIImage {
     func resized() -> UIImage? {
         let canvasSize = CGSize(width: screenWidth, height: screenWidth)

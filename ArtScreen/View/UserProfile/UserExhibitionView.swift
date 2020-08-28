@@ -66,11 +66,9 @@ class UserExhibitionView: UIView {
     //MARK: - API
     func fetchExhibitions() {
         guard let user = user else { return }
-        ExhibitionService.fetchExhibitions(forUser: user) { exhibitions in
+        ExhibitionService.fetchUserExhibitions(forUser: user) { (exhibitions) in
             self.exhibitions = exhibitions
             self.collectionView.reloadData()
-            
-            print("DEBUG: User: \(user.fullname) in ExhibitionView")
         }
     }
 }
