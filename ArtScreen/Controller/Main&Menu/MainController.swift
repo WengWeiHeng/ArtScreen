@@ -124,7 +124,7 @@ class MainController: UIViewController {
         iv.contentMode = .scaleAspectFill
         iv.setDimensions(width: 28, height: 28)
         iv.layer.cornerRadius = 28 / 2
-        iv.backgroundColor = .mainPurple
+        iv.backgroundColor = .mainDarkGray
         
         return iv
     }()
@@ -133,6 +133,7 @@ class MainController: UIViewController {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 14)
         label.textColor = .mainPurple
+        label.text = "@Loading"
         
         return label
     }()
@@ -156,6 +157,7 @@ class MainController: UIViewController {
         label.font = .boldSystemFont(ofSize: 22)
         label.textColor = .mainPurple
         label.numberOfLines = 3
+        label.text = "@Loading"
         
         return label
     }()
@@ -189,6 +191,13 @@ class MainController: UIViewController {
         ExhibitionService.fetchExhibitions { (exhibitions) in
             self.exhibitions = exhibitions
             self.collectionView.reloadData()
+            self.exhibitionTitleLabel.text = exhibitions[0].name
+            
+            let uid = exhibitions[0].uid
+            UserService.fetchUser(withUid: uid) { user in
+                self.usernameLabel.text = user.fullname
+                self.userImageView.sd_setImage(with: user.profileImageUrl)
+            }
         }
     }
     

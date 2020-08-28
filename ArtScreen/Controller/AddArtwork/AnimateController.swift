@@ -914,7 +914,7 @@ extension AnimateController: MoveDrawViewDelegate {
     }
 }
 
-//MARK: -
+//MARK: - EmitterSettingViewDelegate
 extension AnimateController: EmitterSettingViewDelegate {
     func sliderValueDidChange() {
         cells.removeAll()

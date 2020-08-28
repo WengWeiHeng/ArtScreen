@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "udno.png",
+      "filename" : "done.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "udno@2x.png",
+      "filename" : "done@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "udno@3x.png",
+      "filename" : "done@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

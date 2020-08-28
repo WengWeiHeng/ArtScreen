@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Redo.png",
+      "filename" : "redo.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Redo@2x.png",
+      "filename" : "redo@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Redo@3x.png",
+      "filename" : "redo@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

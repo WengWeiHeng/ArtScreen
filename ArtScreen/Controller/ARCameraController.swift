@@ -152,7 +152,6 @@ class ARCameraController: UIViewController {
 }
 
 extension ARCameraController: ARSCNViewDelegate {
-    
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard let imageAnchor = anchor as? ARImageAnchor else { return }
         updateQueue.async {
