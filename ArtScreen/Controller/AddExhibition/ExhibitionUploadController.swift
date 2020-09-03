@@ -258,7 +258,9 @@ extension ExhibitionUploadController: WaterfallLayoutDelegate {
 //MARK: - AddArtworkInputViewDelegate
 extension ExhibitionUploadController: AddArtworkInputViewDelegate {
     func moveToAddArtworkController() {
-        print("DEBUG: move to add Artwork Controller..")
+        let controller = AddArtworkController()
+        controller.modalPresentationStyle = .fullScreen
+        present(controller, animated: true, completion: nil)
     }
     
     func handleCloseInputView() {
@@ -283,9 +285,11 @@ extension ExhibitionUploadController: AddArtworkInputViewDelegate {
 //MARK: - ExhibitionSettingViewDelegate
 extension ExhibitionUploadController: ExhibitionSettingViewDelegate {
     func didTappedNewArtwork() {
-        let controller = AddArtworkController()
-        controller.modalPresentationStyle = .fullScreen
-        self.present(controller, animated: true, completion: nil)
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.8, dampingRatio: 1) {
+            self.settingViewBottom.constant = self.settingViewHeight
+            self.handleShowInputView()
+        }
+        transitionAnimator.startAnimation()
     }
     
     func didTappedEditInfo() {

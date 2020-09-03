@@ -14,6 +14,7 @@ private let reuseIdentifier3 = "DefaultToorBarCell"
 protocol FeatureToolBarViewDelegate: class {
     func showPenToolBar()
     func showLassoToolBarAndDraw()
+    func deletePenAndLasso()
 }
 
 class FeatureToolBarView : UIView {
@@ -66,7 +67,7 @@ extension FeatureToolBarView : UICollectionViewDelegate {
         case .lasso:
             delegate?.showLassoToolBarAndDraw()
         case .delete:
-            print("DEBUG: Handle delete..")
+            delegate?.deletePenAndLasso()
         case .none:
             print("DEBUG: Error..")
         }

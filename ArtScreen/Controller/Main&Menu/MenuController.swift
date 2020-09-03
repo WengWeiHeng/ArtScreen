@@ -134,8 +134,9 @@ extension MenuController {
             print("DEBUG: Show place map page..")
         case .arCamere:
             let controller = ARCameraController()
-            controller.modalPresentationStyle = .fullScreen
-            present(controller, animated: true, completion: nil)
+            let nav = UINavigationController(rootViewController: controller)
+            nav.modalPresentationStyle = .fullScreen
+            present(nav, animated: true, completion: nil)
         case .setting:
             print("DEBUG: Show setting page..")
         case .instructions:

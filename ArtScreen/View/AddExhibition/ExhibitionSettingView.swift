@@ -22,7 +22,7 @@ class ExhibitionSettingView: UIView {
     
     private var btnNewArtwork: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("NEW Artwork", for: .normal)
+        button.setTitle("Add Artwork", for: .normal)
         button.setTitleColor(.mainPurple, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.titleLabel?.textAlignment = .left
@@ -111,6 +111,7 @@ class ExhibitionSettingView: UIView {
     //MARK: - Selectors
     @objc func tapNewArtWork() {
         print("btnNewArtWork be tapped")
+        delegate?.didTappedNewArtwork()
     }
     
     @objc func tapEditInfo() {

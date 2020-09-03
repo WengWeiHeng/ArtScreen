@@ -129,13 +129,16 @@ class MainController: UIViewController {
         return iv
     }()
     
-    private let usernameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 14)
-        label.textColor = .mainPurple
-        label.text = "@Loading"
+    private let usernameButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Loading", for: .normal)
+        button.setTitleColor(.mainPurple, for: .normal)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 16)
+        button.titleLabel?.textAlignment = .left
+        button.setDimensions(width: 110, height: 20)
+        button.addTarget(self, action: #selector(handleShowUserProfile), for: .touchUpInside)
         
-        return label
+        return button
     }()
     
     private let followButton: UIButton = {
@@ -195,7 +198,7 @@ class MainController: UIViewController {
             
             let uid = exhibitions[0].uid
             UserService.fetchUser(withUid: uid) { user in
-                self.usernameLabel.text = user.fullname
+                self.usernameButton.setTitle(user.fullname, for: .normal)
                 self.userImageView.sd_setImage(with: user.profileImageUrl)
             }
         }
@@ -255,6 +258,17 @@ class MainController: UIViewController {
         print("DEBUG: More Exhibition..")
     }
     
+    @objc func handleShowUserProfile() {
+        let controller = ProfileMainController()
+        guard let user = user else { return }
+        UserService.fetchUser(withUid: user.uid) { user in
+            print("DEBUG: user is \(user.username)")
+            controller.user = user
+            controller.modalPresentationStyle = .fullScreen
+            self.present(controller, animated: true, completion: nil)
+        }
+    }
+    
     @objc func handleFollow() {
         print("DEBUG: handle follow..")
     }
@@ -281,17 +295,16 @@ class MainController: UIViewController {
         view.addSubview(exhibitionTitleLabel)
         exhibitionTitleLabel.anchor(top: menuButton.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 26, paddingLeft: 12, paddingRight: 12)
         
-        let userStack = UIStackView(arrangedSubviews: [userImageView, usernameLabel])
-        userStack.axis = .horizontal
-        userStack.alignment = .center
-        userStack.spacing = 12
+        view.addSubview(userImageView)
+        userImageView.anchor(top: exhibitionTitleLabel.bottomAnchor, left: view.leftAnchor, paddingTop: 12, paddingLeft: 12)
         
-        let userBar = UIStackView(arrangedSubviews: [userStack, followButton])
-        userBar.axis = .horizontal
-        userBar.setWidth(width: screenWidth * collectionViewCellWidthCoefficient)
+        view.addSubview(usernameButton)
+        usernameButton.anchor(left: userImageView.rightAnchor)
+        usernameButton.centerY(inView: userImageView)
         
-        view.addSubview(userBar)
-        userBar.anchor(top: exhibitionTitleLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 12, paddingLeft: 12, paddingRight: 12)
+        view.addSubview(followButton)
+        followButton.anchor(right: view.rightAnchor, paddingRight: 12)
+        followButton.centerY(inView: userImageView)
 
         view.addSubview(moreButton)
         moreButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, paddingBottom: 40)
@@ -333,11 +346,11 @@ class MainController: UIViewController {
             self.exhibitionTitleLabel.text = self.exhibitions[indexPath.row % self.exhibitions.count].name
         }, completion: nil)
         
-        UIView.transition(with: usernameLabel, duration: 0.3, options: .transitionCrossDissolve, animations: {
+        UIView.transition(with: usernameButton, duration: 0.3, options: .transitionCrossDissolve, animations: {
             let uid = self.exhibitions[indexPath.row % self.exhibitions.count].uid
             
             UserService.fetchUser(withUid: uid) { user in
-                self.usernameLabel.text = user.fullname
+                self.usernameButton.setTitle(user.fullname, for: .normal)
             }
         }, completion: nil)
         
@@ -387,21 +400,21 @@ extension MainController: MainExhibitionCellDelegate {
     func itemDismissal(isDismissal: Bool) {
         if isDismissal {
             self.menuButton.alpha = 0
-            self.searchButton.alpha = 0
-            self.uploadButton.alpha = 0
+            self.searchButton.isHidden = true
+            self.uploadButton.isHidden = true
             self.titleLabel.alpha = 0
             self.userImageView.alpha = 0
-            self.usernameLabel.alpha = 0
+            self.usernameButton.alpha = 0
             self.followButton.alpha = 0
             self.exhibitionTitleLabel.alpha = 0
             self.moreButton.alpha = 0
         } else {
             self.menuButton.alpha = 1
-            self.searchButton.alpha = 1
-            self.uploadButton.alpha = 1
+            self.searchButton.isHidden = false
+            self.uploadButton.isHidden = false
             self.titleLabel.alpha = 1
             self.userImageView.alpha = 1
-            self.usernameLabel.alpha = 1
+            self.usernameButton.alpha = 1
             self.followButton.alpha = 1
             self.exhibitionTitleLabel.alpha = 1
             self.moreButton.alpha = 1

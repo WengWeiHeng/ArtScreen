@@ -31,11 +31,15 @@ class MenuHeader: UIView {
         return button
     }()
     
-    let profileImageView: UIImageView = {
+    lazy var profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         iv.layer.cornerRadius = 50 / 2
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleShowProfilePage))
+        iv.isUserInteractionEnabled = true
+        iv.addGestureRecognizer(tap)
 
         return iv
     }()

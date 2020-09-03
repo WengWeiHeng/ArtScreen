@@ -20,6 +20,7 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
     let penToolBarView = PenToolBarView()
     let animateToolBarView = AnimateToolBarView()
     let lassoToolBarView = LassoToolBarView()
+    var animator: UIViewPropertyAnimator!
 
     private var layers = [UIImage]()
     
@@ -160,8 +161,6 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
     //MARK: - PenProperties
     var canvas: Canvas = Canvas()
     var penCroppedImage: UIImage?
-//    var imgWidth: CGFloat?
-//    var imgHeight: CGFloat?
     
     //MARK: - LassoProperties
     var cutImagecount : Int = 0
@@ -233,11 +232,11 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
     private let emitterViewHeight: CGFloat = 378
 
     private var moveDrawView: MoveDrawView!
-    private let moveSettingView = MoveSettingView()
-    private let rotateSettingView = RotateSettingView()
-    private let scaleSettingView = ScaleSettingView()
-    private let opacitySettingView = OpacitySettingView()
-    private let emitterSettingView = EmitterSettingView()
+    private var moveSettingView = MoveSettingView()
+    private var rotateSettingView = RotateSettingView()
+    private var scaleSettingView = ScaleSettingView()
+    private var opacitySettingView = OpacitySettingView()
+    private var emitterSettingView = EmitterSettingView()
     
     lazy var centerPoint: UIView = {
         let view = UIView()
@@ -256,11 +255,11 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
     //MARK: - EmitterProperties
     var cells = [CAEmitterCell]()
     var emitter = CAEmitterLayer()
-    var emitterSpeed: CGFloat!
-    var emitterSize: CGFloat!
-    var redValue: CGFloat!
-    var greenValue: CGFloat!
-    var blueValue: CGFloat!
+    var emitterSpeed: CGFloat! = 0
+    var emitterSize: CGFloat! = 0
+    var redValue: CGFloat! = 0
+    var greenValue: CGFloat! = 0
+    var blueValue: CGFloat! = 0
     
     lazy var particleImage: UIImage = {
         let imageSize = CGSize(width: 5, height: 5)
@@ -307,7 +306,6 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
         let x = trimImageView.frame.minX - originalImageView.frame.minX
         let y = trimImageView.frame.minY - originalImageView.frame.minY
         
-        
         let itemCredentials = ArtworkItemCredentials(artworkItemImage: itemImage, width: Float(width), height: Float(height), x: Float(x), y: Float(y), emitterSize: Float(emitterSize), emitterSpeed: Float(emitterSpeed), emitterRedValue: Float(redValue), emitterGreenValue: Float(greenValue), emitterBlueValue: Float(blueValue), moveAnimateSpeed: moveSpeed, rotateFromValue: Float(rotateFromValue), rotateToValue: Float(rotateToValue), rotateAnimateSpeed: rotateAnimateSpeed, scaleFromValue: Float(scaleFromValue), scaleToValue: Float(scaleToValue), scaleAnimateSpeed: scaleAnimateSpeed, opacityFromValue: Float(opacityFromValue), opacityToValue: Float(opacityToValue), opacityAnimateSpeed: opacityAnimateSpeed)
         
         if trimImageView.image == nil {
@@ -347,6 +345,8 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
                 isRunning = false
                 showError("Create your animation objects.")
             } else {
+                print("rotateToValue = \(rotateToValue)")
+                print("rotateFromValue = \(rotateFromValue)")
                 buttonPlay.setImage(#imageLiteral(resourceName: "pause").withRenderingMode(.alwaysOriginal), for: .normal)
                 if (checkViewDrawLasso == true) {
                     view.addSubview(trimImageView)
@@ -388,6 +388,15 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
     
     @objc func handleDeleteLayerItem() {
         print("DEBUG: Delete layer item..")
+        ////fixed start
+        do {
+            resetAnimate()
+
+        } catch {
+            print("error with delete layer Item")
+        }
+        ///fixed end
+        
     }
     
     @objc func panGestureAction(sender: UIPanGestureRecognizer) {
@@ -480,6 +489,7 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
         layerStackView.anchor(top: undoRedoPlayView.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingLeft: 12, paddingRight: 12, height: 56)
     }
     
+    
     func configureAnimateSettingView() {
         view.addSubview(moveSettingView)
         moveSettingView.translatesAutoresizingMaskIntoConstraints = false
@@ -534,7 +544,7 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
     }
     
     func handleDismissal() {
-        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+        animator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
             self.moveBottom.constant = self.moveSettingHeight
             self.scaleBottom.constant = self.settingViewHeight
             self.opacityBottom.constant = self.settingViewHeight
@@ -542,7 +552,7 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
             self.emitterBottom.constant = self.emitterViewHeight
             self.view.layoutIfNeeded()
         }
-        transitionAnimator.startAnimation()
+        animator.startAnimation()
     }
     
     //MARK: - Pen function Helpers
@@ -626,6 +636,24 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
         let trimImage = UIImage(cgImage: imageCropping, scale: image.scale, orientation: image.imageOrientation)
         return trimImage
     }
+    func resetAnimate() {
+
+        cells.removeAll()
+        emitter.removeFromSuperlayer()
+        emitter.removeAllAnimations()
+        rotateSettingView.resetButton()
+        rotateSettingView.fromeValue = 0
+        rotateSettingView.toValue = 0
+        rotateSettingView.speedSlider.value = 0
+        
+        scaleSettingView.maxSizeSlider.value = 0
+        scaleSettingView.minSizeSlider.value = 0
+        scaleSettingView.speedSlider.value = 0
+        
+        opacitySettingView.maxSizeSlider.value = 0
+        opacitySettingView.minSizeSlider.value = 0
+        opacitySettingView.speedSlider.value = 0
+    }
     
     //MARK: - EmitterHelperS
     func setEmitter() {
@@ -707,6 +735,27 @@ extension AnimateController: UICollectionViewDelegateFlowLayout {
 
 //MARK: - FeatureToolBarViewDelegate
 extension AnimateController: FeatureToolBarViewDelegate {
+    func deletePenAndLasso() {
+        ////fixed start
+        do {
+            let count = try arrtrimImageView.count
+            for i in 0..<count {
+                arrtrimImageView[i].removeFromSuperview()
+            }
+            arrtrimImageView.removeAll()
+            trimImageView.image = UIImage()
+            trimImageView.removeFromSuperview()
+            layers.removeAll()
+            collectionView.reloadData()
+            originalImageView.alpha = 1.0
+            resetAnimate()
+        } catch {
+            print("Crash with deletePenAndLasso")
+        }
+
+        ////fixed end
+    }
+    
     func showPenToolBar() {
         UIView.animate(withDuration: 0.4) {
             self.featureToolBarView.alpha = 0
@@ -745,20 +794,24 @@ extension AnimateController: PenToolBarDelegate {
     func penCropAction() {
         let beCropped = penCropImage()
         let finalPath = canvas.getPath()
-        penCroppedImage = UIImage(cgImage: (beCropped?.cgImage?.cropping(to: finalPath.bounds))!)
-        sampleImageView.removeFromSuperview()
+        print("\(beCropped) , \(finalPath)")
+        if (finalPath != UIBezierPath()) {
+            penCroppedImage = UIImage(cgImage: (beCropped?.cgImage?.cropping(to: finalPath.bounds))!)
+            sampleImageView.removeFromSuperview()
+            
+            view.addSubview(trimImageView)
+            trimImageView.image = penCroppedImage
+            trimImageView.frame = finalPath.bounds
+            trimImageView.frame.origin.x = finalPath.bounds.minX + originalImageView.frame.origin.x
+            trimImageView.frame.origin.y = finalPath.bounds.minY + originalImageView.frame.origin.y
+            
+            originalImageView.alpha = 0.3
+            
+            layers.append(penCroppedImage!)
+            collectionView.reloadData()
+            configureCanvasView(withDoing: false)
+        }
         
-        view.addSubview(trimImageView)
-        trimImageView.image = penCroppedImage
-        trimImageView.frame = finalPath.bounds
-        trimImageView.frame.origin.x = finalPath.bounds.minX + originalImageView.frame.origin.x
-        trimImageView.frame.origin.y = finalPath.bounds.minY + originalImageView.frame.origin.y
-        
-        originalImageView.alpha = 0.3
-        
-        layers.append(penCroppedImage!)
-        collectionView.reloadData()
-        configureCanvasView(withDoing: false)
     }
     
     func penJointAction() {
@@ -776,15 +829,20 @@ extension AnimateController: LassoToolBarDelegate {
             self.originalImageView.alpha = 1
         }
         lineView.removeFromSuperview()
+        
     }
     
     func jointAction() {
-        lassoLayerImage = ZImageCropper.cropImage(ofImageView: sampleImageView, withinPoints: lineView.getPoints())!
+        guard let lasspoint : [CGPoint] = lineView.getPoints() else {return}
+        if lasspoint.count > 1 {
+        lassoLayerImage = ZImageCropper.cropImage(ofImageView: sampleImageView, withinPoints: lasspoint)!
+//        self.lassoLayerImage = lassoLayerImage
+        
         let line: [Line] = lineView.getLines()
         
         //cut ImageView with point
         view.addSubview(trimImageView)
-        let points = lineView.getPoints()
+        let points =  lineView.getPoints()
         for i in 0..<points.count {
             solve(points[i])
         }
@@ -814,10 +872,11 @@ extension AnimateController: LassoToolBarDelegate {
         arrtrimImageView[lastIndex].image = trimImageView.image
         arrtrimImageView[lastIndex].tag = lastIndex
         trimImageView.removeFromSuperview()
+        }
     }
     
     func undoAction() {
-        lines = lineView.getLines()
+        lines = try lineView.getLines()
         print(lines.count)
         _ = lines.popLast()
         lineView.removeFromSuperview()
@@ -834,38 +893,42 @@ extension AnimateController: LassoToolBarDelegate {
     }
     
     func cleanAction() {
+        trimImageView.image = UIImage()
+        lineView.reset()
         lineView.removeFromSuperview()
+        showLassoToolBarAndDraw()
+    
     }
 }
 
 //MARK: - AnimateToolBarViewDelegate
 extension AnimateController: AnimateToolBarViewDelegate {
     func emitterSetting() {
-        let tranitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+        animator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
             self.emitterBottom.constant = 0
             self.view.layoutIfNeeded()
         }
-        tranitionAnimator.startAnimation()
+        animator.startAnimation()
         setEmitter()
     }
     
     func moveSetting() {
-        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+        animator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
             self.moveBottom.constant = 0
             self.view.layoutIfNeeded()
         }
-        transitionAnimator.startAnimation()
+        animator.startAnimation()
     
         moveDrawView.delegate = self
         view.addSubview(moveDrawView)
     }
     
     func rotateSetting() {
-        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+        animator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
             self.rotateBottom.constant = 0
             self.view.layoutIfNeeded()
         }
-        transitionAnimator.startAnimation()
+        animator.startAnimation()
         
         UIView.animate(withDuration: 0.3) {
             self.centerPoint.alpha = 1
@@ -873,11 +936,11 @@ extension AnimateController: AnimateToolBarViewDelegate {
     }
     
     func scaleSetting() {
-        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+        animator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
             self.scaleBottom.constant = 0
             self.view.layoutIfNeeded()
         }
-        transitionAnimator.startAnimation()
+        animator.startAnimation()
         
         UIView.animate(withDuration: 0.3) {
             self.centerPoint.alpha = 1
@@ -885,16 +948,18 @@ extension AnimateController: AnimateToolBarViewDelegate {
     }
     
     func opacitySetting() {
-        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+        animator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
             self.opacityBottom.constant = 0
             self.view.layoutIfNeeded()
         }
-        transitionAnimator.startAnimation()
+        animator.startAnimation()
     }
 }
 
 //MARK: - SettingViewDelegate
 extension AnimateController: SettingViewDelegate {
+
+    
     func dismissSettingView() {
         handleDismissal()
         guard let moveDrawView = moveDrawView else { return }

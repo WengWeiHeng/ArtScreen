@@ -116,9 +116,12 @@ class AddExhibitionController: UIViewController {
         }
     }
     
-    @objc func keyboardWillShow() {
-        if view.frame.origin.y == 0 {
-            self.view.frame.origin.y -= 88
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let keyboardHeight = keyboardSize.height
+            if view.frame.origin.y == 0 {
+                self.view.frame.origin.y -= keyboardHeight
+            }
         }
         
         coverImageButton.isEnabled = false

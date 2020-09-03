@@ -36,7 +36,8 @@ class UserContentView: UIView {
     weak var delegate: UserContentViewDelegate?
     
     private var screenOffset: CGFloat = UIScreen.main.bounds.width
-    private var leftConstraint = NSLayoutConstraint()
+//    private var leftConstraint = NSLayoutConstraint()
+    private var rightConstraint = NSLayoutConstraint()
     private var option: ActionOption = .addExhibition
     
     private let userInfoView = UserInfoView()
@@ -199,9 +200,14 @@ class UserContentView: UIView {
         
         addSubview(userExhibitionView)
         userExhibitionView.anchor(top: stack.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, paddingTop: 20, width: screenOffset)
-
+        
         addSubview(userArtworkView)
-        userArtworkView.anchor(top: stack.bottomAnchor, left: userExhibitionView.rightAnchor, bottom: bottomAnchor,  paddingTop: 20, width: screenOffset)
+        userArtworkView.translatesAutoresizingMaskIntoConstraints = false
+        userArtworkView.topAnchor.constraint(equalTo: userExhibitionView.topAnchor).isActive = true
+        userArtworkView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        rightConstraint = userArtworkView.rightAnchor.constraint(equalTo: rightAnchor, constant: screenOffset)
+        rightConstraint.isActive = true
+        userArtworkView.widthAnchor.constraint(equalToConstant: screenOffset).isActive = true
 
         addSubview(filterBar)
         filterBar.centerX(inView: self)
@@ -212,19 +218,23 @@ class UserContentView: UIView {
 
 extension UserContentView: FilterViewDelegate {
     func moveToArtwork() {
-        UIView.animate(withDuration: 0.5) {
-            self.userArtworkView.frame.origin.x -= self.screenOffset
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+            self.rightConstraint.constant = 0
             self.titleLabel.text = "Artwork"
+            self.layoutIfNeeded()
         }
+        transitionAnimator.startAnimation()
         
         self.option = .addArtwork
     }
     
     func moveToExhibition() {
-        UIView.animate(withDuration: 0.5) {
-            self.userArtworkView.frame.origin.x += self.screenOffset
+        let transitionAnimator = UIViewPropertyAnimator(duration: 0.6, dampingRatio: 1) {
+            self.rightConstraint.constant = self.screenOffset
             self.titleLabel.text = "Exhibition"
+            self.layoutIfNeeded()
         }
+        transitionAnimator.startAnimation()
         
         self.option = .addExhibition
     }

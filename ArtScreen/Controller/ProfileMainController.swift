@@ -171,7 +171,7 @@ class ProfileMainController: UIViewController {
         view.backgroundColor = .mainDarkGray
         
         view.addSubview(userCoverView)
-        userCoverView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: view.frame.height - 150)
+        userCoverView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: view.frame.height - 160)
         
         view.addSubview(userInfoView)
         userInfoView.anchor(top: userCoverView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor)
@@ -183,7 +183,7 @@ class ProfileMainController: UIViewController {
         view.addSubview(userContentView)
         userContentView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         userContentView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        bottomConstraint = userContentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: popupOffset - 65)
+        bottomConstraint = userContentView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: popupOffset - 75)
         bottomConstraint.isActive = true
         userContentView.heightAnchor.constraint(equalToConstant: popupOffset).isActive = true
         userContentView.addGestureRecognizer(panRecognizer)

@@ -118,7 +118,11 @@ class DrawView: UIImageView {
     }
     
     func getPoints() -> [CGPoint] {
-        return lines[lines.count-1].points
+        let count = lines.count-1
+        if count >= 0 {
+            return  lines[count].points
+        }
+        return [CGPoint()]
     }
 
     func popLines() {
@@ -145,16 +149,20 @@ class DrawView: UIImageView {
         self.image = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
     }
-    
-    func resetLine() {
-        let lastDrawImage = UIImage()
-        let path = UIBezierPath()
-        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0.0)
-        lastDrawImage.draw(at: CGPoint.zero)
-        penColor.setStroke()
-        path.stroke()
-        self.image = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
+    ///fixed
+    func reset() {
+        lines = [Line]()
     }
+    ///fixed
+//    func resetLine() {
+//        let lastDrawImage = UIImage()
+//        let path = UIBezierPath()
+//        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0.0)
+//        lastDrawImage.draw(at: CGPoint.zero)
+//        penColor.setStroke()
+//        path.stroke()
+//        self.image = UIGraphicsGetImageFromCurrentImageContext()!
+//        UIGraphicsEndImageContext()
+//    }
 }
 

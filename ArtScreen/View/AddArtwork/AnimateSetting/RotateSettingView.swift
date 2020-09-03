@@ -78,6 +78,7 @@ class RotateSettingView: UIView {
          return slider
     }()
     
+    
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -114,6 +115,17 @@ class RotateSettingView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    //MARK: - Functionn
+    ///fixed srtart
+    @objc func resetButton() {
+        print("Testttt")
+        leftButton.backgroundColor = .mainBackground
+        leftButton.setTitleColor(.mainDarkGray, for: .normal)
+        rightButton.backgroundColor = .mainBackground
+        rightButton.setTitleColor(.mainDarkGray, for: .normal)
+    }
+    ///fixed start
+    
     
     //MARK: - Selectors
     @objc func handleDismissal() {

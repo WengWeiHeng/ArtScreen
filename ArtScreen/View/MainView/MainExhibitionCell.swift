@@ -57,15 +57,13 @@ class MainExhibitionCell: UICollectionViewCell {
     }()
     
     //MARK: - Exhibition Info Properties
-    
-    private lazy var closeButton: UIButton = {
+    let closeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "close").withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white
         button.setDimensions(width: 28, height: 28)
-        button.addTarget(self, action: #selector(handleDismissal(_:)), for: .touchUpInside)
         button.alpha = 0
-        
+
         return button
     }()
     
@@ -146,7 +144,7 @@ class MainExhibitionCell: UICollectionViewCell {
         button.setDimensions(width: 80, height: 28)
         button.layer.cornerRadius = 28 / 2
         button.alpha = 0
-//        button.addTarget(self, action: #selector(handleFollow), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleFollow), for: .touchUpInside)
         
         return button
     }()
@@ -243,7 +241,6 @@ class MainExhibitionCell: UICollectionViewCell {
         return stack
     }()
     
-    
     //MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -282,12 +279,13 @@ class MainExhibitionCell: UICollectionViewCell {
         artworkInputView.alpha = 0
         artworkInputView.delegate = self
         
-        addSubview(closeButton)
-        closeButton.anchor(top: safeAreaLayoutGuide.topAnchor, right: rightAnchor, paddingTop: 16, paddingRight: 16)
-        
         addSubview(filterButtonStack)
         filterButtonStack.anchor(bottom: safeAreaLayoutGuide.bottomAnchor)
         filterButtonStack.centerX(inView: self)
+        
+        addSubview(closeButton)
+        closeButton.anchor(top: safeAreaLayoutGuide.topAnchor, right: rightAnchor, paddingTop: 16, paddingRight: 16)
+        closeButton.addTarget(self, action: #selector(handleCloseCell), for: .touchUpInside)
         
         addGestureRecognizer(panRecognizer)
     }
@@ -338,7 +336,7 @@ class MainExhibitionCell: UICollectionViewCell {
         }
     }
     
-    @objc func handleDismissal(_ sender: Any) {
+    @objc func handleCloseCell() {
         toggle()
     }
     
@@ -369,9 +367,12 @@ class MainExhibitionCell: UICollectionViewCell {
         transitionAnimator.startAnimation()
     }
     
+    @objc func handleFollow() {
+        print("DEBUG: Handle Follow..")
+    }
+    
     //MARK: - Helpers
     func configureData(with exhibition: Exhibition, collectionView: UICollectionView, index: Int) {
-        
         exhibitionImage.sd_setImage(with: exhibition.exhibitionImageUrl)
         exhibitionTitleLabel.text = exhibition.name
         exhibitionIntroduction.text = exhibition.introduction
@@ -397,7 +398,6 @@ class MainExhibitionCell: UICollectionViewCell {
     
     func collapse(){
         guard let collectionView = self.collectionView, let index = self.index else { return }
-        
         animator.addAnimations {
             self.delegate?.itemDismissal(isDismissal: false)
             self.exhibitionImage.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner]

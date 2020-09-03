@@ -9,9 +9,11 @@
 import UIKit
 import Photos
 import AVFoundation
+
 protocol AlbumViewDelegate: class {
     func uploadArtwork(_ image: UIImage)
 }
+
 class AlbumView: UIView {
     
     //MARK: - Properties
@@ -93,7 +95,9 @@ class AlbumView: UIView {
         let assets: PHFetchResult = PHAsset.fetchAssets(with: .image, options: nil)
         // PHAssetを一つ一つ格納
         assets.enumerateObjects { [weak self] (asset, index, stop) in
-            self?.photoAssets.append(assets[index])
+            ////fixed start
+            self?.photoAssets.insert(assets[index], at: 0)
+            //fixed end
         }
     }
 }
@@ -121,6 +125,7 @@ extension AlbumView: UICollectionViewDataSource, MyHeaderFooterCollectionViewDel
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: collectionViewHeaderFooterReuseIdentifier, for: indexPath) as? MyHeaderFooterCollectionView
             headerView?.addSubview(headerImageView)
             headerImageView.anchor(top: headerView?.topAnchor, left: headerView?.leftAnchor, bottom: headerView?.bottomAnchor, right: headerView?.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+
             headerImageView.image = convertImageFromAsset(asset: photoAssets[0])
             return headerView!
         default:

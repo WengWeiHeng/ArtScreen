@@ -30,8 +30,8 @@ class CircleView: UIView {
         
         let line = CAShapeLayer()
         line.path = path.cgPath
-        line.lineWidth = 5
-        line.strokeColor = UIColor.yellow.cgColor
+        line.lineWidth = 1.6
+        line.strokeColor = UIColor.mainPurple.cgColor
         circle.inComingLine = line
         outGoingLine = line
         outGoingCircle = circle
@@ -109,8 +109,10 @@ class Canvas: UIView {
     @objc func singleTap(recognizer: UITapGestureRecognizer) {
         //print("singleTap")
         let position = recognizer.location(in: self)
-        let circle1 = CircleView(frame: CGRect(x: position.x, y: position.y, width: 16, height: 16))
-        circle1.backgroundColor = .red
+        let circle1 = CircleView(frame: CGRect(x: position.x, y: position.y, width: 12, height: 12))
+        circle1.backgroundColor = .white
+        circle1.layer.borderWidth = 1.6
+        circle1.layer.borderColor = UIColor.mainPurple.cgColor
         self.addSubview(circle1)
         
         /// Each circle can be dragged
