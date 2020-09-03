@@ -190,7 +190,7 @@ class ProfileMainController: UIViewController {
         userContentView.delegate = self
         
         view.addSubview(editToolBarView)
-        editToolBarView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 150)
+        editToolBarView.anchor(left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, height: 160)
         editToolBarView.alpha = 0
         
         view.addSubview(closeButton)
