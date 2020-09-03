@@ -500,6 +500,7 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
         moveSettingView.heightAnchor.constraint(equalToConstant: moveSettingHeight).isActive = true
         moveSettingView.layer.cornerRadius = 24
         moveSettingView.delegate = self
+        moveSettingView.layer.zPosition = 10000
         
         view.addSubview(rotateSettingView)
         rotateSettingView.translatesAutoresizingMaskIntoConstraints = false
@@ -510,6 +511,7 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
         rotateSettingView.heightAnchor.constraint(equalToConstant: rotateSettingHeight).isActive = true
         rotateSettingView.layer.cornerRadius = 24
         rotateSettingView.delegate = self
+        rotateSettingView.layer.zPosition = 10000
         
         view.addSubview(scaleSettingView)
         scaleSettingView.translatesAutoresizingMaskIntoConstraints = false
@@ -520,6 +522,7 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
         scaleSettingView.heightAnchor.constraint(equalToConstant: settingViewHeight).isActive = true
         scaleSettingView.layer.cornerRadius = 24
         scaleSettingView.delegate = self
+        scaleSettingView.layer.zPosition = 10000
         
         view.addSubview(opacitySettingView)
         opacitySettingView.translatesAutoresizingMaskIntoConstraints = false
@@ -530,6 +533,7 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
         opacitySettingView.heightAnchor.constraint(equalToConstant: settingViewHeight).isActive = true
         opacitySettingView.layer.cornerRadius = 24
         opacitySettingView.delegate = self
+        opacitySettingView.layer.zPosition = 10000
         
         view.addSubview(emitterSettingView)
         emitterSettingView.translatesAutoresizingMaskIntoConstraints = false
@@ -541,6 +545,7 @@ class AnimateController: UIViewController, UIScrollViewDelegate {
         emitterSettingView.layer.cornerRadius = 24
         emitterSettingView.delegate = self
         emitterSettingView.selfDelegate = self
+        emitterSettingView.layer.zPosition = 10000
     }
     
     func handleDismissal() {
